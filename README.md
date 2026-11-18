@@ -113,3 +113,14 @@ uv run --locked python scripts/verify_local_esa.py /path/to/esa-v2 \
 
 A mismatch stops without writing a receipt. EDP v2 file-level inventory and ESA
 licence confirmation are still pending. See `docs/G1_PROGRESS.md`.
+
+For an EDP v2 candidate folder containing the 10 publisher-reported workbooks:
+
+```sh
+uv run --locked python scripts/inventory_local_edp.py /path/to/edp-v2 \
+  --output /path/to/private-receipts/edp-v2-local-inventory.json
+```
+
+This records **local hashes only**. Publisher filenames/checksums were not
+available from the unauthenticated public file API, so it cannot confirm v2
+identity. The resulting receipt is not a dataset manifest or quality report.

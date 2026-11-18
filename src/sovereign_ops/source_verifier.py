@@ -25,7 +25,7 @@ def _hash_file(path: Path) -> tuple[int, str, str]:
     return total, sha256.hexdigest(), md5.hexdigest()
 
 
-def _check_zip_directory(path: Path) -> None:
+def _check_zip_directory(path: Path) -> set[str]:
     """Reject unsafe metadata before anyone attempts extraction in a later gate."""
     with zipfile.ZipFile(path) as archive:
         seen: set[str] = set()
@@ -45,6 +45,7 @@ def _check_zip_directory(path: Path) -> None:
             if name in seen:
                 raise SourceVerificationError(f"Duplicate ZIP member in {path.name}")
             seen.add(name)
+        return seen
 
 
 def verify_esa_archives(source_dir: Path, registry_path: Path) -> dict[str, Any]:
@@ -93,4 +94,44 @@ def verify_esa_archives(source_dir: Path, registry_path: Path) -> dict[str, Any]
         "status": "INTEGRITY_VERIFIED_RIGHTS_PENDING",
         "files": receipts,
         "note": "ZIP directory inspection is not extraction or a complete archive safety audit.",
+    }
+
+
+def inventory_edp_workbooks(source_dir: Path) -> dict[str, Any]:
+    """Inventory local v2 candidates without asserting publisher file identity."""
+    source_dir = source_dir.resolve(strict=True)
+    if not source_dir.is_dir():
+        raise SourceVerificationError("Source path must be a directory")
+    entries = list(source_dir.iterdir())
+    if len(entries) != 10 or any(p.suffix.lower() != ".xlsx" for p in entries):
+        raise SourceVerificationError("Expected exactly 10 EDP v2 Excel workbooks")
+    if len({p.name.casefold() for p in entries}) != 10:
+        raise SourceVerificationError("Workbook filenames must be unique without case ambiguity")
+    receipts: list[dict[str, Any]] = []
+    for path in sorted(entries):
+        if path.is_symlink() or not path.is_file() or path.parent.resolve() != source_dir:
+            raise SourceVerificationError(f"Missing or linked workbook: {path.name}")
+        size, sha256, _ = _hash_file(path)
+        if size == 0:
+            raise SourceVerificationError(f"Empty workbook: {path.name}")
+        try:
+            names = _check_zip_directory(path)
+        except (zipfile.BadZipFile, OSError) as exc:
+            raise SourceVerificationError(f"Unreadable workbook ZIP: {path.name}") from exc
+        if "[Content_Types].xml" not in names or "xl/workbook.xml" not in names:
+            raise SourceVerificationError(f"Missing XLSX structure: {path.name}")
+        if any(
+            name.startswith("xl/externalLinks/") or name.endswith("vbaProject.bin")
+            for name in names
+        ):
+            raise SourceVerificationError(f"Active or external workbook content: {path.name}")
+        receipts.append({"name": path.name, "size_bytes": size, "sha256": sha256})
+    return {
+        "dataset_id": "EDP-SCADA-v2",
+        "doi": "10.17632/zjxjnjp3xs.2",
+        "source_url": "https://data.mendeley.com/datasets/zjxjnjp3xs/2",
+        "checked_at": datetime.now(UTC).isoformat(),
+        "status": "LOCAL_HASHES_ONLY_PUBLISHER_IDENTITY_PENDING",
+        "files": receipts,
+        "note": "No official per-file filenames, sizes or checksums were available to compare.",
     }

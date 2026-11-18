@@ -1,9 +1,9 @@
 # G1 progress — BLOCKED
 
-This increment adds a read-only ESA v2 local integrity verifier and tests. It
+This increment adds read-only ESA v2 and EDP v2 local file checkers and tests. It
 requires the three exact v2 files outside Git. No archive was downloaded or
 inspected on this cloud machine because the user keeps dataset files locally.
-The checker compares official published sizes/MD5, computes local SHA-256, and
+The ESA checker compares official published sizes/MD5, computes local SHA-256, and
 rejects symlinked sources, unsafe ZIP member names and duplicate entries.
 Its receipt explicitly says RIGHTS_PENDING; it is not a data-ingest manifest.
 
@@ -15,3 +15,10 @@ claims are authorized by this progress.
 
 Run the verifier from the Windows Git checkout with source and output paths
 outside the repository. Published GitHub code and data must remain separate.
+
+The Mendeley public page reports 10 Excel files, but its file API returned 401
+to an unauthenticated metadata request during this review. We therefore do not
+claim exact EDP filenames, sizes or publisher checksums. The EDP checker records
+local SHA-256 hashes and checks basic XLSX structure, rejecting external links
+and macro projects; its receipt remains PUBLISHER_IDENTITY_PENDING. It cannot
+establish the files are the published version or that their data are safe to parse.
