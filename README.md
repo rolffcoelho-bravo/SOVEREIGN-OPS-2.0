@@ -97,3 +97,19 @@ secret manager.
 ShockBridge source-code licensing is PENDING_OWNER_SELECTION; no open-source
 licence grant is implied by repository visibility. Dataset and upstream code
 licences are separate. No upstream benchmark implementation is vendored here.
+
+## G1 local source verification (in progress)
+
+The ESA v2 integrity checker reads three archives from a folder **outside** this
+Git repository, compares their byte sizes and publisher MD5 values, computes
+SHA-256 and checks ZIP directory names. It does not extract files, process
+telemetry or approve data rights. Run it only after downloading the exact v2
+release to your own machine:
+
+```sh
+uv run --locked python scripts/verify_local_esa.py /path/to/esa-v2 \
+  --output /path/to/private-receipts/esa-v2-integrity.json
+```
+
+A mismatch stops without writing a receipt. EDP v2 file-level inventory and ESA
+licence confirmation are still pending. See `docs/G1_PROGRESS.md`.
