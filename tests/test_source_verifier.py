@@ -47,7 +47,7 @@ def _fixture(tmp_path: Path, member: str = "telemetry.csv") -> tuple[Path, Path]
 def test_matching_archives_produce_integrity_only_receipt(tmp_path: Path) -> None:
     source, registry = _fixture(tmp_path)
     result = verify_esa_archives(source, registry)
-    assert result["status"] == "INTEGRITY_VERIFIED_RIGHTS_PENDING"
+    assert result["status"] == "INTEGRITY_VERIFIED_FILE_NOTICES_PENDING"
     assert len(result["files"]) == 3
     assert all(len(item["sha256"]) == 64 for item in result["files"])
 

@@ -17,8 +17,9 @@
 
 ## G1 prerequisites and evidence
 
-1. Resolve ESA v2 licence applicability with official evidence; verify EDP file
-   notices. Record permitted use and attribution before data ingestion.
+1. Review the now confirmed ESA v2 CC BY 3.0 IGO record evidence and inspect
+   archive notices; verify EDP file notices. Record permitted use and attribution
+   before data ingestion.
 2. Check actual storage/RAM and intended dataset directory. Download exact
    releases outside Git with a resumable client; preserve source metadata and
    compute byte counts, publisher-checksum comparisons, and SHA-256 receipts.
@@ -58,8 +59,8 @@ Execute G1 only for ShockBridge Sovereign Ops. First read the retained v2
 blueprint, CODEX_MASTER_PROMPT_V2.md, docs/G0_REPORT.md, DATA_RIGHTS.md,
 docs/SOURCE_REVIEW.md, DATASET_REGISTRY.json, and EVALUATION_PROTOCOL.md.
 Inspect the worktree and preserve existing edits. Keep all project content in
-English. Resolve ESA v2 rights from official evidence before data use; verify
-EDP v2 file-level notices. If permission remains unclear, report BLOCKED for
+English. Verify the documented ESA v2 record-level CC BY 3.0 IGO evidence and inspect
+ESA archive notices; verify EDP v2 file-level notices. If permission remains unclear, report BLOCKED for
 that source rather than substituting a dataset. Check disk/RAM before acquiring
 ESA v2 DOI 10.5281/zenodo.15237121 and EDP v2 DOI 10.17632/zjxjnjp3xs.2 outside
 Git. Verify exact versions, measured sizes, publisher checksums and local

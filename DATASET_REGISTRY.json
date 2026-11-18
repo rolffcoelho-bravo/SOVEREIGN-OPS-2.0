@@ -10,10 +10,10 @@
       "source_url": "https://zenodo.org/records/15237121",
       "metadata_url": "https://zenodo.org/api/records/15237121",
       "acquisition_status": "NOT_DOWNLOADED",
-      "rights_status": "RIGHTS_PENDING",
+      "rights_status": "RECORD_LICENSE_CONFIRMED_FILE_NOTICES_PENDING",
       "license_candidate": "CC-BY-3.0-IGO",
-      "license_evidence_url": "https://github.com/esa/anomaly-dataset/blob/main/LICENSE",
-      "license_scope": "Repository licence observed; applicability to exact v2 files unconfirmed",
+      "license_evidence_url": "https://zenodo.org/records/15237121",
+      "license_scope": "Version-specific Zenodo v2 page declares CC BY 3.0 IGO; inspect downloaded file notices before redistribution.",
       "acknowledgement": "Credit ESA/ESOC, dataset creators and contributors, Airbus Defence and Space, KP Labs; cite exact dataset DOI and ESA-ADB paper; preserve notices and identify modifications.",
       "published_total_size_bytes": 11609189449,
       "files": [

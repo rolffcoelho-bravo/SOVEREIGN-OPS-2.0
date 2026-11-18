@@ -11,11 +11,13 @@ Source pages may change; preserve the reviewed commit/blob identities below.
 - Exact DOI: `10.5281/zenodo.15237121`; publication date 2025-04-17.
 - Three archives total 11,609,189,449 bytes. Exact published file sizes and MD5
   checksums are in DATASET_REGISTRY.json, distinct from pending local SHA-256.
-- The metadata declares open access but its retrieved `metadata` object does
-  not contain a licence field. Do not infer redistribution permission.
+- The retrieved API `metadata` object does not contain a `license` field. The
+  version-specific HTML page embeds `rights` with CC BY 3.0 IGO and `version: v2`.
+  Page SHA-256: `f682bd1a50a8ebaadb583d46fd116e6896a71f0766aa13b6208264ed7f4ee67f`.
+  File-level notices still require review.
 - ESA dataset LICENSE blob `e9603f00725a6580a4c82ac6ada160a13f53f323`
   says CC BY 3.0 IGO: https://github.com/esa/anomaly-dataset/blob/main/LICENSE.
-  Exact v2 applicability is not settled by that repository file alone.
+  The exact v2 Zenodo page independently confirms the record-level licence.
 
 ## ESA-ADB reference structure
 

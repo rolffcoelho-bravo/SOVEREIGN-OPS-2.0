@@ -24,7 +24,8 @@ def main() -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     print(
-        f"Verified {len(receipt['files'])} ESA archives; rights remain pending. Receipt: {output}"
+        f"Verified {len(receipt['files'])} ESA archives; "
+        f"file notices remain pending. Receipt: {output}"
     )
 
 

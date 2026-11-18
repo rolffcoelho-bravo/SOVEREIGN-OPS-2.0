@@ -6,7 +6,7 @@ values and actual byte sizes remain `PENDING_SOURCE_DOWNLOAD`.
 
 | ID | Exact release | Official URL | Current state |
 |---|---|---|---|
-| ESA-AD-v2 | DOI 10.5281/zenodo.15237121 | https://zenodo.org/records/15237121 | NOT_DOWNLOADED; RIGHTS_PENDING |
+| ESA-AD-v2 | DOI 10.5281/zenodo.15237121 | https://zenodo.org/records/15237121 | NOT_DOWNLOADED; record licence CC BY 3.0 IGO confirmed, file notices pending |
 | EDP-SCADA-v2 | DOI 10.17632/zjxjnjp3xs.2 | https://data.mendeley.com/datasets/zjxjnjp3xs/2 | NOT_DOWNLOADED; licence observed, file review pending |
 
 ## ESA acquisition requirements

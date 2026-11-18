@@ -5,13 +5,20 @@ technical provenance record; no data has been acquired or redistributed.
 
 | Material | Observed licence | Decision at G0 |
 |---|---|---|
-| ESA dataset repository LICENSE | CC BY 3.0 IGO | Repository licence observed; downloaded v2 material applicability remains RIGHTS_PENDING |
-| Zenodo ESA record 15237121 | Open access; no `metadata.license` in retrieved API response | Open access is not a redistribution licence; block data use pending confirmation |
+| ESA dataset repository LICENSE | CC BY 3.0 IGO | Repository licence observed; version-specific record now independently confirms CC BY 3.0 IGO |
+| Zenodo ESA v2 record 15237121 | CC BY 3.0 IGO in embedded v2 page metadata | Record-level licence confirmed; inspect file-level notices before redistribution |
 | EDP Mendeley version 2 | CC BY 4.0 displayed on version-specific page | Metadata licence confirmed; individual file coverage and notices must be checked at G1 |
 | ESA-ADB top-level code | MIT at reviewed commit | Not vendored or executed; individual algorithms have separate licences |
 | ShockBridge original code | PENDING_OWNER_SELECTION | Do not label as MIT/Apache or claim open-source licensing yet |
 
 ## Attribution and separation
+
+The version-specific Zenodo landing page (reviewed 2026-11-18) embeds `rights`
+with title `CC BY 3.0 IGO`, link to the legal code, and version `v2`. Its
+retrieved API `metadata` lacked a `license` key, but that omission is no longer
+a reason to mark the record licence unknown. The page response SHA-256 was
+`f682bd1a50a8ebaadb583d46fd116e6896a71f0766aa13b6208264ed7f4ee67f`.
+Inspect downloaded archive notices before redistribution.
 
 For ESA, cite the exact v2 DOI; credit the dataset creators De Canio, Kotowski,
 Haskamp and named contributors, ESA/ESOC, Airbus Defence and Space, and KP Labs.

@@ -112,7 +112,7 @@ uv run --locked python scripts/verify_local_esa.py /path/to/esa-v2 \
 ```
 
 A mismatch stops without writing a receipt. EDP v2 file-level inventory and ESA
-licence confirmation are still pending. See `docs/G1_PROGRESS.md`.
+archive notices are still pending. See `docs/G1_PROGRESS.md`.
 
 For an EDP v2 candidate folder containing the 10 publisher-reported workbooks:
 

@@ -91,7 +91,7 @@ def verify_esa_archives(source_dir: Path, registry_path: Path) -> dict[str, Any]
         "dataset_id": "ESA-AD-v2",
         "doi": dataset["doi"],
         "checked_at": datetime.now(UTC).isoformat(),
-        "status": "INTEGRITY_VERIFIED_RIGHTS_PENDING",
+        "status": "INTEGRITY_VERIFIED_FILE_NOTICES_PENDING",
         "files": receipts,
         "note": "ZIP directory inspection is not extraction or a complete archive safety audit.",
     }
