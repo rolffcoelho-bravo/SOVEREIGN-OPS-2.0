@@ -1,0 +1,64 @@
+{
+  "schema_version": "1",
+  "kind": "SOURCE_REGISTRY_NOT_ACQUISITION_MANIFEST",
+  "reviewed_at": "2026-11-18T21:32:10.499617+00:00",
+  "datasets": [
+    {
+      "id": "ESA-AD-v2",
+      "version": "2",
+      "doi": "10.5281/zenodo.15237121",
+      "source_url": "https://zenodo.org/records/15237121",
+      "metadata_url": "https://zenodo.org/api/records/15237121",
+      "acquisition_status": "NOT_DOWNLOADED",
+      "rights_status": "RIGHTS_PENDING",
+      "license_candidate": "CC-BY-3.0-IGO",
+      "license_evidence_url": "https://github.com/esa/anomaly-dataset/blob/main/LICENSE",
+      "license_scope": "Repository licence observed; applicability to exact v2 files unconfirmed",
+      "acknowledgement": "Credit ESA/ESOC, dataset creators and contributors, Airbus Defence and Space, KP Labs; cite exact dataset DOI and ESA-ADB paper; preserve notices and identify modifications.",
+      "published_total_size_bytes": 11609189449,
+      "files": [
+        {
+          "name": "ESA-Mission1.zip",
+          "source_url": "https://zenodo.org/api/records/15237121/files/ESA-Mission1.zip/content",
+          "published_size_bytes": 3776246073,
+          "published_checksum": "md5:9770ad12ed730238f37c42d5c27ab436",
+          "actual_size_bytes": "PENDING_SOURCE_DOWNLOAD",
+          "sha256": "PENDING_SOURCE_DOWNLOAD"
+        },
+        {
+          "name": "ESA-Mission2.zip",
+          "source_url": "https://zenodo.org/api/records/15237121/files/ESA-Mission2.zip/content",
+          "published_size_bytes": 4098539932,
+          "published_checksum": "md5:bfc72012691427d9327eb41f726ce45e",
+          "actual_size_bytes": "PENDING_SOURCE_DOWNLOAD",
+          "sha256": "PENDING_SOURCE_DOWNLOAD"
+        },
+        {
+          "name": "ESA-Mission3.zip",
+          "source_url": "https://zenodo.org/api/records/15237121/files/ESA-Mission3.zip/content",
+          "published_size_bytes": 3734403444,
+          "published_checksum": "md5:d63943f09c81378acd9fc5e565ecc66e",
+          "actual_size_bytes": "PENDING_SOURCE_DOWNLOAD",
+          "sha256": "PENDING_SOURCE_DOWNLOAD"
+        }
+      ]
+    },
+    {
+      "id": "EDP-SCADA-v2",
+      "version": "2",
+      "doi": "10.17632/zjxjnjp3xs.2",
+      "source_url": "https://data.mendeley.com/datasets/zjxjnjp3xs/2",
+      "acquisition_status": "NOT_DOWNLOADED",
+      "rights_status": "METADATA_LICENSE_CONFIRMED_FILE_REVIEW_PENDING",
+      "license_candidate": "CC-BY-4.0",
+      "license_evidence_url": "https://data.mendeley.com/datasets/zjxjnjp3xs/2",
+      "license_scope": "Version-specific page; individual file notices still to review",
+      "acknowledgement": "Credit Krzysztof Kijanowski, Tomasz Barszcz, Wieslaw Staszewski, Phong Dao and original source EDP; cite exact DOI, link CC BY 4.0 and identify modifications.",
+      "published_size_description": "10 Excel files; 173.7 MB as reported by publisher, not exact byte measurements",
+      "file_inventory_status": "PENDING_SOURCE_DOWNLOAD",
+      "actual_size_bytes": "PENDING_SOURCE_DOWNLOAD",
+      "sha256": "PENDING_SOURCE_DOWNLOAD",
+      "files": []
+    }
+  ]
+}

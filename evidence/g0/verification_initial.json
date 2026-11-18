@@ -1,0 +1,111 @@
+{
+  "recorded_at": "2026-11-18T21:34:55.914156+00:00",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "working_directory": "/workspace/work/shockbridge-sovereign-ops",
+  "checks_passed": false,
+  "checks": [
+    {
+      "command": [
+        "uv",
+        "sync",
+        "--locked"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Resolved 55 packages in 1ms\nChecked 54 packages in 0.55ms\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "ruff",
+        "check",
+        "."
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "returncode": 0,
+      "stdout": "22 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "mypy"
+      ],
+      "returncode": 0,
+      "stdout": "Success: no issues found in 10 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pytest",
+        "--junitxml=evidence/g0/tests.xml"
+      ],
+      "returncode": 0,
+      "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0\nrootdir: /workspace/work/shockbridge-sovereign-ops\nconfigfile: pyproject.toml\ntestpaths: tests\nplugins: platformdirs-4.14.7, anyio-4.16.0\ncollected 17 items\n\ntests/test_api.py ..                                                     [ 11%]\ntests/test_contracts.py ...............                                  [100%]\n\n=============================== warnings summary ===============================\n.venv/lib/python3.12/site-packages/fastapi/testclient.py:1\n  /workspace/work/shockbridge-sovereign-ops/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n- generated xml file: /workspace/work/shockbridge-sovereign-ops/evidence/g0/tests.xml -\n======================== 17 passed, 1 warning in 0.30s =========================\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "scripts/smoke_http.py"
+      ],
+      "returncode": 0,
+      "stdout": "{\"status\": \"PASS\", \"live\": {\"status\": \"alive\", \"stage\": \"G0\", \"mode\": \"RESEARCH_ONLY\", \"inference\": \"NOT_IMPLEMENTED\"}, \"ready_http_status\": 404, \"analysis_http_status\": 404, \"server\": \"uvicorn\", \"transport\": \"loopback HTTP\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "scripts/check_secrets.py"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"version\": \"1.5.0\",\n  \"plugins_used\": [\n    {\n      \"name\": \"ArtifactoryDetector\"\n    },\n    {\n      \"name\": \"AWSKeyDetector\"\n    },\n    {\n      \"name\": \"AzureStorageKeyDetector\"\n    },\n    {\n      \"name\": \"Base64HighEntropyString\",\n      \"limit\": 4.5\n    },\n    {\n      \"name\": \"BasicAuthDetector\"\n    },\n    {\n      \"name\": \"CloudantDetector\"\n    },\n    {\n      \"name\": \"DiscordBotTokenDetector\"\n    },\n    {\n      \"name\": \"GitHubTokenDetector\"\n    },\n    {\n      \"name\": \"GitLabTokenDetector\"\n    },\n    {\n      \"name\": \"HexHighEntropyString\",\n      \"limit\": 3.0\n    },\n    {\n      \"name\": \"IbmCloudIamDetector\"\n    },\n    {\n      \"name\": \"IbmCosHmacDetector\"\n    },\n    {\n      \"name\": \"IPPublicDetector\"\n    },\n    {\n      \"name\": \"JwtTokenDetector\"\n    },\n    {\n      \"name\": \"KeywordDetector\",\n      \"keyword_exclude\": \"\"\n    },\n    {\n      \"name\": \"MailchimpDetector\"\n    },\n    {\n      \"name\": \"NpmDetector\"\n    },\n    {\n      \"name\": \"OpenAIDetector\"\n    },\n    {\n      \"name\": \"PrivateKeyDetector\"\n    },\n    {\n      \"name\": \"PypiTokenDetector\"\n    },\n    {\n      \"name\": \"SendGridDetector\"\n    },\n    {\n      \"name\": \"SlackDetector\"\n    },\n    {\n      \"name\": \"SoftlayerDetector\"\n    },\n    {\n      \"name\": \"SquareOAuthDetector\"\n    },\n    {\n      \"name\": \"StripeDetector\"\n    },\n    {\n      \"name\": \"TelegramBotTokenDetector\"\n    },\n    {\n      \"name\": \"TwilioKeyDetector\"\n    }\n  ],\n  \"filters_used\": [\n    {\n      \"path\": \"detect_secrets.filters.allowlist.is_line_allowlisted\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.common.is_ignored_due_to_verification_policies\",\n      \"min_level\": 2\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_indirect_reference\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_likely_id_string\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_lock_file\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_not_alphanumeric_string\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_potential_uuid\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_prefixed_with_dollar_sign\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_sequential_string\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_swagger_file\"\n    },\n    {\n      \"path\": \"detect_secrets.filters.heuristic.is_templated_secret\"\n    }\n  ],\n  \"results\": {},\n  \"generated_at\": \"2026-11-18T21:34:55Z\",\n  \"scan_scope\": {\n    \"files_scanned\": 27,\n    \"excluded\": [\n      \"uv.lock (dependency hashes)\",\n      \"evidence/g0/ (generated verification logs)\"\n    ],\n    \"history_scanned\": false\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "pip-audit",
+        "--skip-editable",
+        "--strict",
+        "--progress-spinner",
+        "off",
+        "--cache-dir",
+        ".cache/pip-audit"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "ERROR:pip_audit._cli:shockbridge-sovereign-ops: distribution marked as editable\n"
+    }
+  ],
+  "scope": "G0 software only; no model experiments or hosted CI run"
+}

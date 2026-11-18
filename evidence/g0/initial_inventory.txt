@@ -1,0 +1,7 @@
+Workspace: /workspace
+No project checkout or AGENTS.md found. /workspace/.git is an empty managed directory, not a repository.
+Existing directories: attachments, library-files, scratch, shared and managed configuration directories.
+Target: /workspace/work/shockbridge-sovereign-ops (new directory).
+Windows E: drive is not mounted in this session.
+Python: 3.12.14; uv: 0.13.6.
+Original attached v2 specifications retained unchanged.

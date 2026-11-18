@@ -1,0 +1,2 @@
+The first uv sync ran before README.md was created and failed with: Readme file does not exist: README.md. This was an initial scaffolding ordering error; subsequent locked install is recorded in verification.json.
+Initial lint found one long API description; corrected. Initial dependency audit attempted a home cache, then strict mode rejected the local editable package despite --skip-editable. Final audit uses locked exported third-party requirements and a project-local cache; it does not exempt third-party dependencies.

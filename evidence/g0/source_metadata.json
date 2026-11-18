@@ -1,0 +1,9 @@
+{
+  "reviewed_at": "2026-11-18T21:32:10.499617+00:00",
+  "esa_metadata_response_sha256": "dfa1c59b7c17e0e9c6eda541de81f3ca3fa58ed68f8bbab9802bbbe8e89e0891",
+  "esa_metadata_license_present": false,
+  "esa_metadata_doi": "10.5281/zenodo.15237121",
+  "edp_page_response_sha256": "14456293cf5fe189ecafeee301aadd67661b1da037611cdeaa084a02afc5bfa0",
+  "raw_dataset_downloads": 0,
+  "note": "Hashes identify documentation responses, not dataset bytes."
+}
