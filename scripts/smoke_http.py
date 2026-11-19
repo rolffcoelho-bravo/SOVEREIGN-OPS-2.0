@@ -42,7 +42,7 @@ def main() -> None:
                         body = json.load(response)
                         if response.status != 200 or body != {
                             "status": "alive",
-                            "stage": "G2",
+                            "stage": "G3",
                             "mode": "RESEARCH_ONLY",
                             "inference": "NOT_IMPLEMENTED",
                         }:
@@ -70,6 +70,17 @@ def main() -> None:
                 if prov_response.status != 200:
                     raise RuntimeError("Provenance endpoint failed")
 
+            # Verify quality schemas endpoint
+            with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
+                f"http://127.0.0.1:{port}/quality/schemas",
+                timeout=2,
+            ) as quality_response:
+                quality_body = json.load(quality_response)
+                if quality_response.status != 200:
+                    raise RuntimeError("Quality schemas endpoint failed")
+                if len(quality_body.get("schemas", [])) < 2:
+                    raise RuntimeError("Expected at least 2 schemas")
+
             # Verify unimplemented routes return 404
             for path in ("/v1/analysis",):
                 try:
@@ -88,6 +99,7 @@ def main() -> None:
                         "live": body,
                         "ready": ready_body,
                         "provenance_datasets": len(prov_body.get("datasets", [])),
+                        "quality_schemas": len(quality_body.get("schemas", [])),
                         "analysis_http_status": 404,
                         "server": "uvicorn",
                         "transport": "loopback HTTP",

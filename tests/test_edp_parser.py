@@ -155,7 +155,8 @@ class TestValidateScadaWorkbook:
             schema=EDP_SCADA_SCHEMA,
         )
         range_v = [
-            v for v in report.violations
+            v
+            for v in report.violations
             if v.violation_type == "RANGE_VIOLATION" and v.column == "ActivePower_kW"
         ]
         assert len(range_v) == 0

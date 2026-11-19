@@ -32,10 +32,7 @@ BAD_TIMESTAMPS_CSV = (
     "2023-01-01T00:10:00Z,CH001,43.1,0\n"
 )
 
-MISSING_COLUMN_CSV = (
-    "timestamp,value,anomaly_label\n"
-    "2023-01-01T00:00:00Z,42.5,0\n"
-)
+MISSING_COLUMN_CSV = "timestamp,value,anomaly_label\n2023-01-01T00:00:00Z,42.5,0\n"
 
 RANGE_VIOLATION_CSV = (
     "timestamp,channel_id,value,anomaly_label\n"
@@ -312,10 +309,7 @@ class TestIterPoints:
         assert all(p.asset_id == "Mars_Express" for p in points)
 
     def test_multiple_zips(self, tmp_path: Path) -> None:
-        csv2 = (
-            "timestamp,channel_id,value,anomaly_label\n"
-            "2023-02-01T00:00:00Z,CH010,99.9,0\n"
-        )
+        csv2 = "timestamp,channel_id,value,anomaly_label\n2023-02-01T00:00:00Z,CH010,99.9,0\n"
         _, sha1 = _write_zip_fixture(tmp_path, GOOD_CSV, "Mission1.zip")
         _, sha2 = _write_zip_fixture(tmp_path, csv2, "Mission2.zip")
         manifest = _make_manifest(
