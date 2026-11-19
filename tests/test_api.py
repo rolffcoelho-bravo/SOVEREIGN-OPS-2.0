@@ -11,7 +11,7 @@ def test_liveness_reports_g3_stage() -> None:
         assert response.status_code == 200
         body = response.json()
         assert body["status"] == "alive"
-        assert body["stage"] == "G4"
+        assert body["stage"] == "G5"
         assert body["mode"] == "RESEARCH_ONLY"
         assert body["inference"] == "NOT_IMPLEMENTED"
 
@@ -50,17 +50,18 @@ def test_gates_endpoint_returns_development_progress() -> None:
         response = client.get("/meta/gates")
         assert response.status_code == 200
         body = response.json()
-        assert body["current_gate"] == "G4"
+        assert body["current_gate"] == "G5"
         assert len(body["gates"]) == 10
         gate_ids = [g["gate"] for g in body["gates"]]
         assert gate_ids == [f"G{i}" for i in range(10)]
-        # G0, G1, G2 all COMPLETE
+        # G0–G4 all COMPLETE
         assert body["gates"][0]["status"] == "COMPLETE"
         assert body["gates"][1]["status"] == "COMPLETE"
         assert body["gates"][2]["status"] == "COMPLETE"
-        # G3 COMPLETE, G4 now IN_PROGRESS
         assert body["gates"][3]["status"] == "COMPLETE"
-        assert body["gates"][4]["status"] == "IN_PROGRESS"
+        assert body["gates"][4]["status"] == "COMPLETE"
+        # G5 now IN_PROGRESS
+        assert body["gates"][5]["status"] == "IN_PROGRESS"
 
 
 def test_unimplemented_routes_return_404() -> None:
@@ -104,7 +105,7 @@ def test_pipeline_config_returns_defaults() -> None:
         response = client.get("/pipeline/config")
         assert response.status_code == 200
         body = response.json()
-        assert body["stage"] == "G4"
+        assert body["stage"] == "G5"
         assert body["default_train_frac"] == 0.6
         assert body["default_calibration_frac"] == 0.2
         assert body["default_test_frac"] == 0.2

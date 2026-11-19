@@ -42,7 +42,7 @@ def main() -> None:
                         body = json.load(response)
                         if response.status != 200 or body != {
                             "status": "alive",
-                            "stage": "G4",
+                            "stage": "G5",
                             "mode": "RESEARCH_ONLY",
                             "inference": "NOT_IMPLEMENTED",
                         }:
@@ -110,7 +110,7 @@ def main() -> None:
                 pipe_body = json.load(pipe_response)
                 if pipe_response.status != 200:
                     raise RuntimeError("Pipeline config endpoint failed")
-                if pipe_body.get("stage") != "G4":
+                if pipe_body.get("stage") != "G5":
                     raise RuntimeError("Pipeline config stage != G4")
 
             # Verify G4 decision protocol endpoint

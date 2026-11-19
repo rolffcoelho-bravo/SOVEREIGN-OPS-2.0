@@ -56,7 +56,7 @@ class LivenessResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     status: Literal["alive"] = "alive"
-    stage: Literal["G4"] = "G4"
+    stage: Literal["G5"] = "G5"
     mode: Literal["RESEARCH_ONLY"] = "RESEARCH_ONLY"
     inference: Literal["NOT_IMPLEMENTED"] = "NOT_IMPLEMENTED"
 
@@ -174,7 +174,7 @@ class EvaluationProtocolResponse(BaseModel):
 class PipelineConfigResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    stage: Literal["G4"] = "G4"
+    stage: Literal["G5"] = "G5"
     description: str = (
         "Single-domain analysis pipeline: points → chronological_split "
         "→ detector.fit(train) → detector.predict(test) → "
@@ -305,13 +305,13 @@ GATES: tuple[GateStatus, ...] = (
     GateStatus(
         gate="G4",
         name="DARP Core",
-        status="IN_PROGRESS",
+        status="COMPLETE",
         description="Cross-domain decision protocol with shared abstention vocabulary",
     ),
     GateStatus(
         gate="G5",
         name="Confirmatory Evaluation",
-        status="PENDING",
+        status="IN_PROGRESS",
         description="Holm-corrected multiple comparisons on held-out chronological splits",
     ),
     GateStatus(
