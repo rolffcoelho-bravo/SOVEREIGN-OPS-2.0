@@ -2,6 +2,7 @@
 
 **Domain-Aware Reliability and Abstention for Mission-Critical Telemetry**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24364517.svg)](https://doi.org/10.5281/zenodo.24364517)
 [![CI](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
@@ -176,6 +177,8 @@ If you use this work, please cite:
   year         = {2026},
   organization = {ShockBridge Pulse Research Lab},
   url          = {https://github.com/rolffcoelho-bravo/sovereign-ops-2.0},
+  doi          = {10.5281/zenodo.24364518},
+  version      = {0.1.0},
   note         = {Research software, gated development}
 }
 ```

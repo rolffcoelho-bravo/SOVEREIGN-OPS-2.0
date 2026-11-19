@@ -31,3 +31,8 @@ keywords:
 license: Apache-2.0
 version: 0.1.0
 date-released: "2026-11-19"
+doi: "10.5281/zenodo.24364518"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24364518"
+    description: "Zenodo archive of this release"
