@@ -1,4 +1,4 @@
-"""Start the real ASGI server on loopback and verify its public G0 boundary."""
+"""Start the real ASGI server on loopback and verify its public boundary."""
 
 import json
 import socket
@@ -42,7 +42,7 @@ def main() -> None:
                         body = json.load(response)
                         if response.status != 200 or body != {
                             "status": "alive",
-                            "stage": "G0",
+                            "stage": "G1",
                             "mode": "RESEARCH_ONLY",
                             "inference": "NOT_IMPLEMENTED",
                         }:
@@ -52,7 +52,26 @@ def main() -> None:
                     if time.monotonic() >= deadline:
                         raise RuntimeError("ASGI server did not become live") from None
                     time.sleep(0.1)
-            for path in ("/health/ready", "/v1/analysis"):
+            # Verify readiness probe is available
+            with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
+                f"http://127.0.0.1:{port}/health/ready",
+                timeout=2,
+            ) as ready_response:
+                ready_body = json.load(ready_response)
+                if ready_response.status != 200:
+                    raise RuntimeError("Readiness probe failed")
+
+            # Verify provenance endpoint
+            with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
+                f"http://127.0.0.1:{port}/provenance/registry",
+                timeout=2,
+            ) as prov_response:
+                prov_body = json.load(prov_response)
+                if prov_response.status != 200:
+                    raise RuntimeError("Provenance endpoint failed")
+
+            # Verify unimplemented routes return 404
+            for path in ("/v1/analysis",):
                 try:
                     with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
                         f"http://127.0.0.1:{port}{path}",
@@ -67,7 +86,8 @@ def main() -> None:
                     {
                         "status": "PASS",
                         "live": body,
-                        "ready_http_status": 404,
+                        "ready": ready_body,
+                        "provenance_datasets": len(prov_body.get("datasets", [])),
                         "analysis_http_status": 404,
                         "server": "uvicorn",
                         "transport": "loopback HTTP",

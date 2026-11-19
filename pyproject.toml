@@ -7,7 +7,7 @@ name = "shockbridge-sovereign-ops"
 version = "0.1.0"
 description = "Domain-aware reliability and abstention for mission-critical telemetry"
 readme = "README.md"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.12,<3.14"
 license = "Apache-2.0"
 authors = [
   { name = "Rodolfo Pereira", email = "research@shockbridgepulse.com" },

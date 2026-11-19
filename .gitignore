@@ -16,6 +16,7 @@ build/
 .env.*
 !.env.example
 data/
+!data/registry.json
 artifacts/
 models/
 private/

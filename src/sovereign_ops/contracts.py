@@ -1,5 +1,18 @@
-"""Version-one contracts; no domain parser, model, or decision policy is implemented."""
+"""Immutable typed contracts for the Domain-Aware Reliability Protocol (DARP).
 
+Every contract uses ``extra="forbid"`` and ``frozen=True`` so that:
+  - Unexpected fields are structural errors, not silent data loss.
+  - Once constructed, a contract cannot be mutated — provenance chains
+    remain verifiable from creation through final decision.
+
+No contract in this module encodes domain-specific parsing, model logic,
+or decision policy.  Those responsibilities belong to adapter and policy
+layers that consume these types.
+"""
+
+from __future__ import annotations
+
+import hashlib
 from enum import StrEnum
 from typing import Annotated, Literal, Self
 
@@ -14,18 +27,75 @@ from pydantic import (
     model_validator,
 )
 
+__all__ = [
+    "AbstentionReason",
+    "AcquiredFile",
+    "AcquisitionManifest",
+    "CaseRecord",
+    "Contract",
+    "DataQualityReport",
+    "DatasetId",
+    "DecisionEnvelope",
+    "EvidenceCitation",
+    "Fraction",
+    "Identifier",
+    "ModelEvidence",
+    "SHA256",
+    "TelemetryPoint",
+    "TimeWindow",
+]
+
+# ---------------------------------------------------------------------------
+# Constrained scalars
+# ---------------------------------------------------------------------------
+
 Identifier = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+"""Non-empty, whitespace-stripped string used for all human-readable identifiers."""
+
 SHA256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
+"""Lowercase hex-encoded SHA-256 digest — 64 characters exactly."""
+
 Fraction = Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)]
+"""A real number in [0, 1], used for proportions like missing-data fractions."""
+
 DatasetId = Literal["ESA-AD-v2", "EDP-SCADA-v2"]
+"""Registered dataset identifiers.  Adding a new domain requires a new literal."""
+
+
+# ---------------------------------------------------------------------------
+# Base
+# ---------------------------------------------------------------------------
 
 
 class Contract(BaseModel):
+    """Base for all DARP contracts.
+
+    ``extra="forbid"`` prevents silent field injection.
+    ``frozen=True`` guarantees immutability after construction.
+    """
+
     model_config = ConfigDict(extra="forbid", frozen=True)
+
+    def canonical_json(self) -> str:
+        """Deterministic JSON for hashing: sorted keys, no whitespace."""
+        return self.model_dump_json(indent=None)
+
+    def sha256_digest(self) -> str:
+        """SHA-256 of the canonical JSON representation."""
+        return hashlib.sha256(self.canonical_json().encode("utf-8")).hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# Temporal
+# ---------------------------------------------------------------------------
 
 
 class TimeWindow(Contract):
-    """Half-open interval [start, end), with explicit timezone information."""
+    """Half-open interval ``[start, end)`` with explicit timezone information.
+
+    Both endpoints must carry timezone data (``AwareDatetime``).
+    Naive datetimes are rejected at validation time.
+    """
 
     start: AwareDatetime
     end: AwareDatetime
@@ -33,12 +103,21 @@ class TimeWindow(Contract):
     @model_validator(mode="after")
     def validate_order(self) -> Self:
         if self.end <= self.start:
-            raise ValueError("Window end must be after its start")
+            raise ValueError("Window end must be strictly after its start")
         return self
 
 
+# ---------------------------------------------------------------------------
+# Acquisition & provenance
+# ---------------------------------------------------------------------------
+
+
 class AcquiredFile(Contract):
-    """An acquisition receipt, never a substitute for checking bytes on disk."""
+    """An acquisition receipt for a single downloaded file.
+
+    This is a *claim about bytes on disk*, not a substitute for checking
+    those bytes at verification time.
+    """
 
     source_url: HttpUrl
     relative_path: Identifier
@@ -55,7 +134,11 @@ class AcquiredFile(Contract):
 
 
 class AcquisitionManifest(Contract):
-    """G1 receipt schema. Rights and hashes still require independent verification."""
+    """G1 receipt: everything needed to prove which bytes were acquired and from where.
+
+    ``rights_review_reference`` must point to the license review record —
+    this is *not* an assertion that rights have been approved.
+    """
 
     schema_version: Literal["1"] = "1"
     dataset_id: DatasetId
@@ -79,7 +162,18 @@ class AcquisitionManifest(Contract):
         return self
 
 
+# ---------------------------------------------------------------------------
+# Telemetry & quality
+# ---------------------------------------------------------------------------
+
+
 class TelemetryPoint(Contract):
+    """A single observed measurement, pinned to its source file by SHA-256.
+
+    ``value`` may be ``None`` for explicitly missing readings — a valid
+    observation that the signal was not available at that instant.
+    """
+
     dataset_id: DatasetId
     asset_id: Identifier
     signal_id: Identifier
@@ -90,6 +184,12 @@ class TelemetryPoint(Contract):
 
 
 class DataQualityReport(Contract):
+    """Measured data-quality statistics over a time window.
+
+    Cannot be constructed from zero rows — an empty input is a data
+    pipeline error, not a measured quality observation.
+    """
+
     dataset_id: DatasetId
     source_manifest_sha256: SHA256
     window: TimeWindow
@@ -107,7 +207,14 @@ class DataQualityReport(Contract):
         return self
 
 
+# ---------------------------------------------------------------------------
+# Evidence & inference
+# ---------------------------------------------------------------------------
+
+
 class EvidenceCitation(Contract):
+    """A traceable pointer to a specific piece of model evidence."""
+
     evidence_id: Identifier
     source_url: HttpUrl
     source_sha256: SHA256
@@ -115,6 +222,12 @@ class EvidenceCitation(Contract):
 
 
 class ModelEvidence(Contract):
+    """A single model's inference result, cryptographically pinned to its inputs.
+
+    Every evidence record must cite at least one source, and the
+    ``protocol_sha256`` locks the evaluation methodology that produced it.
+    """
+
     dataset_id: DatasetId
     model_id: Identifier
     model_sha256: SHA256
@@ -127,7 +240,18 @@ class ModelEvidence(Contract):
     citations: Annotated[tuple[EvidenceCitation, ...], Field(min_length=1)]
 
 
+# ---------------------------------------------------------------------------
+# Decision layer
+# ---------------------------------------------------------------------------
+
+
 class AbstentionReason(StrEnum):
+    """Explicit reasons for declining to issue an actionable decision.
+
+    Every abstention must cite at least one reason — the protocol does not
+    allow silent refusal.
+    """
+
     INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
     UNKNOWN_REGIME = "UNKNOWN_REGIME"
     STALE_DATA = "STALE_DATA"
@@ -136,6 +260,17 @@ class AbstentionReason(StrEnum):
 
 
 class DecisionEnvelope(Contract):
+    """The five-outcome decision taxonomy for domain-aware reliability.
+
+    **Domain isolation**: evidence items must share the envelope's ``dataset_id``.
+    Cross-domain evidence is a structural error, not a policy choice.
+
+    **Outcome rules**:
+    - ``SUPPORTED_ALERT`` / ``INVESTIGATE``: require evidence, forbid reasons.
+    - ``ABSTAIN_INSUFFICIENT_EVIDENCE`` / ``BLOCK_DATA_INTEGRITY`` /
+      ``DEGRADED_SERVICE``: require at least one reason.
+    """
+
     dataset_id: DatasetId
     asset_id: Identifier
     outcome: Literal[
@@ -145,6 +280,7 @@ class DecisionEnvelope(Contract):
         "BLOCK_DATA_INTEGRITY",
         "DEGRADED_SERVICE",
     ]
+    confidence: Fraction | None = None
     evidence: tuple[ModelEvidence, ...]
     reasons: tuple[AbstentionReason, ...]
 
@@ -160,8 +296,17 @@ class DecisionEnvelope(Contract):
         return self
 
 
+# ---------------------------------------------------------------------------
+# Case management
+# ---------------------------------------------------------------------------
+
+
 class CaseRecord(Contract):
-    """Future persisted record shape, not authorization to create or review cases."""
+    """Persisted decision record for audit trail.
+
+    Status begins at ``DRAFT`` — no contract may skip directly to a
+    terminal state.  Future gates will add transition validation.
+    """
 
     case_id: Identifier
     actor_id: Identifier

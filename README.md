@@ -2,7 +2,7 @@
 
 **Domain-Aware Reliability and Abstention for Mission-Critical Telemetry**
 
-[![G0 verification](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions)
+[![CI](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
@@ -70,13 +70,13 @@ The project follows a **10-gate staged development** model (G0–G9). Current st
 | Gate | Status | Description |
 |---|---|---|
 | **G0** | ✅ PASS | Foundation — contracts, API skeleton, CI, threat model, evaluation design |
-| **G1** | 🔄 In progress | Source verification — cryptographic dataset acquisition and integrity checks |
-| G2 | Planned | Structural data audit — schema conformance, quality profiling |
+| **G1** | ✅ PASS | Data sovereignty — pinned registry, cryptographic acquisition, integrity verification, provenance API |
+| **G2** | 🔄 Next | Structural data audit — schema conformance, quality profiling |
 | G3–G9 | Planned | Domain preprocessing → models → evaluation → governance → deployment |
 
-**G0 delivers:** typed contracts, FastAPI liveness endpoint, full CI pipeline (lint + format + type check + test + secret scan + dependency audit), source registry with DOI pinning, evaluation protocol draft, threat model, and product contract boundaries.
+**G1 delivers (cumulative):** typed contracts with canonical JSON + SHA-256 provenance, FastAPI with liveness/readiness/provenance/gates endpoints, pinned data registry (2 datasets, real DOIs, file checksums), cryptographic dataset acquisition with integrity verification, full CI pipeline, evaluation protocol draft, threat model, and product contract boundaries.
 
-See [G0 Report](docs/G0_REPORT.md) for verified evidence and [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for the full gate sequence.
+See [Architecture](docs/ARCHITECTURE.md) for design decisions and [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for the full gate sequence.
 
 ## Quick start
 
@@ -96,7 +96,7 @@ uv run --locked ruff check .
 # Start the API (development)
 uv run --locked uvicorn sovereign_ops.api:app --host 127.0.0.1 --port 8000
 curl http://127.0.0.1:8000/health/live
-# → {"status":"alive","stage":"G0","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
+# → {"status":"alive","stage":"G1","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
 ```
 
 For the complete verification sequence (lint, format, types, tests, secrets scan, dependency audit):
@@ -169,13 +169,14 @@ This repository (`SOVEREIGN-OPS-2.0`) contains the open research platform. Propr
 If you use this work, please cite:
 
 ```bibtex
-@software{pereira_sovereign_ops_2026,
-  author    = {Pereira, Rodolfo},
-  title     = {Sovereign Ops: Domain-Aware Reliability and Abstention
-               for Mission-Critical Telemetry},
-  year      = {2026},
-  url       = {https://github.com/rolffcoelho-bravo/sovereign-ops-2.0},
-  note      = {Research software, gated development}
+@software{shockbridgepulse_sovereign_ops_2026,
+  author       = {Pereira, Rodolfo},
+  title        = {Sovereign Ops: Domain-Aware Reliability and Abstention
+                  for Mission-Critical Telemetry},
+  year         = {2026},
+  organization = {ShockBridge Pulse Research Lab},
+  url          = {https://github.com/rolffcoelho-bravo/sovereign-ops-2.0},
+  note         = {Research software, gated development}
 }
 ```
 
