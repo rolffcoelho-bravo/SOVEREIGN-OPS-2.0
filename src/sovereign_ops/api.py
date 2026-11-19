@@ -4,8 +4,9 @@ Liveness: the process is running.
 Readiness: the data registry is loaded and structurally valid.
 Provenance: immutable metadata about registered datasets and gate status.
 Quality: G2 schema definitions and conformance metadata.
+Pipeline: G4 DARP Core — pipeline configuration and decision protocol metadata.
 
-No data ingestion, inference, or live infrastructure connection exists at G0–G3.
+No data ingestion, inference, or live infrastructure connection exists at G0–G4.
 """
 
 from __future__ import annotations
@@ -165,6 +166,56 @@ class EvaluationProtocolResponse(BaseModel):
         "Abstention signals insufficient evidence, not a negative "
         "prediction.  Chronological splitting enforces no data leakage."
     )
+
+
+# -- G4 models / pipeline + decision --
+
+
+class PipelineConfigResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    stage: Literal["G4"] = "G4"
+    description: str = (
+        "Single-domain analysis pipeline: points → chronological_split "
+        "→ detector.fit(train) → detector.predict(test) → "
+        "evaluate_predictions() → ModelEvidence with SHA-256 chain."
+    )
+    default_train_frac: float = 0.6
+    default_calibration_frac: float = 0.2
+    default_test_frac: float = 0.2
+    provenance_hash: Literal["SHA-256"] = "SHA-256"
+    domain_isolation: bool = True
+    supported_domains: tuple[str, ...] = ("ESA-AD-v2", "EDP-SCADA-v2")
+
+
+class DecisionOutcomeInfo(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    outcome: str
+    priority: int
+    actionable: bool
+    description: str
+
+
+class DecisionPolicyResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    min_coverage: float
+    min_f1: float
+    alert_confidence: float
+    investigate_confidence: float
+    max_abstention_rate: float
+
+
+class DecisionProtocolResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    name: str = "DARP Decision Protocol"
+    version: str = "1.0"
+    policy: DecisionPolicyResponse
+    outcomes: tuple[DecisionOutcomeInfo, ...]
+    confidence_formula: str = "coverage × f1"
+    domain_isolation: bool = True
 
 
 # ---------------------------------------------------------------------------
@@ -470,6 +521,97 @@ def create_app() -> FastAPI:
         apply over the non-abstaining subset.
         """
         return EvaluationProtocolResponse()
+
+    # -------------------------------------------------------------------
+    # G4: Pipeline & decision protocol endpoints
+    # -------------------------------------------------------------------
+
+    @application.get(
+        "/pipeline/config",
+        response_model=PipelineConfigResponse,
+        tags=["pipeline"],
+        summary="Pipeline configuration",
+    )
+    def pipeline_config() -> PipelineConfigResponse:
+        """Default pipeline configuration for single-domain analysis.
+
+        Describes the DARP orchestration spine: how points flow
+        through chronological splitting, detector fitting, prediction,
+        evaluation, and evidence generation.
+        """
+        return PipelineConfigResponse()
+
+    @application.get(
+        "/pipeline/decision-protocol",
+        response_model=DecisionProtocolResponse,
+        tags=["pipeline"],
+        summary="DARP decision protocol specification",
+    )
+    def decision_protocol() -> DecisionProtocolResponse:
+        """The five-outcome decision taxonomy with default policy thresholds.
+
+        Each pipeline result maps to exactly one outcome based on
+        priority ordering: BLOCK_DATA_INTEGRITY → DEGRADED_SERVICE →
+        ABSTAIN_INSUFFICIENT_EVIDENCE → SUPPORTED_ALERT → INVESTIGATE.
+        """
+        from sovereign_ops.decision_engine import DEFAULT_POLICY
+
+        return DecisionProtocolResponse(
+            policy=DecisionPolicyResponse(
+                min_coverage=DEFAULT_POLICY.min_coverage,
+                min_f1=DEFAULT_POLICY.min_f1,
+                alert_confidence=DEFAULT_POLICY.alert_confidence,
+                investigate_confidence=DEFAULT_POLICY.investigate_confidence,
+                max_abstention_rate=DEFAULT_POLICY.max_abstention_rate,
+            ),
+            outcomes=(
+                DecisionOutcomeInfo(
+                    outcome="BLOCK_DATA_INTEGRITY",
+                    priority=1,
+                    actionable=False,
+                    description=(
+                        "Data quality below threshold or evidence chain "
+                        "integrity check fails.  No decisions possible."
+                    ),
+                ),
+                DecisionOutcomeInfo(
+                    outcome="DEGRADED_SERVICE",
+                    priority=2,
+                    actionable=False,
+                    description=(
+                        "Required detector components missing or evaluation "
+                        "metrics below minimum thresholds."
+                    ),
+                ),
+                DecisionOutcomeInfo(
+                    outcome="ABSTAIN_INSUFFICIENT_EVIDENCE",
+                    priority=3,
+                    actionable=False,
+                    description=(
+                        "Not enough decisive evidence — high abstention rate "
+                        "or no confident signals."
+                    ),
+                ),
+                DecisionOutcomeInfo(
+                    outcome="SUPPORTED_ALERT",
+                    priority=4,
+                    actionable=True,
+                    description=(
+                        "High-confidence anomaly detection with corroborating "
+                        "evidence.  Confidence ≥ alert_confidence threshold."
+                    ),
+                ),
+                DecisionOutcomeInfo(
+                    outcome="INVESTIGATE",
+                    priority=5,
+                    actionable=True,
+                    description=(
+                        "Anomaly signals present but confidence below the "
+                        "alert threshold.  Human review warranted."
+                    ),
+                ),
+            ),
+        )
 
     return application
 

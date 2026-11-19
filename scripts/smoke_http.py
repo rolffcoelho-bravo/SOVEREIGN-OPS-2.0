@@ -102,6 +102,28 @@ def main() -> None:
                 if eval_response.status != 200:
                     raise RuntimeError("Evaluation protocol endpoint failed")
 
+            # Verify G4 pipeline config endpoint
+            with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
+                f"http://127.0.0.1:{port}/pipeline/config",
+                timeout=2,
+            ) as pipe_response:
+                pipe_body = json.load(pipe_response)
+                if pipe_response.status != 200:
+                    raise RuntimeError("Pipeline config endpoint failed")
+                if pipe_body.get("stage") != "G4":
+                    raise RuntimeError("Pipeline config stage != G4")
+
+            # Verify G4 decision protocol endpoint
+            with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
+                f"http://127.0.0.1:{port}/pipeline/decision-protocol",
+                timeout=2,
+            ) as dec_response:
+                dec_body = json.load(dec_response)
+                if dec_response.status != 200:
+                    raise RuntimeError("Decision protocol endpoint failed")
+                if len(dec_body.get("outcomes", [])) != 5:
+                    raise RuntimeError("Expected 5 decision outcomes")
+
             # Verify unimplemented routes return 404
             for path in ("/v1/analysis",):
                 try:
@@ -123,6 +145,8 @@ def main() -> None:
                         "quality_schemas": len(quality_body.get("schemas", [])),
                         "detector_families": len(families),
                         "evaluation_protocol": eval_body.get("name"),
+                        "pipeline_stage": pipe_body.get("stage"),
+                        "decision_outcomes": len(dec_body.get("outcomes", [])),
                         "analysis_http_status": 404,
                         "server": "uvicorn",
                         "transport": "loopback HTTP",

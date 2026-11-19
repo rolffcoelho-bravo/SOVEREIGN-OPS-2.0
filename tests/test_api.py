@@ -99,6 +99,55 @@ def test_quality_schemas_unknown_dataset_404() -> None:
         assert response.status_code == 404
 
 
+def test_pipeline_config_returns_defaults() -> None:
+    with TestClient(create_app()) as client:
+        response = client.get("/pipeline/config")
+        assert response.status_code == 200
+        body = response.json()
+        assert body["stage"] == "G4"
+        assert body["default_train_frac"] == 0.6
+        assert body["default_calibration_frac"] == 0.2
+        assert body["default_test_frac"] == 0.2
+        assert body["provenance_hash"] == "SHA-256"
+        assert body["domain_isolation"] is True
+        assert set(body["supported_domains"]) == {"ESA-AD-v2", "EDP-SCADA-v2"}
+
+
+def test_decision_protocol_returns_policy_and_outcomes() -> None:
+    with TestClient(create_app()) as client:
+        response = client.get("/pipeline/decision-protocol")
+        assert response.status_code == 200
+        body = response.json()
+        assert body["name"] == "DARP Decision Protocol"
+        assert body["confidence_formula"] == "coverage × f1"
+        assert body["domain_isolation"] is True
+
+        # Policy defaults
+        policy = body["policy"]
+        assert policy["min_coverage"] == 0.7
+        assert policy["min_f1"] == 0.3
+        assert policy["alert_confidence"] == 0.8
+        assert policy["investigate_confidence"] == 0.5
+        assert policy["max_abstention_rate"] == 0.5
+
+        # Five outcomes in priority order
+        outcomes = body["outcomes"]
+        assert len(outcomes) == 5
+        priorities = [o["priority"] for o in outcomes]
+        assert priorities == [1, 2, 3, 4, 5]
+        outcome_names = [o["outcome"] for o in outcomes]
+        assert outcome_names == [
+            "BLOCK_DATA_INTEGRITY",
+            "DEGRADED_SERVICE",
+            "ABSTAIN_INSUFFICIENT_EVIDENCE",
+            "SUPPORTED_ALERT",
+            "INVESTIGATE",
+        ]
+        # Actionable: only SUPPORTED_ALERT and INVESTIGATE
+        actionable = [o["outcome"] for o in outcomes if o["actionable"]]
+        assert actionable == ["SUPPORTED_ALERT", "INVESTIGATE"]
+
+
 def test_openapi_schema_includes_all_routes() -> None:
     with TestClient(create_app()) as client:
         doc = client.get("/openapi.json").json()
@@ -109,3 +158,6 @@ def test_openapi_schema_includes_all_routes() -> None:
         assert "/meta/gates" in paths
         assert "/quality/schemas" in paths
         assert "/quality/schemas/{dataset_id}" in paths
+        # G4 endpoints
+        assert "/pipeline/config" in paths
+        assert "/pipeline/decision-protocol" in paths
