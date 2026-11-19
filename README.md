@@ -97,7 +97,7 @@ uv run --locked ruff check .
 # Start the API (development)
 uv run --locked uvicorn sovereign_ops.api:app --host 127.0.0.1 --port 8000
 curl http://127.0.0.1:8000/health/live
-# → {"status":"alive","stage":"G1","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
+# → {"status":"alive","stage":"G2","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
 ```
 
 For the complete verification sequence (lint, format, types, tests, secrets scan, dependency audit):

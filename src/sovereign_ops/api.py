@@ -4,7 +4,7 @@ Liveness: the process is running.
 Readiness: the data registry is loaded and structurally valid.
 Provenance: immutable metadata about registered datasets and gate status.
 
-No data ingestion, inference, or live infrastructure connection exists at G0/G1.
+No data ingestion, inference, or live infrastructure connection exists at G0–G2.
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ class LivenessResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     status: Literal["alive"] = "alive"
-    stage: Literal["G1"] = "G1"
+    stage: Literal["G2"] = "G2"
     mode: Literal["RESEARCH_ONLY"] = "RESEARCH_ONLY"
     inference: Literal["NOT_IMPLEMENTED"] = "NOT_IMPLEMENTED"
 
@@ -115,13 +115,13 @@ GATES: tuple[GateStatus, ...] = (
     GateStatus(
         gate="G1",
         name="Data Sovereignty",
-        status="IN_PROGRESS",
+        status="COMPLETE",
         description="Acquisition, integrity verification, cryptographic provenance, rights audit",
     ),
     GateStatus(
         gate="G2",
         name="Structural Audit",
-        status="PENDING",
+        status="IN_PROGRESS",
         description="Schema validation, domain-specific parsing, quality reporting",
     ),
     GateStatus(

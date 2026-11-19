@@ -42,7 +42,7 @@ def main() -> None:
                         body = json.load(response)
                         if response.status != 200 or body != {
                             "status": "alive",
-                            "stage": "G1",
+                            "stage": "G2",
                             "mode": "RESEARCH_ONLY",
                             "inference": "NOT_IMPLEMENTED",
                         }:

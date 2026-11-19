@@ -5,13 +5,13 @@ from fastapi.testclient import TestClient
 from sovereign_ops.api import create_app
 
 
-def test_liveness_reports_g1_stage() -> None:
+def test_liveness_reports_g2_stage() -> None:
     with TestClient(create_app()) as client:
         response = client.get("/health/live")
         assert response.status_code == 200
         body = response.json()
         assert body["status"] == "alive"
-        assert body["stage"] == "G1"
+        assert body["stage"] == "G2"
         assert body["mode"] == "RESEARCH_ONLY"
         assert body["inference"] == "NOT_IMPLEMENTED"
 
@@ -50,12 +50,13 @@ def test_gates_endpoint_returns_development_progress() -> None:
         response = client.get("/meta/gates")
         assert response.status_code == 200
         body = response.json()
-        assert body["current_gate"] == "G1"
+        assert body["current_gate"] == "G2"
         assert len(body["gates"]) == 10
         gate_ids = [g["gate"] for g in body["gates"]]
         assert gate_ids == [f"G{i}" for i in range(10)]
         assert body["gates"][0]["status"] == "COMPLETE"
-        assert body["gates"][1]["status"] == "IN_PROGRESS"
+        assert body["gates"][1]["status"] == "COMPLETE"
+        assert body["gates"][2]["status"] == "IN_PROGRESS"
 
 
 def test_unimplemented_routes_return_404() -> None:
