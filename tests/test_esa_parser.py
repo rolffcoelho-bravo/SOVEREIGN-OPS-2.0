@@ -76,7 +76,7 @@ def _make_manifest(
         full = tmp_path / rel_path
         acquired.append(
             AcquiredFile(
-                source_url="https://zenodo.org/record/15237121/files/" + rel_path,
+                source_url="https://zenodo.org/record/15237121/files/" + rel_path,  # type: ignore[arg-type]
                 relative_path=rel_path,
                 size_bytes=full.stat().st_size,
                 sha256=sha,
@@ -203,7 +203,7 @@ class TestInspect:
             rights_review_reference="docs/RIGHTS_REVIEW.md",
             files=(
                 AcquiredFile(
-                    source_url="https://example.com/Mission1.zip",
+                    source_url="https://example.com/Mission1.zip",  # type: ignore[arg-type]
                     relative_path="Mission1.zip",
                     size_bytes=(tmp_path / "Mission1.zip").stat().st_size,
                     sha256=sha,
@@ -234,7 +234,7 @@ class TestInspect:
             rights_review_reference="docs/RIGHTS_REVIEW.md",
             files=(
                 AcquiredFile(
-                    source_url="https://example.com/Ghost.zip",
+                    source_url="https://example.com/Ghost.zip",  # type: ignore[arg-type]
                     relative_path="Ghost.zip",
                     size_bytes=100,
                     sha256="a" * 64,
@@ -287,7 +287,7 @@ class TestIterPoints:
             rights_review_reference="docs/RIGHTS_REVIEW.md",
             files=(
                 AcquiredFile(
-                    source_url="https://example.com/Mission1.zip",
+                    source_url="https://example.com/Mission1.zip",  # type: ignore[arg-type]
                     relative_path="Mission1.zip",
                     size_bytes=(tmp_path / "Mission1.zip").stat().st_size,
                     sha256=sha,

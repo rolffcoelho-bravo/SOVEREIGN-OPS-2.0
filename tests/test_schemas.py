@@ -24,15 +24,15 @@ from sovereign_ops.schemas import (
 class TestSchemaImmutability:
     def test_esa_schema_is_frozen(self) -> None:
         with pytest.raises(ValidationError):
-            ESA_SCHEMA.dataset_id = "TAMPERED"  # type: ignore[misc]
+            ESA_SCHEMA.dataset_id = "TAMPERED"  # type: ignore[assignment]
 
     def test_edp_scada_schema_is_frozen(self) -> None:
         with pytest.raises(ValidationError):
-            EDP_SCADA_SCHEMA.dataset_id = "TAMPERED"  # type: ignore[misc]
+            EDP_SCADA_SCHEMA.dataset_id = "TAMPERED"  # type: ignore[assignment]
 
     def test_edp_failures_schema_is_frozen(self) -> None:
         with pytest.raises(ValidationError):
-            EDP_FAILURES_SCHEMA.dataset_id = "TAMPERED"  # type: ignore[misc]
+            EDP_FAILURES_SCHEMA.dataset_id = "TAMPERED"  # type: ignore[assignment]
 
 
 # ---------------------------------------------------------------------------
