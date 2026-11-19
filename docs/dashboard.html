@@ -7,335 +7,675 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --surface-0:#0d0d0d;--surface-1:#1a1a19;--surface-2:#242423;--surface-3:#2c2c2a;
-  --text-primary:#f0efec;--text-secondary:#c3c2b7;--text-muted:#898781;
-  --grid:#2c2c2a;--border:rgba(255,255,255,0.10);
-  --blue:#3987e5;--orange:#d95926;--aqua:#199e70;--yellow:#c98500;
-  --good:#0ca30c;--warning:#fab219;--serious:#ec835a;--critical:#d03b3b;
-  --blue-wash:rgba(57,135,229,0.12);--aqua-wash:rgba(25,158,112,0.12);
-  --good-wash:rgba(12,163,12,0.10);--warning-wash:rgba(250,178,25,0.10);
-  --muted-wash:rgba(137,135,129,0.08);
-  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  --surface-0:#0b0c10;--surface-1:#14151a;--surface-2:#1c1d24;--surface-3:#24252e;
+  --text-primary:#eae9e6;--text-secondary:#b0afaa;--text-muted:#6e6d69;
+  --grid:#2a2b34;--border:rgba(255,255,255,0.08);
+  --blue:#4a9eff;--blue-dim:#2a5a9e;--orange:#e06030;--aqua:#1cbe80;--yellow:#d49500;
+  --good:#1ab34a;--warning:#f0b020;--serious:#ec835a;--critical:#e04040;
+  --purple:#9070e0;--pink:#d060a0;
+  --blue-wash:rgba(74,158,255,0.10);--aqua-wash:rgba(28,190,128,0.10);
+  --good-wash:rgba(26,179,74,0.08);--warning-wash:rgba(240,176,32,0.08);
+  --purple-wash:rgba(144,112,224,0.08);
+  --glow-blue:0 0 20px rgba(74,158,255,0.15);
+  --glow-aqua:0 0 20px rgba(28,190,128,0.15);
+  --glow-good:0 0 20px rgba(26,179,74,0.15);
+  font-family:'Inter',system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--text-primary);background:var(--surface-0);
+  line-height:1.5;
 }
-body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
+body{max-width:1200px;margin:0 auto;padding:40px 24px 80px}
+
+/* Typography */
+h1{font-size:2.25rem;font-weight:800;letter-spacing:0.06em}
+h2{font-size:1.25rem;font-weight:700}
+h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
 
 /* Header */
-.header{text-align:center;margin-bottom:48px}
-.header h1{font-size:2rem;font-weight:700;letter-spacing:0.04em;margin-bottom:8px}
-.header .subtitle{font-size:1rem;color:var(--text-secondary);margin-bottom:16px}
-.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;
-  border-radius:12px;font-size:0.75rem;font-weight:600;letter-spacing:0.02em}
-.badge--blue{background:var(--blue-wash);color:var(--blue)}
-.badge--aqua{background:var(--aqua-wash);color:var(--aqua)}
-.badge--good{background:var(--good-wash);color:var(--good)}
+.header{text-align:center;margin-bottom:56px;position:relative}
+.header::after{content:"";position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
+  width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.header h1{margin-bottom:10px}
+.header .subtitle{font-size:1.05rem;color:var(--text-secondary);margin-bottom:16px;font-weight:400}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;
+  border-radius:20px;font-size:0.75rem;font-weight:600;letter-spacing:0.02em;
+  backdrop-filter:blur(4px)}
+.badge--blue{background:var(--blue-wash);color:var(--blue);border:1px solid rgba(74,158,255,0.2)}
+.badge--aqua{background:var(--aqua-wash);color:var(--aqua);border:1px solid rgba(28,190,128,0.2)}
+.badge--good{background:var(--good-wash);color:var(--good);border:1px solid rgba(26,179,74,0.2)}
 
-/* Stat tiles */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:12px;margin-bottom:48px}
-.stat{background:var(--surface-1);border-radius:12px;padding:20px;
-  border:1px solid var(--grid)}
-.stat__label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;
-  letter-spacing:0.06em;margin-bottom:8px}
-.stat__value{font-size:1.75rem;font-weight:700;line-height:1}
-.stat__detail{font-size:0.8rem;color:var(--text-secondary);margin-top:6px}
+/* KPI Tiles */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:14px;margin-bottom:56px}
+.stat{background:var(--surface-1);border-radius:14px;padding:22px 20px;
+  border:1px solid var(--grid);position:relative;overflow:hidden;
+  transition:transform 0.2s,box-shadow 0.2s}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--glow-blue)}
+.stat__icon{font-size:1.5rem;margin-bottom:10px;opacity:0.8}
+.stat__label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:0.08em;margin-bottom:8px;font-weight:600}
+.stat__value{font-size:2rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.stat__detail{font-size:0.78rem;color:var(--text-secondary);margin-top:8px;line-height:1.4}
 .stat__value--blue{color:var(--blue)}
 .stat__value--aqua{color:var(--aqua)}
 .stat__value--good{color:var(--good)}
+.stat__value--purple{color:var(--purple)}
+.stat__glow{position:absolute;top:-30px;right:-30px;width:100px;height:100px;
+  border-radius:50%;filter:blur(40px);opacity:0.12;pointer-events:none}
 
 /* Sections */
-.section{margin-bottom:48px}
-.section__title{font-size:1.125rem;font-weight:600;margin-bottom:20px;
-  display:flex;align-items:center;gap:8px}
-.section__title::before{content:"";width:3px;height:18px;border-radius:2px;
+.section{margin-bottom:56px}
+.section__title{font-size:1.2rem;font-weight:700;margin-bottom:24px;
+  display:flex;align-items:center;gap:10px}
+.section__title::before{content:"";width:4px;height:20px;border-radius:2px;
   background:var(--blue)}
+.section__subtitle{font-size:0.85rem;color:var(--text-muted);margin-top:4px;font-weight:400}
 
-/* Gate progress */
-.gates{display:flex;flex-direction:column;gap:8px}
-.gate{display:grid;grid-template-columns:72px 1fr 100px;align-items:center;
-  gap:12px;padding:12px 16px;background:var(--surface-1);border-radius:8px;
-  border:1px solid var(--grid)}
-.gate__id{font-weight:700;font-size:0.875rem;font-variant-numeric:tabular-nums}
-.gate__bar-track{height:8px;background:var(--surface-3);border-radius:4px;overflow:hidden}
-.gate__bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease}
-.gate__status{font-size:0.75rem;font-weight:600;text-align:right;display:flex;
-  align-items:center;justify-content:flex-end;gap:6px}
-.gate__name{font-size:0.8rem;color:var(--text-secondary);margin-top:2px}
-.gate--complete .gate__bar-fill{background:var(--good);width:100%}
+/* Gate Progress — Radial Chart */
+.gates-container{display:grid;grid-template-columns:280px 1fr;gap:32px;align-items:start}
+@media(max-width:768px){.gates-container{grid-template-columns:1fr}}
+.radial-wrap{display:flex;justify-content:center;align-items:center}
+.radial-chart{position:relative;width:240px;height:240px}
+.radial-chart svg{width:100%;height:100%}
+.radial-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.radial-center__pct{font-size:2.4rem;font-weight:800;color:var(--good)}
+.radial-center__label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em}
+
+/* Gate list */
+.gates{display:flex;flex-direction:column;gap:6px}
+.gate{display:grid;grid-template-columns:60px 1fr 110px;align-items:center;
+  gap:12px;padding:12px 16px;background:var(--surface-1);border-radius:10px;
+  border:1px solid var(--grid);transition:background 0.2s}
+.gate:hover{background:var(--surface-2)}
+.gate__id{font-weight:800;font-size:0.85rem;font-variant-numeric:tabular-nums}
+.gate__bar-track{height:6px;background:var(--surface-3);border-radius:3px;overflow:hidden}
+.gate__bar-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(0.4,0,0.2,1)}
+.gate__status{font-size:0.72rem;font-weight:700;text-align:right;display:flex;
+  align-items:center;justify-content:flex-end;gap:6px;text-transform:uppercase;letter-spacing:0.04em}
+.gate__name{font-size:0.75rem;color:var(--text-secondary);margin-top:2px}
+.gate--complete .gate__bar-fill{background:linear-gradient(90deg,var(--good),var(--aqua));width:100%}
 .gate--complete .gate__status{color:var(--good)}
-.gate--progress .gate__bar-fill{background:var(--blue);width:25%}
+.gate--progress .gate__bar-fill{background:linear-gradient(90deg,var(--blue),var(--purple));width:25%}
 .gate--progress .gate__status{color:var(--blue)}
 .gate--pending .gate__bar-fill{background:var(--text-muted);width:0%}
 .gate--pending .gate__status{color:var(--text-muted)}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.gate--complete .status-dot{background:var(--good)}
-.gate--progress .status-dot{background:var(--blue)}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.gate--complete .status-dot{background:var(--good);box-shadow:0 0 6px var(--good)}
+.gate--progress .status-dot{background:var(--blue);box-shadow:0 0 6px var(--blue);animation:pulse 2s infinite}
 .gate--pending .status-dot{background:var(--text-muted)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 
-/* Architecture */
-.arch{display:grid;grid-template-columns:1fr;gap:2px;margin-top:12px}
-.arch__row{display:grid;gap:2px}
-.arch__row--3{grid-template-columns:1fr 1.4fr 1fr}
-.arch__row--1{grid-template-columns:1fr}
-.arch__cell{background:var(--surface-1);padding:16px;text-align:center;
+/* Charts */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
+.chart-card{background:var(--surface-1);border-radius:14px;padding:24px;
   border:1px solid var(--grid)}
-.arch__cell:first-child{border-radius:8px 0 0 0}
-.arch__row--3 .arch__cell:last-child{border-radius:0 8px 0 0}
-.arch__row--1:last-child .arch__cell{border-radius:0 0 8px 8px}
-.arch__cell-title{font-size:0.8rem;font-weight:700;margin-bottom:4px}
-.arch__cell-desc{font-size:0.7rem;color:var(--text-muted);line-height:1.4}
-.arch__cell--decision{border-top:3px solid var(--blue)}
-.arch__cell--governance{border-top:3px solid var(--aqua)}
-.arch__cell--domain{border-top:3px solid var(--orange)}
-.arch__cell--data{border-top:3px solid var(--yellow)}
+.chart-card__title{font-size:0.85rem;font-weight:700;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px}
+.chart-card__title span{font-size:0.7rem;color:var(--text-muted);font-weight:400}
 
-/* Stack */
-.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:12px}
-.stack__group{background:var(--surface-1);border-radius:8px;padding:16px;
-  border:1px solid var(--grid)}
-.stack__group-title{font-size:0.8rem;font-weight:600;color:var(--text-secondary);
-  margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em}
-.stack__item{display:flex;align-items:center;gap:8px;padding:6px 0;
-  font-size:0.85rem;color:var(--text-primary)}
+/* Bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:180px;padding-top:8px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0}
+.bar{border-radius:4px 4px 0 0;width:100%;min-height:2px;transition:height 0.8s cubic-bezier(0.4,0,0.2,1);
+  position:relative;cursor:default}
+.bar:hover{filter:brightness(1.2)}
+.bar__tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  background:var(--surface-3);color:var(--text-primary);padding:4px 8px;border-radius:6px;
+  font-size:0.7rem;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity 0.2s;border:1px solid var(--grid)}
+.bar:hover .bar__tooltip{opacity:1}
+.bar-label{font-size:0.55rem;color:var(--text-muted);text-align:center;writing-mode:vertical-rl;
+  transform:rotate(180deg);max-height:60px;overflow:hidden;text-overflow:ellipsis}
+
+/* Donut chart */
+.donut-wrap{display:flex;align-items:center;gap:24px}
+.donut-svg{width:140px;height:140px;flex-shrink:0}
+.donut-legend{display:flex;flex-direction:column;gap:6px}
+.donut-legend__item{display:flex;align-items:center;gap:8px;font-size:0.78rem}
+.donut-legend__dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* Treemap */
+.treemap{display:grid;gap:3px;height:200px}
+.treemap-cell{border-radius:6px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;padding:6px;cursor:default;transition:filter 0.2s;position:relative;
+  overflow:hidden}
+.treemap-cell:hover{filter:brightness(1.25)}
+.treemap-cell__name{font-size:0.65rem;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);
+  text-align:center;line-height:1.2}
+.treemap-cell__val{font-size:0.6rem;color:rgba(255,255,255,0.75);margin-top:2px}
+
+/* Decision Envelope — Priority Waterfall */
+.waterfall{display:flex;flex-direction:column;gap:6px}
+.wf-row{display:grid;grid-template-columns:200px 1fr 60px;align-items:center;gap:12px;
+  padding:12px 16px;background:var(--surface-1);border-radius:10px;border:1px solid var(--grid)}
+.wf-row__label{font-size:0.8rem;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.wf-row__bar-track{height:28px;background:var(--surface-3);border-radius:6px;overflow:hidden;position:relative}
+.wf-row__bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;
+  font-size:0.7rem;font-weight:600;color:rgba(0,0,0,0.75);transition:width 1s cubic-bezier(0.4,0,0.2,1)}
+.wf-row__priority{font-size:0.75rem;font-weight:800;color:var(--text-muted);text-align:center;
+  font-variant-numeric:tabular-nums}
+.wf-desc{font-size:0.72rem;color:var(--text-secondary);margin-top:4px}
+
+/* Architecture — SVG Flow */
+.arch-svg-wrap{background:var(--surface-1);border-radius:14px;padding:24px;
+  border:1px solid var(--grid);overflow-x:auto}
+.arch-svg-wrap svg{width:100%;height:auto;min-width:700px}
+.arch-svg-wrap svg text{font-family:'Inter',system-ui,sans-serif}
+
+/* Provenance Chain */
+.provenance{display:flex;align-items:center;gap:0;overflow-x:auto;padding:16px 0}
+.prov-node{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:120px}
+.prov-box{background:var(--surface-2);border:1px solid var(--grid);border-radius:10px;
+  padding:12px 16px;text-align:center;position:relative;transition:box-shadow 0.2s}
+.prov-box:hover{box-shadow:var(--glow-blue)}
+.prov-box__icon{font-size:1.3rem;margin-bottom:4px}
+.prov-box__title{font-size:0.75rem;font-weight:700}
+.prov-box__detail{font-size:0.65rem;color:var(--text-muted);margin-top:2px}
+.prov-arrow{color:var(--blue);font-size:1.2rem;margin:0 4px;flex-shrink:0;opacity:0.6}
+.prov-hash{font-size:0.6rem;color:var(--blue);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  opacity:0.7;margin-top:2px}
+
+/* CI Pipeline */
+.pipeline{display:flex;flex-wrap:wrap;align-items:center;gap:0}
+.pipe-step{display:flex;align-items:center}
+.pipe-box{background:var(--surface-1);border:1px solid var(--grid);border-radius:8px;
+  padding:10px 16px;font-size:0.8rem;font-weight:600;display:flex;align-items:center;gap:8px;
+  white-space:nowrap;transition:box-shadow 0.2s}
+.pipe-box:hover{box-shadow:var(--glow-good)}
+.pipe-arrow{color:var(--text-muted);font-size:0.8rem;padding:0 6px}
+.pipe-check{color:var(--good);font-size:1rem}
+
+/* Tech Stack */
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.stack__group{background:var(--surface-1);border-radius:12px;padding:18px;
+  border:1px solid var(--grid);transition:box-shadow 0.2s}
+.stack__group:hover{box-shadow:var(--glow-blue)}
+.stack__group-title{font-size:0.75rem;font-weight:700;color:var(--text-muted);
+  margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em}
+.stack__item{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:0.82rem}
 .stack__dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
-/* Decision envelope */
-.envelope{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:8px}
-.env-card{background:var(--surface-1);border-radius:8px;padding:14px;
-  border:1px solid var(--grid);border-left:3px solid}
-.env-card__outcome{font-size:0.8rem;font-weight:700;margin-bottom:4px;
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.env-card__desc{font-size:0.75rem;color:var(--text-secondary);line-height:1.4}
-.env--supported{border-left-color:var(--good)}
-.env--investigate{border-left-color:var(--warning)}
-.env--abstain{border-left-color:var(--blue)}
-.env--block{border-left-color:var(--critical)}
-.env--degraded{border-left-color:var(--serious)}
-
-/* CI pipeline */
-.pipeline{display:flex;flex-wrap:wrap;align-items:center;gap:0}
-.pipe-step{display:flex;align-items:center;gap:0}
-.pipe-box{background:var(--surface-1);border:1px solid var(--grid);
-  border-radius:6px;padding:8px 14px;font-size:0.8rem;font-weight:600;
-  display:flex;align-items:center;gap:6px;white-space:nowrap}
-.pipe-arrow{color:var(--text-muted);font-size:0.75rem;padding:0 4px}
-.pipe-check{color:var(--good);font-size:0.9rem}
+/* Design Principles */
+.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.principle{background:var(--surface-1);border-radius:12px;padding:20px;
+  border:1px solid var(--grid);border-top:3px solid var(--blue)}
+.principle__title{font-size:0.85rem;font-weight:700;margin-bottom:8px}
+.principle__desc{font-size:0.8rem;color:var(--text-secondary);line-height:1.6}
 
 /* Footer */
-.footer{text-align:center;padding-top:32px;border-top:1px solid var(--grid);
+.footer{text-align:center;padding-top:36px;border-top:1px solid var(--grid);
   font-size:0.75rem;color:var(--text-muted)}
 .footer a{color:var(--blue);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.animate{animation:fadeUp 0.5s ease-out forwards;opacity:0}
+.animate:nth-child(1){animation-delay:0.05s}
+.animate:nth-child(2){animation-delay:0.1s}
+.animate:nth-child(3){animation-delay:0.15s}
+.animate:nth-child(4){animation-delay:0.2s}
+.animate:nth-child(5){animation-delay:0.25s}
+.animate:nth-child(6){animation-delay:0.3s}
 
 /* Responsive */
 @media(max-width:640px){
-  .gate{grid-template-columns:60px 1fr 80px}
-  .arch__row--3{grid-template-columns:1fr}
+  body{padding:24px 16px 60px}
+  h1{font-size:1.6rem}
+  .gate{grid-template-columns:50px 1fr 80px}
+  .wf-row{grid-template-columns:140px 1fr 40px}
   .pipeline{flex-direction:column;align-items:flex-start}
   .pipe-arrow{transform:rotate(90deg)}
+  .donut-wrap{flex-direction:column}
+  .bar-chart{height:140px}
 }
 </style>
 </head>
 <body>
 
+<!-- ═══════════ HEADER ═══════════ -->
 <header class="header">
   <h1>SOVEREIGN OPS</h1>
-  <p class="subtitle">Domain-Aware Reliability and Abstention for Mission-Critical Telemetry</p>
+  <p class="subtitle">Domain-Aware Reliability Protocol — Abstention-First Anomaly Detection</p>
   <div class="badges">
-    <span class="badge badge--blue">v0.1.0</span>
+    <span class="badge badge--blue">v0.1.0 · G5</span>
     <span class="badge badge--aqua">Apache 2.0</span>
-    <span class="badge badge--good">CI ✓ Passing</span>
+    <span class="badge badge--good">CI ✓ 199 Tests</span>
   </div>
 </header>
 
-<!-- KPI Row -->
+<!-- ═══════════ KPI ROW ═══════════ -->
 <section class="stats">
-  <div class="stat">
+  <div class="stat animate">
+    <div class="stat__glow" style="background:var(--good)"></div>
+    <div class="stat__icon">🧪</div>
     <div class="stat__label">Tests</div>
-    <div class="stat__value stat__value--good">199</div>
-    <div class="stat__detail">All passing · 16 modules</div>
+    <div class="stat__value stat__value--good" data-count="199">0</div>
+    <div class="stat__detail">14 test modules · 100% passing</div>
   </div>
-  <div class="stat">
+  <div class="stat animate">
+    <div class="stat__glow" style="background:var(--blue)"></div>
+    <div class="stat__icon">📐</div>
+    <div class="stat__label">Source Modules</div>
+    <div class="stat__value stat__value--blue" data-count="16">0</div>
+    <div class="stat__detail">4,008 lines · mypy --strict</div>
+  </div>
+  <div class="stat animate">
+    <div class="stat__glow" style="background:var(--purple)"></div>
+    <div class="stat__icon">📜</div>
     <div class="stat__label">Contract Types</div>
-    <div class="stat__value stat__value--blue">26</div>
+    <div class="stat__value stat__value--purple" data-count="26">0</div>
     <div class="stat__detail">Immutable · Pydantic v2</div>
   </div>
-  <div class="stat">
+  <div class="stat animate">
+    <div class="stat__glow" style="background:var(--aqua)"></div>
+    <div class="stat__icon">🗄️</div>
     <div class="stat__label">Datasets</div>
-    <div class="stat__value stat__value--aqua">2</div>
-    <div class="stat__detail">ESA + EDP · 11.8 GB</div>
+    <div class="stat__value stat__value--aqua" data-count="2">0</div>
+    <div class="stat__detail">ESA + EDP · 11.8 GB · DOI-pinned</div>
   </div>
-  <div class="stat">
-    <div class="stat__label">CI Checks</div>
-    <div class="stat__value">7</div>
-    <div class="stat__detail">lint → types → test → audit</div>
-  </div>
-  <div class="stat">
+  <div class="stat animate">
+    <div class="stat__icon">🔌</div>
     <div class="stat__label">API Endpoints</div>
-    <div class="stat__value">11</div>
-    <div class="stat__detail">health · provenance · quality · models · pipeline</div>
+    <div class="stat__value" data-count="11">0</div>
+    <div class="stat__detail">health · provenance · pipeline · decisions</div>
   </div>
-  <div class="stat">
+  <div class="stat animate">
+    <div class="stat__icon">🏷️</div>
     <div class="stat__label">Zenodo DOIs</div>
-    <div class="stat__value">2</div>
+    <div class="stat__value" data-count="2">0</div>
     <div class="stat__detail">Concept + Version pinned</div>
   </div>
 </section>
 
-<!-- Gate Progress -->
+<!-- ═══════════ GATE PROGRESS ═══════════ -->
 <section class="section">
   <h2 class="section__title">Development Gates</h2>
-  <div class="gates">
-    <div class="gate gate--complete">
-      <div><div class="gate__id">G0</div><div class="gate__name">Foundation</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
+  <div class="gates-container">
+    <!-- Radial Chart -->
+    <div class="radial-wrap">
+      <div class="radial-chart">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="gateGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#1cbe80"/>
+              <stop offset="100%" stop-color="#4a9eff"/>
+            </linearGradient>
+          </defs>
+          <!-- Background ring -->
+          <circle cx="100" cy="100" r="82" fill="none" stroke="var(--surface-3)" stroke-width="14"/>
+          <!-- Progress ring: 5/10 gates = 50%, animated -->
+          <circle cx="100" cy="100" r="82" fill="none" stroke="url(#gateGrad)" stroke-width="14"
+            stroke-linecap="round" stroke-dasharray="515.22" stroke-dashoffset="515.22"
+            transform="rotate(-90 100 100)" class="radial-progress"/>
+          <!-- Tick marks for each gate -->
+          <g stroke="var(--surface-0)" stroke-width="2">
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(0 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(36 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(72 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(108 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(144 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(180 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(216 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(252 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(288 100 100)"/>
+            <line x1="100" y1="4" x2="100" y2="22" transform="rotate(324 100 100)"/>
+          </g>
+        </svg>
+        <div class="radial-center">
+          <div class="radial-center__pct">50%</div>
+          <div class="radial-center__label">5 / 10 Gates</div>
+        </div>
+      </div>
     </div>
-    <div class="gate gate--complete">
-      <div><div class="gate__id">G1</div><div class="gate__name">Data Sovereignty</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
-    </div>
-    <div class="gate gate--complete">
-      <div><div class="gate__id">G2</div><div class="gate__name">Structural Audit</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
-    </div>
-    <div class="gate gate--complete">
-      <div><div class="gate__id">G3</div><div class="gate__name">Baseline Models</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
-    </div>
-    <div class="gate gate--complete">
-      <div><div class="gate__id">G4</div><div class="gate__name">DARP Core</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
-    </div>
-    <div class="gate gate--progress">
-      <div><div class="gate__id">G5</div><div class="gate__name">Confirmatory Evaluation</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> IN PROGRESS</div>
-    </div>
-    <div class="gate gate--pending">
-      <div><div class="gate__id">G6</div><div class="gate__name">Observability</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
-    </div>
-    <div class="gate gate--pending">
-      <div><div class="gate__id">G7</div><div class="gate__name">Containerization</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
-    </div>
-    <div class="gate gate--pending">
-      <div><div class="gate__id">G8</div><div class="gate__name">Documentation</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
-    </div>
-    <div class="gate gate--pending">
-      <div><div class="gate__id">G9</div><div class="gate__name">Publication</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    <!-- Gate list -->
+    <div class="gates">
+      <div class="gate gate--complete">
+        <div><div class="gate__id">G0</div><div class="gate__name">Foundation</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>COMPLETE</div>
+      </div>
+      <div class="gate gate--complete">
+        <div><div class="gate__id">G1</div><div class="gate__name">Data Sovereignty</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>COMPLETE</div>
+      </div>
+      <div class="gate gate--complete">
+        <div><div class="gate__id">G2</div><div class="gate__name">Structural Audit</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>COMPLETE</div>
+      </div>
+      <div class="gate gate--complete">
+        <div><div class="gate__id">G3</div><div class="gate__name">Baseline Models</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>COMPLETE</div>
+      </div>
+      <div class="gate gate--complete">
+        <div><div class="gate__id">G4</div><div class="gate__name">DARP Core</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>COMPLETE</div>
+      </div>
+      <div class="gate gate--progress">
+        <div><div class="gate__id">G5</div><div class="gate__name">Confirmatory Eval</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>IN PROGRESS</div>
+      </div>
+      <div class="gate gate--pending">
+        <div><div class="gate__id">G6</div><div class="gate__name">Observability</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>PLANNED</div>
+      </div>
+      <div class="gate gate--pending">
+        <div><div class="gate__id">G7</div><div class="gate__name">Containerization</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>PLANNED</div>
+      </div>
+      <div class="gate gate--pending">
+        <div><div class="gate__id">G8</div><div class="gate__name">Documentation</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>PLANNED</div>
+      </div>
+      <div class="gate gate--pending">
+        <div><div class="gate__id">G9</div><div class="gate__name">Publication</div></div>
+        <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+        <div class="gate__status"><span class="status-dot"></span>PLANNED</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Decision Envelope -->
+<!-- ═══════════ TEST & CODE CHARTS ═══════════ -->
+<section class="section">
+  <h2 class="section__title">Codebase Analytics</h2>
+  <div class="chart-grid">
+    <!-- Test Distribution -->
+    <div class="chart-card">
+      <div class="chart-card__title">Test Distribution by Module <span>199 total</span></div>
+      <div class="bar-chart" id="testChart"></div>
+    </div>
+    <!-- Source Lines Treemap -->
+    <div class="chart-card">
+      <div class="chart-card__title">Source Code Heatmap <span>4,008 lines</span></div>
+      <div class="treemap" id="treemap" style="grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr)"></div>
+    </div>
+    <!-- Module Composition Donut -->
+    <div class="chart-card">
+      <div class="chart-card__title">Module Composition</div>
+      <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 120 120">
+          <defs>
+            <linearGradient id="d1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#6ab0ff"/></linearGradient>
+            <linearGradient id="d2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1cbe80"/><stop offset="100%" stop-color="#3dd6a0"/></linearGradient>
+            <linearGradient id="d3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9070e0"/><stop offset="100%" stop-color="#a890f0"/></linearGradient>
+            <linearGradient id="d4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#e06030"/><stop offset="100%" stop-color="#f08050"/></linearGradient>
+          </defs>
+          <!-- API+Parsers (1595 lines = 39.8%) -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d1)" stroke-width="18"
+            stroke-dasharray="113 170" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <!-- Contracts+Schemas (741 = 18.5%) -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d2)" stroke-width="18"
+            stroke-dasharray="52 231" stroke-dashoffset="-113" transform="rotate(-90 60 60)"/>
+          <!-- ML Pipeline (1021 = 25.5%) -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d3)" stroke-width="18"
+            stroke-dasharray="72 211" stroke-dashoffset="-165" transform="rotate(-90 60 60)"/>
+          <!-- Infrastructure (651 = 16.2%) -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d4)" stroke-width="18"
+            stroke-dasharray="46 237" stroke-dashoffset="-237" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="36" fill="var(--surface-1)"/>
+          <text x="60" y="58" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="800">16</text>
+          <text x="60" y="70" text-anchor="middle" fill="var(--text-muted)" font-size="7" font-weight="600">MODULES</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--blue)"></div> API + Parsers (40%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--aqua)"></div> Contracts + Schemas (18%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--purple)"></div> ML Pipeline (26%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--orange)"></div> Infrastructure (16%)</div>
+        </div>
+      </div>
+    </div>
+    <!-- Test Coverage by Gate -->
+    <div class="chart-card">
+      <div class="chart-card__title">Test Growth by Gate</div>
+      <div class="bar-chart" id="gateTestChart"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ DECISION ENVELOPE ═══════════ -->
 <section class="section">
   <h2 class="section__title">Decision Envelope — Five-Outcome Taxonomy</h2>
-  <div class="envelope">
-    <div class="env-card env--supported">
-      <div class="env-card__outcome">SUPPORTED_ALERT</div>
-      <div class="env-card__desc">Evidence from ≥1 model supports investigation</div>
+  <p class="section__subtitle" style="margin-bottom:20px;margin-top:-12px">Priority-ordered outcomes with confidence formula: coverage × F1</p>
+  <div class="waterfall">
+    <div class="wf-row">
+      <div>
+        <div class="wf-row__label" style="color:var(--critical)">BLOCK_DATA_INTEGRITY</div>
+        <div class="wf-desc">Source provenance or hash verification failed</div>
+      </div>
+      <div class="wf-row__bar-track">
+        <div class="wf-row__bar-fill" style="background:linear-gradient(90deg,var(--critical),#f06060);width:100%">Priority 1 — Halt</div>
+      </div>
+      <div class="wf-row__priority">P1</div>
     </div>
-    <div class="env-card env--investigate">
-      <div class="env-card__outcome">INVESTIGATE</div>
-      <div class="env-card__desc">Mixed evidence; human review warranted</div>
+    <div class="wf-row">
+      <div>
+        <div class="wf-row__label" style="color:var(--serious)">DEGRADED_SERVICE</div>
+        <div class="wf-desc">Upstream component unavailable</div>
+      </div>
+      <div class="wf-row__bar-track">
+        <div class="wf-row__bar-fill" style="background:linear-gradient(90deg,var(--serious),#f0a080);width:85%">Priority 2 — Degrade</div>
+      </div>
+      <div class="wf-row__priority">P2</div>
     </div>
-    <div class="env-card env--abstain">
-      <div class="env-card__outcome">ABSTAIN</div>
-      <div class="env-card__desc">Data quality or coverage too low to decide</div>
+    <div class="wf-row">
+      <div>
+        <div class="wf-row__label" style="color:var(--blue)">ABSTAIN_INSUFFICIENT</div>
+        <div class="wf-desc">Data quality or coverage too low to decide</div>
+      </div>
+      <div class="wf-row__bar-track">
+        <div class="wf-row__bar-fill" style="background:linear-gradient(90deg,var(--blue),#70b8ff);width:70%">Priority 3 — Abstain</div>
+      </div>
+      <div class="wf-row__priority">P3</div>
     </div>
-    <div class="env-card env--block">
-      <div class="env-card__outcome">BLOCK_DATA_INTEGRITY</div>
-      <div class="env-card__desc">Source provenance or hash verification failed</div>
+    <div class="wf-row">
+      <div>
+        <div class="wf-row__label" style="color:var(--good)">SUPPORTED_ALERT</div>
+        <div class="wf-desc">Evidence supports anomaly investigation</div>
+      </div>
+      <div class="wf-row__bar-track">
+        <div class="wf-row__bar-fill" style="background:linear-gradient(90deg,var(--good),#40d070);width:55%">Priority 4 — Actionable</div>
+      </div>
+      <div class="wf-row__priority">P4</div>
     </div>
-    <div class="env-card env--degraded">
-      <div class="env-card__outcome">DEGRADED_SERVICE</div>
-      <div class="env-card__desc">Upstream component unavailable</div>
+    <div class="wf-row">
+      <div>
+        <div class="wf-row__label" style="color:var(--warning)">INVESTIGATE</div>
+        <div class="wf-desc">Mixed evidence; human review warranted</div>
+      </div>
+      <div class="wf-row__bar-track">
+        <div class="wf-row__bar-fill" style="background:linear-gradient(90deg,var(--warning),#ffd060);width:40%">Priority 5 — Review</div>
+      </div>
+      <div class="wf-row__priority">P5</div>
     </div>
   </div>
 </section>
 
-<!-- Architecture -->
+<!-- ═══════════ ARCHITECTURE FLOW ═══════════ -->
 <section class="section">
-  <h2 class="section__title">Architecture</h2>
-  <div class="arch">
-    <div class="arch__row arch__row--1">
-      <div class="arch__cell arch__cell--decision" style="border-radius:8px 8px 0 0">
-        <div class="arch__cell-title">Decision Envelope</div>
-        <div class="arch__cell-desc">outcome · evidence[] · reasons[] · dataset_id<br>Five outcomes with typed citations and cryptographic provenance</div>
+  <h2 class="section__title">Architecture — DARP Flow</h2>
+  <div class="arch-svg-wrap">
+    <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ag1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d49500"/><stop offset="100%" stop-color="#e0a820"/></linearGradient>
+        <linearGradient id="ag2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#e06030"/><stop offset="100%" stop-color="#f08050"/></linearGradient>
+        <linearGradient id="ag3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9070e0"/><stop offset="100%" stop-color="#a890f0"/></linearGradient>
+        <linearGradient id="ag4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1cbe80"/><stop offset="100%" stop-color="#3dd6a0"/></linearGradient>
+        <linearGradient id="ag5" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#6ab0ff"/></linearGradient>
+        <linearGradient id="ag6" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#e04040"/><stop offset="100%" stop-color="#f06060"/></linearGradient>
+        <filter id="dropShadow"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/></filter>
+        <marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#4a9eff"/>
+        </marker>
+        <marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#1cbe80"/>
+        </marker>
+      </defs>
+      <!-- Layer 1: Data Sources -->
+      <rect x="20" y="30" width="180" height="80" rx="12" fill="#1c1d24" stroke="url(#ag1)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="110" y="60" text-anchor="middle" fill="#d49500" font-size="11" font-weight="700">SOVEREIGN DATA</text>
+      <text x="110" y="78" text-anchor="middle" fill="#b0afaa" font-size="9">SHA-256 · DOI · Receipts</text>
+      <text x="110" y="92" text-anchor="middle" fill="#6e6d69" font-size="8">ESA-AD-v2 + EDP-SCADA-v2</text>
+
+      <!-- Layer 2: Domain Adapters -->
+      <rect x="20" y="150" width="85" height="65" rx="10" fill="#1c1d24" stroke="url(#ag2)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="62" y="175" text-anchor="middle" fill="#e06030" font-size="10" font-weight="700">ESA</text>
+      <text x="62" y="192" text-anchor="middle" fill="#b0afaa" font-size="8">Adapter</text>
+      <rect x="115" y="150" width="85" height="65" rx="10" fill="#1c1d24" stroke="url(#ag2)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="157" y="175" text-anchor="middle" fill="#e06030" font-size="10" font-weight="700">EDP</text>
+      <text x="157" y="192" text-anchor="middle" fill="#b0afaa" font-size="8">Adapter</text>
+
+      <!-- Arrows: Data → Adapters -->
+      <line x1="62" y1="110" x2="62" y2="148" stroke="#d49500" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+      <line x1="157" y1="110" x2="157" y2="148" stroke="#d49500" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+
+      <!-- Layer 3: Quality Profiler -->
+      <rect x="260" y="150" width="160" height="65" rx="10" fill="#1c1d24" stroke="url(#ag4)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="340" y="175" text-anchor="middle" fill="#1cbe80" font-size="10" font-weight="700">QUALITY PROFILER</text>
+      <text x="340" y="192" text-anchor="middle" fill="#b0afaa" font-size="8">completeness · freshness · outliers</text>
+
+      <!-- Arrow: Adapters → Quality -->
+      <line x1="200" y1="182" x2="258" y2="182" stroke="#e06030" stroke-width="1.5" marker-end="url(#arrowG)" opacity="0.5"/>
+
+      <!-- Layer 4: Detectors -->
+      <rect x="480" y="120" width="170" height="50" rx="10" fill="#1c1d24" stroke="url(#ag3)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="565" y="142" text-anchor="middle" fill="#9070e0" font-size="10" font-weight="700">Z-SCORE DETECTOR</text>
+      <text x="565" y="156" text-anchor="middle" fill="#b0afaa" font-size="8">MAD-based robust z-score</text>
+      <rect x="480" y="185" width="170" height="50" rx="10" fill="#1c1d24" stroke="url(#ag3)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="565" y="207" text-anchor="middle" fill="#9070e0" font-size="10" font-weight="700">ISOLATION FOREST</text>
+      <text x="565" y="221" text-anchor="middle" fill="#b0afaa" font-size="8">sklearn · numpy fallback</text>
+
+      <!-- Arrow: Quality → Detectors -->
+      <line x1="420" y1="172" x2="478" y2="148" stroke="#1cbe80" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+      <line x1="420" y1="192" x2="478" y2="208" stroke="#1cbe80" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+
+      <!-- Layer 5: Pipeline -->
+      <rect x="260" y="275" width="390" height="65" rx="12" fill="#1c1d24" stroke="url(#ag5)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="455" y="300" text-anchor="middle" fill="#4a9eff" font-size="11" font-weight="700">DARP PIPELINE ORCHESTRATOR</text>
+      <text x="455" y="318" text-anchor="middle" fill="#b0afaa" font-size="9">points → split → fit → predict → evaluate → ModelEvidence</text>
+      <text x="455" y="330" text-anchor="middle" fill="#6e6d69" font-size="8">chronological splits · SHA-256 provenance chain</text>
+
+      <!-- Arrows: Detectors → Pipeline -->
+      <line x1="565" y1="235" x2="565" y2="273" stroke="#9070e0" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+      <line x1="340" y1="215" x2="340" y2="273" stroke="#1cbe80" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+
+      <!-- Layer 6: Decision Engine -->
+      <rect x="260" y="370" width="390" height="40" rx="10" fill="#1c1d24" stroke="url(#ag6)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="455" y="395" text-anchor="middle" fill="#e04040" font-size="11" font-weight="700">DECISION ENGINE → DecisionEnvelope</text>
+
+      <!-- Arrow: Pipeline → Decision -->
+      <line x1="455" y1="340" x2="455" y2="368" stroke="#4a9eff" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+
+      <!-- Layer 7: Evaluation (right column) -->
+      <rect x="710" y="150" width="170" height="65" rx="10" fill="#1c1d24" stroke="url(#ag4)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="795" y="175" text-anchor="middle" fill="#1cbe80" font-size="10" font-weight="700">EVALUATION ENGINE</text>
+      <text x="795" y="192" text-anchor="middle" fill="#b0afaa" font-size="8">P / R / F1 · abstention-aware</text>
+
+      <!-- Arrow: Detectors → Evaluation -->
+      <line x1="650" y1="170" x2="708" y2="175" stroke="#9070e0" stroke-width="1.5" marker-end="url(#arrowG)" opacity="0.5"/>
+
+      <!-- Arrow: Evaluation → Pipeline -->
+      <line x1="795" y1="215" x2="795" y2="300" stroke="#1cbe80" stroke-width="1.5" opacity="0.3"/>
+      <line x1="795" y1="300" x2="652" y2="300" stroke="#1cbe80" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.3"/>
+
+      <!-- Contracts overlay -->
+      <rect x="700" y="280" width="180" height="55" rx="10" fill="#1c1d24" stroke="var(--grid)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="790" y="302" text-anchor="middle" fill="#6e6d69" font-size="9" font-weight="600">CONTRACTS (Pydantic v2)</text>
+      <text x="790" y="318" text-anchor="middle" fill="#6e6d69" font-size="8">extra="forbid" · frozen=True</text>
+      <text x="790" y="330" text-anchor="middle" fill="#6e6d69" font-size="7">canonical_json() · sha256_digest()</text>
+
+      <!-- Domain isolation annotation -->
+      <rect x="700" y="370" width="180" height="40" rx="10" fill="#1c1d24" stroke="#e04040" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="790" y="393" text-anchor="middle" fill="#e04040" font-size="9" font-weight="600">🔒 DOMAIN ISOLATION</text>
+      <text x="790" y="404" text-anchor="middle" fill="#6e6d69" font-size="7">cross-domain evidence prohibited at type level</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════ PROVENANCE CHAIN ═══════════ -->
+<section class="section">
+  <h2 class="section__title">Cryptographic Provenance Chain</h2>
+  <div class="provenance">
+    <div class="prov-node">
+      <div class="prov-box">
+        <div class="prov-box__icon">📦</div>
+        <div class="prov-box__title">Source Bytes</div>
+        <div class="prov-box__detail">DOI-pinned ZIP</div>
       </div>
+      <div class="prov-hash">SHA-256 + MD5</div>
     </div>
-    <div class="arch__row arch__row--3">
-      <div class="arch__cell arch__cell--domain">
-        <div class="arch__cell-title">ESA Domain</div>
-        <div class="arch__cell-desc">Spacecraft telemetry<br>3 missions · 11.6 GB<br>CC BY 3.0 IGO</div>
+    <div class="prov-arrow">→</div>
+    <div class="prov-node">
+      <div class="prov-box">
+        <div class="prov-box__icon">📋</div>
+        <div class="prov-box__title">Acquisition</div>
+        <div class="prov-box__detail">Receipt + manifest</div>
       </div>
-      <div class="arch__cell arch__cell--governance">
-        <div class="arch__cell-title">Shared Governance</div>
-        <div class="arch__cell-desc">Contracts (Pydantic v2)<br>Abstention Protocol<br>Evaluation Engine<br>DARP Pipeline &amp; Decision Engine<br>Audit &amp; Provenance</div>
-      </div>
-      <div class="arch__cell arch__cell--domain">
-        <div class="arch__cell-title">EDP Domain</div>
-        <div class="arch__cell-desc">Wind turbine SCADA<br>4 turbines · 173.7 MB<br>CC BY 4.0</div>
-      </div>
+      <div class="prov-hash">verify()</div>
     </div>
-    <div class="arch__row arch__row--1">
-      <div class="arch__cell arch__cell--data" style="border-radius:0 0 8px 8px">
-        <div class="arch__cell-title">Sovereign Data Layer</div>
-        <div class="arch__cell-desc">SHA-256 + MD5 dual verification · DOI-pinned sources · Acquisition receipts · ZIP safety · Resumable downloads</div>
+    <div class="prov-arrow">→</div>
+    <div class="prov-node">
+      <div class="prov-box">
+        <div class="prov-box__icon">🔍</div>
+        <div class="prov-box__title">Quality Report</div>
+        <div class="prov-box__detail">Profiler checks</div>
       </div>
+      <div class="prov-hash">data_hash</div>
+    </div>
+    <div class="prov-arrow">→</div>
+    <div class="prov-node">
+      <div class="prov-box">
+        <div class="prov-box__icon">📊</div>
+        <div class="prov-box__title">Model Evidence</div>
+        <div class="prov-box__detail">Evaluation metrics</div>
+      </div>
+      <div class="prov-hash">model_hash</div>
+    </div>
+    <div class="prov-arrow">→</div>
+    <div class="prov-node">
+      <div class="prov-box">
+        <div class="prov-box__icon">🔐</div>
+        <div class="prov-box__title">Decision Envelope</div>
+        <div class="prov-box__detail">Sealed outcome</div>
+      </div>
+      <div class="prov-hash">envelope_hash</div>
+    </div>
+    <div class="prov-arrow">→</div>
+    <div class="prov-node">
+      <div class="prov-box">
+        <div class="prov-box__icon">📁</div>
+        <div class="prov-box__title">Case Record</div>
+        <div class="prov-box__detail">Audit-ready</div>
+      </div>
+      <div class="prov-hash">case_digest</div>
     </div>
   </div>
 </section>
 
-<!-- CI Pipeline -->
+<!-- ═══════════ CI PIPELINE ═══════════ -->
 <section class="section">
   <h2 class="section__title">CI Pipeline</h2>
   <div class="pipeline">
-    <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> ruff check</div>
-      <span class="pipe-arrow">→</span>
-    </div>
-    <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> ruff format</div>
-      <span class="pipe-arrow">→</span>
-    </div>
-    <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> mypy strict</div>
-      <span class="pipe-arrow">→</span>
-    </div>
-    <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> pytest (199)</div>
-      <span class="pipe-arrow">→</span>
-    </div>
-    <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> smoke HTTP</div>
-      <span class="pipe-arrow">→</span>
-    </div>
-    <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> secrets scan</div>
-      <span class="pipe-arrow">→</span>
-    </div>
-    <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> pip-audit</div>
-    </div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> ruff check</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> ruff format</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> mypy --strict</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pytest (199)</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> smoke HTTP</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> secrets scan</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pip-audit</div></div>
   </div>
 </section>
 
-<!-- Technology Stack -->
+<!-- ═══════════ TECHNOLOGY STACK ═══════════ -->
 <section class="section">
   <h2 class="section__title">Technology Stack</h2>
   <div class="stack">
@@ -368,30 +708,25 @@ body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
   </div>
 </section>
 
-<!-- Key Design Principles -->
+<!-- ═══════════ DESIGN PRINCIPLES ═══════════ -->
 <section class="section">
   <h2 class="section__title">Key Design Principles</h2>
-  <div class="stack" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-    <div class="stack__group">
-      <div class="stack__group-title">Contract-First</div>
-      <div class="stack__item" style="line-height:1.5;color:var(--text-secondary)">
-        All data flows through immutable Pydantic models (extra="forbid", frozen=True).
-        Canonical JSON serialization with SHA-256 digest for deterministic hashing.
-      </div>
+  <div class="principles">
+    <div class="principle" style="border-top-color:var(--blue)">
+      <div class="principle__title">Contract-First</div>
+      <div class="principle__desc">All data flows through immutable Pydantic models (extra="forbid", frozen=True). Canonical JSON serialization with SHA-256 digest for deterministic hashing.</div>
     </div>
-    <div class="stack__group">
-      <div class="stack__group-title">Domain Isolation</div>
-      <div class="stack__item" style="line-height:1.5;color:var(--text-secondary)">
-        Evidence cannot cross domain boundaries — enforced at the type level.
-        No ESA model output ever enters an EDP decision envelope.
-      </div>
+    <div class="principle" style="border-top-color:var(--aqua)">
+      <div class="principle__title">Domain Isolation</div>
+      <div class="principle__desc">Evidence cannot cross domain boundaries — enforced at the type level. No ESA model output ever enters an EDP decision envelope.</div>
     </div>
-    <div class="stack__group">
-      <div class="stack__group-title">Cryptographic Provenance</div>
-      <div class="stack__item" style="line-height:1.5;color:var(--text-secondary)">
-        SHA-256 chains from source bytes through every decision. DOI-pinned datasets
-        with dual-hash verification and acquisition audit receipts.
-      </div>
+    <div class="principle" style="border-top-color:var(--purple)">
+      <div class="principle__title">Cryptographic Provenance</div>
+      <div class="principle__desc">SHA-256 chains from source bytes through every decision. DOI-pinned datasets with dual-hash verification and acquisition audit receipts.</div>
+    </div>
+    <div class="principle" style="border-top-color:var(--orange)">
+      <div class="principle__title">Abstention-Aware</div>
+      <div class="principle__desc">The system says "I don't know" when data quality is insufficient. Precision/recall/F1 computed only over non-abstaining subsets; coverage = 1 − abstention_rate.</div>
     </div>
   </div>
 </section>
@@ -401,5 +736,84 @@ body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
   <p style="margin-top:6px">DOI: <a href="https://doi.org/10.5281/zenodo.24364517">10.5281/zenodo.24364517</a> · Apache 2.0</p>
 </footer>
 
+<script>
+// ── Animated Counters ──
+document.querySelectorAll('[data-count]').forEach(el => {
+  const target = parseInt(el.dataset.count);
+  const duration = 1200;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(ease * target);
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+});
+
+// ── Radial Progress Animation ──
+const radial = document.querySelector('.radial-progress');
+if (radial) {
+  const circumference = 2 * Math.PI * 82;
+  const pct = 0.5; // 5/10 gates complete
+  const offset = circumference * (1 - pct);
+  setTimeout(() => { radial.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)'; radial.style.strokeDashoffset = offset; }, 200);
+}
+
+// ── Test Distribution Bar Chart ──
+const testData = [
+  {name:'contracts',v:41},{name:'schemas',v:26},{name:'decision',v:18},
+  {name:'esa_parser',v:17},{name:'detectors',v:16},{name:'g3_ctr',v:14},
+  {name:'esa_parser',v:13},{name:'api',v:12},{name:'splits',v:11},
+  {name:'pipeline',v:10},{name:'eval',v:8},{name:'edp_inv',v:5},
+  {name:'esa_acq',v:4},{name:'src_ver',v:4}
+];
+const maxTest = Math.max(...testData.map(d=>d.v));
+const testChart = document.getElementById('testChart');
+testData.forEach(d => {
+  const col = document.createElement('div');
+  col.className = 'bar-col';
+  const h = (d.v / maxTest) * 100;
+  const hue = 140 + (1 - d.v / maxTest) * 100;
+  col.innerHTML = `<div class="bar" style="height:${h}%;background:hsl(${hue},60%,50%)"><div class="bar__tooltip">${d.name}: ${d.v}</div></div><div class="bar-label">${d.name}</div>`;
+  testChart.appendChild(col);
+});
+
+// ── Treemap (Source Lines) ──
+const srcData = [
+  {name:'api',v:619,c:'var(--blue)'},{name:'edp_parser',v:501,c:'var(--orange)'},
+  {name:'esa_parser',v:475,c:'var(--orange)'},{name:'contracts',v:418,c:'var(--aqua)'},
+  {name:'detectors',v:342,c:'var(--purple)'},{name:'schemas',v:323,c:'var(--aqua)'},
+  {name:'decision',v:286,c:'var(--purple)'},{name:'pipeline',v:280,c:'var(--purple)'},
+  {name:'quality',v:183,c:'var(--aqua)'},{name:'splits',v:151,c:'var(--purple)'},
+  {name:'verifier',v:137,c:'var(--blue)'},{name:'eval',v:112,c:'var(--purple)'},
+  {name:'esa_acq',v:112,c:'var(--blue)'},{name:'adapters',v:35,c:'var(--blue)'},
+  {name:'audit',v:31,c:'var(--blue)'},{name:'init',v:3,c:'var(--text-muted)'}
+];
+const treemap = document.getElementById('treemap');
+srcData.slice(0, 12).forEach(d => {
+  const cell = document.createElement('div');
+  cell.className = 'treemap-cell';
+  const alpha = 0.4 + (d.v / 619) * 0.5;
+  cell.style.background = `color-mix(in srgb, ${d.c} ${Math.round(alpha*100)}%, var(--surface-2))`;
+  if (d.v >= 300) { cell.style.gridColumn = 'span 2'; }
+  cell.innerHTML = `<div class="treemap-cell__name">${d.name}</div><div class="treemap-cell__val">${d.v} lines</div>`;
+  treemap.appendChild(cell);
+});
+
+// ── Gate Test Growth Chart ──
+const gateGrowth = [
+  {name:'G0',v:38},{name:'G1',v:72},{name:'G2',v:110},{name:'G3',v:169},{name:'G4',v:199}
+];
+const maxGate = Math.max(...gateGrowth.map(d=>d.v));
+const gateChart = document.getElementById('gateTestChart');
+gateGrowth.forEach(d => {
+  const col = document.createElement('div');
+  col.className = 'bar-col';
+  const h = (d.v / maxGate) * 100;
+  col.innerHTML = `<div class="bar" style="height:${h}%;background:linear-gradient(180deg,var(--aqua),var(--blue))"><div class="bar__tooltip">${d.name}: ${d.v} tests</div></div><div class="bar-label" style="writing-mode:horizontal-tb;transform:none">${d.name}</div>`;
+  gateChart.appendChild(col);
+});
+</script>
 </body>
 </html>
