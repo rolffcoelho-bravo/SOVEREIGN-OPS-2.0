@@ -5,13 +5,13 @@ from fastapi.testclient import TestClient
 from sovereign_ops.api import create_app
 
 
-def test_liveness_reports_g2_stage() -> None:
+def test_liveness_reports_g3_stage() -> None:
     with TestClient(create_app()) as client:
         response = client.get("/health/live")
         assert response.status_code == 200
         body = response.json()
         assert body["status"] == "alive"
-        assert body["stage"] == "G2"
+        assert body["stage"] == "G3"
         assert body["mode"] == "RESEARCH_ONLY"
         assert body["inference"] == "NOT_IMPLEMENTED"
 
@@ -50,19 +50,52 @@ def test_gates_endpoint_returns_development_progress() -> None:
         response = client.get("/meta/gates")
         assert response.status_code == 200
         body = response.json()
-        assert body["current_gate"] == "G2"
+        assert body["current_gate"] == "G3"
         assert len(body["gates"]) == 10
         gate_ids = [g["gate"] for g in body["gates"]]
         assert gate_ids == [f"G{i}" for i in range(10)]
+        # G0, G1, G2 all COMPLETE
         assert body["gates"][0]["status"] == "COMPLETE"
         assert body["gates"][1]["status"] == "COMPLETE"
-        assert body["gates"][2]["status"] == "IN_PROGRESS"
+        assert body["gates"][2]["status"] == "COMPLETE"
+        # G3 now IN_PROGRESS
+        assert body["gates"][3]["status"] == "IN_PROGRESS"
 
 
 def test_unimplemented_routes_return_404() -> None:
     with TestClient(create_app()) as client:
         assert client.post("/v1/analysis", json={}).status_code in (404, 405)
         assert client.post("/v1/cases", json={}).status_code in (404, 405)
+
+
+def test_quality_schemas_returns_all_schemas() -> None:
+    with TestClient(create_app()) as client:
+        response = client.get("/quality/schemas")
+        assert response.status_code == 200
+        body = response.json()
+        schemas = body["schemas"]
+        assert len(schemas) == 3  # ESA, EDP SCADA, EDP failures
+        ids = {s["dataset_id"] for s in schemas}
+        assert ids == {"ESA-AD-v2", "EDP-SCADA-v2"}
+        for s in schemas:
+            assert len(s["sha256"]) == 64
+            assert s["column_count"] == len(s["columns"])
+
+
+def test_quality_schemas_by_dataset() -> None:
+    with TestClient(create_app()) as client:
+        response = client.get("/quality/schemas/ESA-AD-v2")
+        assert response.status_code == 200
+        body = response.json()
+        assert len(body["schemas"]) == 1
+        assert body["schemas"][0]["dataset_id"] == "ESA-AD-v2"
+        assert body["schemas"][0]["column_count"] == 4
+
+
+def test_quality_schemas_unknown_dataset_404() -> None:
+    with TestClient(create_app()) as client:
+        response = client.get("/quality/schemas/NONEXISTENT")
+        assert response.status_code == 404
 
 
 def test_openapi_schema_includes_all_routes() -> None:
@@ -73,3 +106,5 @@ def test_openapi_schema_includes_all_routes() -> None:
         assert "/health/ready" in paths
         assert "/provenance/registry" in paths
         assert "/meta/gates" in paths
+        assert "/quality/schemas" in paths
+        assert "/quality/schemas/{dataset_id}" in paths

@@ -154,12 +154,12 @@ body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
 <section class="stats">
   <div class="stat">
     <div class="stat__label">Tests</div>
-    <div class="stat__value stat__value--good">61</div>
-    <div class="stat__detail">All passing · 5 modules</div>
+    <div class="stat__value stat__value--good">120</div>
+    <div class="stat__detail">All passing · 8 modules</div>
   </div>
   <div class="stat">
     <div class="stat__label">Contract Types</div>
-    <div class="stat__value stat__value--blue">15</div>
+    <div class="stat__value stat__value--blue">22</div>
     <div class="stat__detail">Immutable · Pydantic v2</div>
   </div>
   <div class="stat">
@@ -171,6 +171,11 @@ body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
     <div class="stat__label">CI Checks</div>
     <div class="stat__value">7</div>
     <div class="stat__detail">lint → types → test → audit</div>
+  </div>
+  <div class="stat">
+    <div class="stat__label">API Endpoints</div>
+    <div class="stat__value">6</div>
+    <div class="stat__detail">health · provenance · quality</div>
   </div>
   <div class="stat">
     <div class="stat__label">Zenodo DOIs</div>
@@ -193,38 +198,38 @@ body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
       <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
       <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
     </div>
-    <div class="gate gate--progress">
+    <div class="gate gate--complete">
       <div><div class="gate__id">G2</div><div class="gate__name">Structural Audit</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
+    </div>
+    <div class="gate gate--progress">
+      <div><div class="gate__id">G3</div><div class="gate__name">Baseline Models</div></div>
       <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
       <div class="gate__status"><span class="status-dot"></span> IN PROGRESS</div>
     </div>
     <div class="gate gate--pending">
-      <div><div class="gate__id">G3</div><div class="gate__name">Domain Preprocessing</div></div>
+      <div><div class="gate__id">G4</div><div class="gate__name">DARP Core</div></div>
       <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
       <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
     </div>
     <div class="gate gate--pending">
-      <div><div class="gate__id">G4</div><div class="gate__name">Baseline Models</div></div>
+      <div><div class="gate__id">G5</div><div class="gate__name">Confirmatory Evaluation</div></div>
       <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
       <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
     </div>
     <div class="gate gate--pending">
-      <div><div class="gate__id">G5</div><div class="gate__name">Abstention Protocol</div></div>
+      <div><div class="gate__id">G6</div><div class="gate__name">Observability</div></div>
       <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
       <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
     </div>
     <div class="gate gate--pending">
-      <div><div class="gate__id">G6</div><div class="gate__name">Evaluation Engine</div></div>
+      <div><div class="gate__id">G7</div><div class="gate__name">Containerization</div></div>
       <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
       <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
     </div>
     <div class="gate gate--pending">
-      <div><div class="gate__id">G7</div><div class="gate__name">Cross-Domain Governance</div></div>
-      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
-      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
-    </div>
-    <div class="gate gate--pending">
-      <div><div class="gate__id">G8</div><div class="gate__name">Deployment Hardening</div></div>
+      <div><div class="gate__id">G8</div><div class="gate__name">Documentation</div></div>
       <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
       <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
     </div>
@@ -313,7 +318,7 @@ body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
       <span class="pipe-arrow">→</span>
     </div>
     <div class="pipe-step">
-      <div class="pipe-box"><span class="pipe-check">✓</span> pytest (61)</div>
+      <div class="pipe-box"><span class="pipe-check">✓</span> pytest (120)</div>
       <span class="pipe-arrow">→</span>
     </div>
     <div class="pipe-step">
