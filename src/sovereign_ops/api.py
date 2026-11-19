@@ -55,7 +55,7 @@ class LivenessResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     status: Literal["alive"] = "alive"
-    stage: Literal["G3"] = "G3"
+    stage: Literal["G4"] = "G4"
     mode: Literal["RESEARCH_ONLY"] = "RESEARCH_ONLY"
     inference: Literal["NOT_IMPLEMENTED"] = "NOT_IMPLEMENTED"
 
@@ -127,6 +127,46 @@ class SchemasResponse(BaseModel):
     schemas: tuple[SchemaInfo, ...]
 
 
+# -- G3 models / detectors --
+
+
+class DetectorInfo(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    family: str
+    description: str
+    default_params: dict[str, float | int | str]
+    supports_abstention: bool = True
+    score_range: tuple[float, float] = (0.0, 1.0)
+
+
+class DetectorsResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    families: tuple[DetectorInfo, ...]
+
+
+class EvaluationProtocolResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    name: str = "Abstention-Aware Evaluation"
+    version: str = "1.0"
+    splitting: str = "Chronological (train < calibration < test)"
+    metrics: tuple[str, ...] = (
+        "precision",
+        "recall",
+        "f1",
+        "coverage",
+        "abstention_rate",
+    )
+    description: str = (
+        "Precision, recall, and F1 are computed only over the "
+        "non-abstaining subset.  Coverage = 1 − abstention_rate.  "
+        "Abstention signals insufficient evidence, not a negative "
+        "prediction.  Chronological splitting enforces no data leakage."
+    )
+
+
 # ---------------------------------------------------------------------------
 # Schema registry — G2 schema definitions
 # ---------------------------------------------------------------------------
@@ -134,6 +174,37 @@ class SchemasResponse(BaseModel):
 _SCHEMA_REGISTRY: dict[str, tuple[DatasetSchema, ...]] = {
     "ESA-AD-v2": (ESA_SCHEMA,),
     "EDP-SCADA-v2": (EDP_SCADA_SCHEMA, EDP_FAILURES_SCHEMA),
+}
+
+
+# ---------------------------------------------------------------------------
+# Detector info registry — G3
+# ---------------------------------------------------------------------------
+
+_DETECTOR_INFO: dict[str, DetectorInfo] = {
+    "ZScore": DetectorInfo(
+        family="ZScore",
+        description=(
+            "Statistical anomaly detector using modified Z-scores based on "
+            "median and MAD (Median Absolute Deviation).  Robust against "
+            "outliers in the training distribution."
+        ),
+        default_params={"mad_scale": 1.4826},
+    ),
+    "IsolationForest": DetectorInfo(
+        family="IsolationForest",
+        description=(
+            "Ensemble-based anomaly detector using scikit-learn's "
+            "IsolationForest.  Normalizes decision_function output "
+            "from [-1, 1] to [0, 1].  Falls back to pure-NumPy "
+            "percentile-distance approach if sklearn unavailable."
+        ),
+        default_params={
+            "n_estimators": 100,
+            "contamination": 0.05,
+            "random_state": 42,
+        },
+    ),
 }
 
 
@@ -177,13 +248,13 @@ GATES: tuple[GateStatus, ...] = (
     GateStatus(
         gate="G3",
         name="Baseline Models",
-        status="IN_PROGRESS",
+        status="COMPLETE",
         description="Single-domain anomaly detectors with abstention-aware evaluation",
     ),
     GateStatus(
         gate="G4",
         name="DARP Core",
-        status="PENDING",
+        status="IN_PROGRESS",
         description="Cross-domain decision protocol with shared abstention vocabulary",
     ),
     GateStatus(
@@ -351,6 +422,54 @@ def create_app() -> FastAPI:
         return SchemasResponse(
             schemas=tuple(_schema_to_info(s) for s in schemas_tuple),
         )
+
+    # -------------------------------------------------------------------
+    # G3: Model / detector endpoints
+    # -------------------------------------------------------------------
+
+    @application.get(
+        "/models/detectors",
+        response_model=DetectorsResponse,
+        tags=["models"],
+        summary="Registered anomaly detector families",
+    )
+    def detectors() -> DetectorsResponse:
+        """Detector families available for single-domain anomaly detection.
+
+        Each family exposes ``fit`` → ``score`` → ``predict`` with
+        first-class abstention support.
+        """
+        return DetectorsResponse(families=tuple(_DETECTOR_INFO.values()))
+
+    @application.get(
+        "/models/detectors/{family}",
+        response_model=DetectorInfo,
+        tags=["models"],
+        summary="Detector family detail",
+    )
+    def detector_detail(family: str) -> DetectorInfo:
+        """Detailed metadata for a single detector family."""
+        info = _DETECTOR_INFO.get(family)
+        if info is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Unknown detector family '{family}'",
+            )
+        return info
+
+    @application.get(
+        "/models/evaluation-protocol",
+        response_model=EvaluationProtocolResponse,
+        tags=["models"],
+        summary="Evaluation protocol specification",
+    )
+    def evaluation_protocol() -> EvaluationProtocolResponse:
+        """Abstention-aware evaluation methodology.
+
+        Describes how predictions are scored and which metrics
+        apply over the non-abstaining subset.
+        """
+        return EvaluationProtocolResponse()
 
     return application
 

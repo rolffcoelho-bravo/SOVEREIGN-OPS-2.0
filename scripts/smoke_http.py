@@ -42,7 +42,7 @@ def main() -> None:
                         body = json.load(response)
                         if response.status != 200 or body != {
                             "status": "alive",
-                            "stage": "G3",
+                            "stage": "G4",
                             "mode": "RESEARCH_ONLY",
                             "inference": "NOT_IMPLEMENTED",
                         }:
@@ -81,6 +81,27 @@ def main() -> None:
                 if len(quality_body.get("schemas", [])) < 2:
                     raise RuntimeError("Expected at least 2 schemas")
 
+            # Verify G3 detectors endpoint
+            with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
+                f"http://127.0.0.1:{port}/models/detectors",
+                timeout=2,
+            ) as det_response:
+                det_body = json.load(det_response)
+                if det_response.status != 200:
+                    raise RuntimeError("Detectors endpoint failed")
+                families = det_body.get("families", [])
+                if len(families) < 2:
+                    raise RuntimeError("Expected at least 2 detector families")
+
+            # Verify G3 evaluation protocol endpoint
+            with urlopen(  # noqa: S310 -- fixed loopback HTTP URL
+                f"http://127.0.0.1:{port}/models/evaluation-protocol",
+                timeout=2,
+            ) as eval_response:
+                eval_body = json.load(eval_response)
+                if eval_response.status != 200:
+                    raise RuntimeError("Evaluation protocol endpoint failed")
+
             # Verify unimplemented routes return 404
             for path in ("/v1/analysis",):
                 try:
@@ -100,6 +121,8 @@ def main() -> None:
                         "ready": ready_body,
                         "provenance_datasets": len(prov_body.get("datasets", [])),
                         "quality_schemas": len(quality_body.get("schemas", [])),
+                        "detector_families": len(families),
+                        "evaluation_protocol": eval_body.get("name"),
                         "analysis_http_status": 404,
                         "server": "uvicorn",
                         "transport": "loopback HTTP",

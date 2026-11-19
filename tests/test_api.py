@@ -11,7 +11,7 @@ def test_liveness_reports_g3_stage() -> None:
         assert response.status_code == 200
         body = response.json()
         assert body["status"] == "alive"
-        assert body["stage"] == "G3"
+        assert body["stage"] == "G4"
         assert body["mode"] == "RESEARCH_ONLY"
         assert body["inference"] == "NOT_IMPLEMENTED"
 
@@ -50,7 +50,7 @@ def test_gates_endpoint_returns_development_progress() -> None:
         response = client.get("/meta/gates")
         assert response.status_code == 200
         body = response.json()
-        assert body["current_gate"] == "G3"
+        assert body["current_gate"] == "G4"
         assert len(body["gates"]) == 10
         gate_ids = [g["gate"] for g in body["gates"]]
         assert gate_ids == [f"G{i}" for i in range(10)]
@@ -58,8 +58,9 @@ def test_gates_endpoint_returns_development_progress() -> None:
         assert body["gates"][0]["status"] == "COMPLETE"
         assert body["gates"][1]["status"] == "COMPLETE"
         assert body["gates"][2]["status"] == "COMPLETE"
-        # G3 now IN_PROGRESS
-        assert body["gates"][3]["status"] == "IN_PROGRESS"
+        # G3 COMPLETE, G4 now IN_PROGRESS
+        assert body["gates"][3]["status"] == "COMPLETE"
+        assert body["gates"][4]["status"] == "IN_PROGRESS"
 
 
 def test_unimplemented_routes_return_404() -> None:

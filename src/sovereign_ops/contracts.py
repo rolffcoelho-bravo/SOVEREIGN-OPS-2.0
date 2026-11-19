@@ -36,11 +36,15 @@ __all__ = [
     "DataQualityReport",
     "DatasetId",
     "DecisionEnvelope",
+    "DetectorConfig",
+    "DetectorPrediction",
+    "EvaluationResult",
     "EvidenceCitation",
     "Fraction",
     "Identifier",
     "ModelEvidence",
     "SHA256",
+    "SplitSpec",
     "TelemetryPoint",
     "TimeWindow",
 ]
@@ -204,6 +208,105 @@ class DataQualityReport(Contract):
             raise ValueError("Duplicate count cannot exceed row count")
         if self.rows == 0:
             raise ValueError("Empty input cannot produce a measured quality report")
+        return self
+
+
+# ---------------------------------------------------------------------------
+# G3 — Baseline models & evaluation
+# ---------------------------------------------------------------------------
+
+
+class SplitSpec(Contract):
+    """Chronological train/calibration/test split specification.
+
+    Guarantees temporal ordering: ``train < calibration < test``.
+    ``calibration_frac`` defines the fraction of the non-test window
+    reserved for threshold calibration (0 → no calibration split).
+    """
+
+    dataset_id: DatasetId
+    train_window: TimeWindow
+    calibration_window: TimeWindow | None = None
+    test_window: TimeWindow
+
+    @model_validator(mode="after")
+    def validate_temporal_order(self) -> Self:
+        if self.calibration_window is not None:
+            if self.calibration_window.start < self.train_window.end:
+                raise ValueError("Calibration window must start after training window")
+            if self.test_window.start < self.calibration_window.end:
+                raise ValueError("Test window must start after calibration window")
+        else:
+            if self.test_window.start < self.train_window.end:
+                raise ValueError("Test window must start after training window")
+        return self
+
+
+class DetectorConfig(Contract):
+    """Frozen hyperparameters for a single-domain anomaly detector.
+
+    ``family`` names the algorithm class (e.g. ``'IsolationForest'``,
+    ``'ZScore'``).  ``params`` carries family-specific configuration as
+    an immutable dict.  ``abstention_threshold`` is the anomaly-score
+    boundary below which the detector abstains rather than committing to
+    normal/anomalous.
+    """
+
+    dataset_id: DatasetId
+    model_id: Identifier
+    family: Identifier
+    params: tuple[tuple[str, str | int | float | bool], ...] = ()
+    abstention_threshold: Fraction | None = None
+
+
+class DetectorPrediction(Contract):
+    """A detector's output for one observation window.
+
+    ``anomaly_score``: higher → more anomalous.  ``None`` ↔ abstention.
+    ``is_anomaly``: the detector's binary call, or ``None`` if abstaining.
+    """
+
+    dataset_id: DatasetId
+    model_id: Identifier
+    asset_id: Identifier
+    signal_id: Identifier
+    observed_at: AwareDatetime
+    anomaly_score: FiniteFloat | None = None
+    is_anomaly: bool | None = None
+    abstained: bool = False
+
+
+class EvaluationResult(Contract):
+    """Abstention-aware evaluation metrics for a single detector on one split.
+
+    Coverage = 1 − abstention_rate: the fraction of test samples on which the
+    detector issues a decision.  Precision/recall/f1 are computed only over
+    the non-abstaining subset.  ``None`` ↔ undefined (e.g. no positives).
+    """
+
+    dataset_id: DatasetId
+    model_id: Identifier
+    split_sha256: SHA256
+    config_sha256: SHA256
+    total_samples: Annotated[int, Field(strict=True, ge=0)]
+    abstention_count: Annotated[int, Field(strict=True, ge=0)]
+    abstention_rate: Fraction
+    coverage: Fraction
+    true_positives: Annotated[int, Field(strict=True, ge=0)]
+    false_positives: Annotated[int, Field(strict=True, ge=0)]
+    true_negatives: Annotated[int, Field(strict=True, ge=0)]
+    false_negatives: Annotated[int, Field(strict=True, ge=0)]
+    precision: FiniteFloat | None = None
+    recall: FiniteFloat | None = None
+    f1: FiniteFloat | None = None
+
+    @model_validator(mode="after")
+    def validate_counts(self) -> Self:
+        decided = (
+            self.true_positives + self.false_positives + self.true_negatives + self.false_negatives
+        )
+        if decided + self.abstention_count != self.total_samples:
+            raise ValueError("TP + FP + TN + FN + abstentions must equal total_samples")
         return self
 
 
