@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Sovereign Ops: Domain-Aware Reliability and Abstention for Mission-Critical Telemetry"
+authors:
+  - family-names: Pereira
+    given-names: Rodolfo
+    orcid: ""
+    affiliation: "ShockBridge Pulse Research Lab"
+repository-code: "https://github.com/rolffcoelho-bravo/sovereign-ops-2.0"
+url: "https://shockbridgepulse.com"
+abstract: >-
+  Research software for domain-aware reliability and abstention on
+  historical spacecraft and wind-turbine telemetry. Implements a shared
+  governance layer — typed contracts, explicit abstention vocabulary,
+  cryptographic source provenance, and confirmatory evaluation protocol —
+  across physically distinct domains while preserving domain-specific
+  models and event definitions.
+keywords:
+  - anomaly-detection
+  - reliability-engineering
+  - abstention
+  - domain-aware
+  - mission-critical
+  - telemetry
+  - spacecraft
+  - wind-turbine
+  - scada
+  - data-sovereignty
+  - provenance
+license: Apache-2.0
+version: 0.1.0
+date-released: "2026-11-19"

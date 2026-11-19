@@ -1,7 +1,9 @@
-name: G0 verification
+name: CI — lint, type-check, test, audit
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
 permissions:
   contents: read
 jobs:

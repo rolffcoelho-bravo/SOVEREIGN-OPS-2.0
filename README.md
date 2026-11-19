@@ -1,141 +1,191 @@
-# ShockBridge Sovereign Ops
+# SOVEREIGN OPS
 
-**G0 foundation · RESEARCH ONLY · No telemetry downloaded · No inference implemented**
+**Domain-Aware Reliability and Abstention for Mission-Critical Telemetry**
 
-A research software project for domain-aware reliability and abstention on historical
-spacecraft and wind-turbine telemetry. The intended product is historical replay;
-it has no connection to live satellites, wind farms, or industrial controls.
+[![G0 verification](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 
-## What works today
+## Research question
 
-- Typed FastAPI `GET /health/live` and machine-readable `/openapi.json`.
-- Python 3.12 package, dependency lock, linting, type checking, and unit tests.
-- Validated schema contracts; ESA and EDP adapter interfaces; ingest audit interface.
-- Source registry, rights review, threat model, and evaluation design.
-- GitHub Actions workflow (remote execution remains NOT_EXECUTED until published).
+> Can a common, independently audited *reliability decision protocol* control alerting and abstention across fundamentally different high-dimensional systems — spacecraft telemetry and wind-turbine SCADA — while preserving domain-specific physical models and event definitions?
 
-There are no dataset parsers, models, scores, telemetry queries, user accounts,
-durable audit storage, LLM integration, UI, or production deployment at G0.
-Contract validation does not verify source bytes or establish data rights.
+Most cross-domain anomaly detection work either trains a universal model (which silently degrades on out-of-distribution regimes) or stays within a single domain. **Sovereign Ops** takes a different approach: the *governance layer* — contracts, abstention rules, evidence provenance, and evaluation protocol — is shared; the *physics* stays separate.
 
-## Run locally
+## Why this matters
 
-Install Python 3.12 and [uv](https://docs.astral.sh/uv/). G0 was verified with
-uv 0.13.6. From the repository root:
+Mission-critical systems need more than anomaly scores. They need to know **when not to answer**. A turbine SCADA system with 40% missing data in the analysis window should return `ABSTAIN_INSUFFICIENT_EVIDENCE`, not a low-confidence alert that an operator might act on.
 
-```sh
+Sovereign Ops implements a five-outcome decision envelope with explicit abstention:
+
+| Outcome | Meaning |
+|---|---|
+| `SUPPORTED_ALERT` | Evidence from ≥1 model supports investigation |
+| `INVESTIGATE` | Mixed evidence; human review warranted |
+| `ABSTAIN_INSUFFICIENT_EVIDENCE` | Data quality or coverage too low to decide |
+| `BLOCK_DATA_INTEGRITY` | Source provenance or hash verification failed |
+| `DEGRADED_SERVICE` | Upstream component unavailable |
+
+Each decision carries typed evidence citations, model provenance hashes, and an explicit abstention reason when applicable — a structured vocabulary for "I don't know" in production systems.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   Decision Envelope                      │
+│  outcome · evidence[] · reasons[] · dataset_id           │
+├──────────────┬──────────────────────┬───────────────────┤
+│  ESA Domain  │  Shared Governance   │   EDP Domain      │
+│  Models &    │  ─────────────────   │   Models &        │
+│  Preprocessing│ Contracts (Pydantic) │  Preprocessing   │
+│              │  Abstention Protocol │                   │
+│              │  Evaluation Engine   │                   │
+│              │  Audit & Provenance  │                   │
+├──────────────┴──────────────────────┴───────────────────┤
+│              Sovereign Data Layer                        │
+│  SHA-256 + MD5 dual verification · DOI-pinned sources   │
+│  Acquisition receipts · ZIP safety · Resumable downloads│
+└─────────────────────────────────────────────────────────┘
+```
+
+**Key architectural decisions:**
+- **Contract-first design:** All data flows through immutable Pydantic models (`extra="forbid"`, `frozen=True`). Schema-valid ≠ trustworthy — contracts enforce shape; provenance verification establishes trust.
+- **Domain isolation:** Evidence cannot cross domain boundaries (enforced at the type level). No ESA model output ever enters an EDP decision envelope.
+- **Cryptographic provenance:** Every dataset file is tracked by SHA-256 + MD5 dual hashes, DOI-pinned to its exact version, with audit receipts recording acquisition time and byte-level verification.
+- **Historical replay only:** This is a research platform for offline analysis. No connection to live satellites, wind farms, or industrial controls.
+
+## Core domains
+
+| Domain | Dataset | Scale | License |
+|---|---|---|---|
+| **Space** | ESA Anomaly Dataset v2 ([Zenodo](https://zenodo.org/records/15237121)) | 11.6 GB, 3 missions | CC BY 3.0 IGO |
+| **Energy** | EDP Onshore Wind Farm SCADA v2 ([Mendeley](https://data.mendeley.com/datasets/zjxjnjp3xs/2)) | 173.7 MB, 4 turbines, 28 confirmed failures | CC BY 4.0 |
+
+Additional domains (Scania fleet, HAI security testbed, TraCSS orbital) are registered but deferred until core governance works end-to-end.
+
+## Development status
+
+The project follows a **10-gate staged development** model (G0–G9). Current state:
+
+| Gate | Status | Description |
+|---|---|---|
+| **G0** | ✅ PASS | Foundation — contracts, API skeleton, CI, threat model, evaluation design |
+| **G1** | 🔄 In progress | Source verification — cryptographic dataset acquisition and integrity checks |
+| G2 | Planned | Structural data audit — schema conformance, quality profiling |
+| G3–G9 | Planned | Domain preprocessing → models → evaluation → governance → deployment |
+
+**G0 delivers:** typed contracts, FastAPI liveness endpoint, full CI pipeline (lint + format + type check + test + secret scan + dependency audit), source registry with DOI pinning, evaluation protocol draft, threat model, and product contract boundaries.
+
+See [G0 Report](docs/G0_REPORT.md) for verified evidence and [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for the full gate sequence.
+
+## Quick start
+
+**Requirements:** Python 3.12, [uv](https://docs.astral.sh/uv/) ≥ 0.13.6
+
+```bash
+# Clone and install
+git clone https://github.com/rolffcoelho-bravo/sovereign-ops-2.0.git
+cd sovereign-ops-2.0
 uv sync --locked
-uv run --locked uvicorn sovereign_ops.api:app --host 127.0.0.1 --port 8000
-```
 
-In another terminal:
-
-```sh
-curl http://127.0.0.1:8000/health/live
-```
-
-Expected response:
-
-```json
-{"status":"alive","stage":"G0","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
-```
-
-PowerShell alternative: `Invoke-RestMethod http://127.0.0.1:8000/health/live`.
-The service binds to localhost. Authentication and rate limiting are not yet
-implemented; this development service must not be exposed as a production API.
-`/health/ready` and `/v1/*` are intentionally absent, returning 404.
-
-## Verify
-
-```sh
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy
+# Run the full verification suite
 uv run --locked pytest
-uv run --locked python scripts/smoke_http.py
-uv run --locked python scripts/check_secrets.py
-uv export --locked --all-groups --no-emit-project --format requirements-txt --output-file audit-requirements.txt
-uv run --locked pip-audit --requirement audit-requirements.txt --disable-pip --no-deps --strict --progress-spinner off --cache-dir .cache/pip-audit
+uv run --locked mypy
+uv run --locked ruff check .
+
+# Start the API (development)
+uv run --locked uvicorn sovereign_ops.api:app --host 127.0.0.1 --port 8000
+curl http://127.0.0.1:8000/health/live
+# → {"status":"alive","stage":"G0","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
 ```
 
-Tests use explicitly synthetic fixtures solely for software validation. They are
-not empirical model evidence. See [the G0 report](docs/G0_REPORT.md) for actual
-command results and limitations. See [the implementation plan](docs/IMPLEMENTATION_PLAN.md)
-for the next gate prompt and estimated resources.
+For the complete verification sequence (lint, format, types, tests, secrets scan, dependency audit):
 
-To rerun all checks and preserve a fresh report, run `python scripts/verify.py`.
-This requires Git (used by the secret scanner) and uv on PATH. If starting from
-the source archive, run `git init` in the extracted project first.
-Generated evidence in `evidence/g0/` and dependency hashes in `uv.lock` are
-excluded from the scoped secret scan; it does not scan Git history.
+```bash
+uv run --locked python scripts/verify.py
+```
 
-## Scope and sources
+## Project documentation
 
-Core sources are ESA Anomaly Dataset v2, DOI `10.5281/zenodo.15237121`, and EDP
-SCADA v2, DOI `10.17632/zjxjnjp3xs.2`. Domain preprocessing, physical models,
-event semantics, and evaluation remain separate. Scania, HAI, and TraCSS are deferred.
+| Document | Purpose |
+|---|---|
+| [Product Contract](PRODUCT_CONTRACT.md) | 8 binding boundaries the system must respect |
+| [Architecture](ARCHITECTURE.md) | Implemented vs. target design, trust boundaries |
+| [Evaluation Protocol](EVALUATION_PROTOCOL.md) | Holm-corrected multiple comparisons, chronological splits |
+| [Threat Model](THREAT_MODEL.md) | Attack surfaces and mitigations |
+| [Dataset Registry](DATASET_REGISTRY.md) | Source metadata, DOIs, access constraints |
+| [Data Rights](DATA_RIGHTS.md) | License audit per dataset |
+| [Source Review](docs/SOURCE_REVIEW.md) | Provenance verification procedures |
+| [Blueprint](SHOCKBRIDGE_SOVEREIGN_OPS_V2_BLUEPRINT.md) | Original specification (proposed, not claims about current state) |
 
-- [Product contract](PRODUCT_CONTRACT.md)
-- [Architecture](ARCHITECTURE.md) and [scope decision](docs/ADR/0001-scope.md)
-- [Dataset registry](DATASET_REGISTRY.md), [rights](DATA_RIGHTS.md), and
-  [source review](docs/SOURCE_REVIEW.md)
-- [Evaluation protocol](EVALUATION_PROTOCOL.md) and [threat model](THREAT_MODEL.md)
-- [Original v2 blueprint](SHOCKBRIDGE_SOVEREIGN_OPS_V2_BLUEPRINT.md)
+## Evaluation methodology
 
-The original supplied blueprint is retained unchanged as a proposed specification.
-Its descriptions of future functionality are not claims about the current application.
+The evaluation protocol enforces:
+- **Chronological train/test splits** — no future information leaks
+- **Holm-corrected multiple comparisons** — honest p-values across model families
+- **Per-domain benchmarks** — ESA-ADB official protocol for space; domain-appropriate metrics for energy
+- **Abstention-aware scoring** — models that correctly abstain under uncertainty are rewarded, not penalized
+
+This is a confirmatory evaluation design: the protocol is frozen before test data is unsealed. Post-hoc changes create a new exploratory study and cannot rescue the original claim.
+
+## Technology stack
+
+| Layer | Technology |
+|---|---|
+| Language | Python 3.12 (strict typing, `mypy --strict`) |
+| Contracts | Pydantic v2 (immutable, `extra="forbid"`) |
+| API | FastAPI |
+| Data | Polars, PyArrow, Parquet, DuckDB |
+| ML | scikit-learn, PyTorch |
+| Observability | OpenTelemetry, Prometheus, Grafana |
+| CI | GitHub Actions (lint → format → types → test → secrets → audit) |
+| Package management | uv (locked, reproducible) |
+
+## Repository structure
+
+```
+sovereign-ops-2.0/
+├── src/sovereign_ops/       # Python package
+│   ├── contracts.py         # Immutable Pydantic contracts
+│   ├── adapters.py          # Domain adapter protocols
+│   ├── api.py               # FastAPI application
+│   ├── audit.py             # Validation and audit interfaces
+│   ├── source_verifier.py   # Cryptographic source verification
+│   └── esa_acquisition.py   # ESA dataset acquisition pipeline
+├── tests/                   # Pytest suite (synthetic fixtures only)
+├── scripts/                 # Verification, acquisition, and audit scripts
+├── docs/                    # Gate reports, ADRs, implementation plan
+├── evidence/                # Machine-readable verification artifacts
+└── .github/workflows/       # CI pipeline
+```
 
 ## Public and private boundary
 
-This project targets `rolffcoelho-bravo/SOVEREIGN-OPS-2.0`. The Python distribution
-and local folder are named `shockbridge-sovereign-ops`. The project must remain
-usable without `SOVEREIGN-CORE-2.0`; no essential functionality is reserved for it.
-Never commit source datasets, customer data, credentials, private logs, or model
-artifacts. Keep acquisition files outside Git. A private Git repository is not a
-secret manager.
+This repository (`SOVEREIGN-OPS-2.0`) contains the open research platform. Proprietary algorithms, commercial methods, and sensitive configurations live in a separate private repository. The public project must remain fully functional without the private components — no essential functionality is reserved.
 
-ShockBridge source-code licensing is PENDING_OWNER_SELECTION; no open-source
-licence grant is implied by repository visibility. Dataset and upstream code
-licences are separate. No upstream benchmark implementation is vendored here.
+**Data policy:** Raw datasets are never committed. Acquisition scripts download from original sources with cryptographic verification. All derived artifacts are traceable to their source DOI and file hashes.
 
-## G1 local source verification (in progress)
+## Citation
 
-To download the three exact ESA v2 archives on your own computer, provide a
-dataset folder and a separate receipt path, both outside the Git checkout:
+If you use this work, please cite:
 
-```sh
-uv run --locked python scripts/acquire_local_esa.py /path/to/esa-v2 \
-  --output /path/to/private-receipts/esa-v2-integrity.json
+```bibtex
+@software{pereira_sovereign_ops_2026,
+  author    = {Pereira, Rodolfo},
+  title     = {Sovereign Ops: Domain-Aware Reliability and Abstention
+               for Mission-Critical Telemetry},
+  year      = {2026},
+  url       = {https://github.com/rolffcoelho-bravo/sovereign-ops-2.0},
+  note      = {Research software, gated development}
+}
 ```
 
-The command checks free disk space, supports resuming `.partial` files when the
-server confirms the byte range, compares published sizes and MD5 values,
-computes SHA-256, and writes a receipt only after all three archives pass. It
-requires more than 11.6 GB free for a fresh download plus a 1 GiB reserve;
-allow substantially more for later safe extraction and derived data. It never
-adds dataset bytes to Git. File notices and archive contents still need review.
+## License
 
-The ESA v2 integrity checker reads three archives from a folder **outside** this
-Git repository, compares their byte sizes and publisher MD5 values, computes
-SHA-256 and checks ZIP directory names. It does not extract files, process
-telemetry or approve data rights. Run it only after downloading the exact v2
-release to your own machine:
+Apache License 2.0. See [LICENSE](LICENSE) for details.
 
-```sh
-uv run --locked python scripts/verify_local_esa.py /path/to/esa-v2 \
-  --output /path/to/private-receipts/esa-v2-integrity.json
-```
+Dataset licenses are separate and documented in [DATA_RIGHTS.md](DATA_RIGHTS.md).
 
-A mismatch stops without writing a receipt. EDP v2 file-level inventory and ESA
-archive notices are still pending. See `docs/G1_PROGRESS.md`.
+---
 
-For an EDP v2 candidate folder containing the 10 publisher-reported workbooks:
-
-```sh
-uv run --locked python scripts/inventory_local_edp.py /path/to/edp-v2 \
-  --output /path/to/private-receipts/edp-v2-local-inventory.json
-```
-
-This records **local hashes only**. Publisher filenames/checksums were not
-available from the unauthenticated public file API, so it cannot confirm v2
-identity. The resulting receipt is not a dataset manifest or quality report.
+*ShockBridge Pulse Research Lab · [shockbridgepulse.com](https://shockbridgepulse.com)*

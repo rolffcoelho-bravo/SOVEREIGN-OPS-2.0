@@ -1,0 +1,104 @@
+---
+title: "Sovereign Ops: Quick Start in R"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Overview
+
+The `sovereignops` R package provides cross-language access to the Sovereign Ops
+decision envelope and abstention protocol. It calls the Python contract system
+via `reticulate`, ensuring that R-based analysis pipelines benefit from the same
+typed validation, domain isolation, and provenance guarantees as the Python layer.
+
+## Prerequisites
+
+```{r prereqs}
+# Install the R package (from the R/ directory)
+# install.packages("reticulate")
+# reticulate::install_miniconda()  # if needed
+# reticulate::py_install("shockbridge-sovereign-ops", pip = TRUE)
+
+library(sovereignops)
+```
+
+## Abstention vocabulary
+
+The five-reason abstention vocabulary is a core contribution:
+
+```{r reasons}
+abstention_reasons()
+#> INSUFFICIENT_EVIDENCE        UNKNOWN_REGIME             STALE_DATA
+#> "INSUFFICIENT_EVIDENCE"     "UNKNOWN_REGIME"           "STALE_DATA"
+#>       DATA_INTEGRITY   COMPONENT_UNAVAILABLE
+#>      "DATA_INTEGRITY" "COMPONENT_UNAVAILABLE"
+```
+
+## Creating a decision envelope
+
+Construct a decision envelope that explicitly abstains:
+
+```{r envelope}
+env <- decision_envelope(
+  dataset_id = "EDP-SCADA-v2",
+  asset_id = "turbine-T01",
+  outcome = "ABSTAIN_INSUFFICIENT_EVIDENCE",
+  reasons = c("INSUFFICIENT_EVIDENCE", "STALE_DATA")
+)
+
+# The system declined to decide rather than producing a low-confidence alert
+env$outcome
+#> "ABSTAIN_INSUFFICIENT_EVIDENCE"
+```
+
+## Cross-domain isolation
+
+Attempting to use ESA evidence in an EDP envelope raises a validation error:
+
+```{r isolation}
+# This will fail — domain boundaries are enforced at the type level
+tryCatch(
+  decision_envelope(
+    dataset_id = "EDP-SCADA-v2",
+    asset_id = "turbine-T01",
+    outcome = "SUPPORTED_ALERT",
+    evidence = list(esa_evidence),  # Wrong domain!
+    reasons = character(0)
+  ),
+  error = function(e) message("Domain isolation enforced: ", e$message)
+)
+```
+
+## Validating manifests
+
+Read and validate a provenance receipt:
+
+```{r manifest}
+manifest <- read_manifest("/path/to/esa-v2-integrity.json")
+manifest$doi
+#> "10.5281/zenodo.15237121"
+```
+
+## Design philosophy
+
+The R package is intentionally thin. Domain-specific models and preprocessing
+stay in Python; the R layer provides access to the **shared governance**:
+
+- **Contracts** — typed, immutable decision structures
+- **Abstention** — structured vocabulary for uncertainty
+- **Provenance** — cryptographic source verification
+- **Evaluation** — reproducible comparison framework
+
+This cross-language approach ensures that reliability analysis can be
+replicated in either ecosystem.

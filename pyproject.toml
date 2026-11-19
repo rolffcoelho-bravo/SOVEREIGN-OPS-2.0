@@ -5,14 +5,42 @@ build-backend = "hatchling.build"
 [project]
 name = "shockbridge-sovereign-ops"
 version = "0.1.0"
-description = "G0 foundation for domain-aware reliability research on historical telemetry"
+description = "Domain-aware reliability and abstention for mission-critical telemetry"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
+license = "Apache-2.0"
+authors = [
+  { name = "Rodolfo Pereira", email = "research@shockbridgepulse.com" },
+]
+keywords = [
+  "anomaly-detection",
+  "reliability",
+  "abstention",
+  "telemetry",
+  "spacecraft",
+  "wind-turbine",
+  "scada",
+  "mission-critical",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Typing :: Typed",
+]
 dependencies = [
   "fastapi>=0.115,<1",
   "pydantic>=2.10,<3",
   "uvicorn>=0.34,<1",
 ]
+
+[project.urls]
+Homepage = "https://shockbridgepulse.com"
+Repository = "https://github.com/rolffcoelho-bravo/sovereign-ops-2.0"
+Documentation = "https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/tree/main/docs"
+Issues = "https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/issues"
 
 [dependency-groups]
 dev = [
@@ -45,4 +73,3 @@ select = ["E", "F", "I", "B", "UP", "S"]
 python_version = "3.12"
 strict = true
 files = ["src", "tests", "scripts"]
-

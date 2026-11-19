@@ -1,0 +1,26 @@
+Package: sovereignops
+Type: Package
+Title: Domain-Aware Reliability Contracts for Mission-Critical Telemetry
+Version: 0.1.0
+Authors@R: person("Rodolfo", "Pereira", role = c("aut", "cre"),
+                   comment = c(affiliation = "ShockBridge Pulse Research Lab"))
+Description: R interface to the Sovereign Ops decision envelope and abstention
+    protocol. Provides typed wrappers around the Python contract system for
+    cross-language reproducibility of reliability analysis on spacecraft and
+    wind-turbine telemetry. The shared governance layer (contracts, abstention
+    vocabulary, evaluation protocol) is domain-agnostic; domain-specific models
+    and preprocessing remain in Python.
+License: Apache License (>= 2)
+URL: https://github.com/rolffcoelho-bravo/sovereign-ops-2.0
+BugReports: https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/issues
+Depends: R (>= 4.1.0)
+Imports:
+    reticulate (>= 1.28),
+    jsonlite (>= 1.8)
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Encoding: UTF-8
+RoxygenNote: 7.3.0

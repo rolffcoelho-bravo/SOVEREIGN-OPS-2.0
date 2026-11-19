@@ -1,0 +1,40 @@
+{
+  "title": "Sovereign Ops: Domain-Aware Reliability and Abstention for Mission-Critical Telemetry",
+  "description": "Research software for domain-aware reliability and abstention on historical spacecraft and wind-turbine telemetry. Implements a shared governance layer across physically distinct domains while preserving domain-specific models and event definitions.",
+  "creators": [
+    {
+      "name": "Pereira, Rodolfo",
+      "affiliation": "ShockBridge Pulse Research Lab"
+    }
+  ],
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "Apache-2.0",
+  "keywords": [
+    "anomaly-detection",
+    "reliability-engineering",
+    "abstention",
+    "domain-aware",
+    "mission-critical",
+    "telemetry",
+    "spacecraft",
+    "wind-turbine",
+    "scada",
+    "data-sovereignty",
+    "provenance"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.15237121",
+      "relation": "cites",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.17632/zjxjnjp3xs.2",
+      "relation": "cites",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    }
+  ]
+}
