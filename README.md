@@ -116,7 +116,6 @@ uv run --locked python scripts/verify.py
 | [Dataset Registry](DATASET_REGISTRY.md) | Source metadata, DOIs, access constraints |
 | [Data Rights](DATA_RIGHTS.md) | License audit per dataset |
 | [Source Review](docs/SOURCE_REVIEW.md) | Provenance verification procedures |
-| [Blueprint](SHOCKBRIDGE_SOVEREIGN_OPS_V2_BLUEPRINT.md) | Original specification (proposed, not claims about current state) |
 
 ## Evaluation methodology
 

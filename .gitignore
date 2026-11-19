@@ -33,3 +33,7 @@ private/
 *.key
 *.sqlite*
 *.db
+
+# Private specifications — local only, never published
+CODEX_MASTER_PROMPT_V2.md
+SHOCKBRIDGE_SOVEREIGN_OPS_V2_BLUEPRINT.md
