@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOVEREIGN OPS — Project Status Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --surface-0:#0d0d0d;--surface-1:#1a1a19;--surface-2:#242423;--surface-3:#2c2c2a;
+  --text-primary:#f0efec;--text-secondary:#c3c2b7;--text-muted:#898781;
+  --grid:#2c2c2a;--border:rgba(255,255,255,0.10);
+  --blue:#3987e5;--orange:#d95926;--aqua:#199e70;--yellow:#c98500;
+  --good:#0ca30c;--warning:#fab219;--serious:#ec835a;--critical:#d03b3b;
+  --blue-wash:rgba(57,135,229,0.12);--aqua-wash:rgba(25,158,112,0.12);
+  --good-wash:rgba(12,163,12,0.10);--warning-wash:rgba(250,178,25,0.10);
+  --muted-wash:rgba(137,135,129,0.08);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--text-primary);background:var(--surface-0);
+}
+body{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
+
+/* Header */
+.header{text-align:center;margin-bottom:48px}
+.header h1{font-size:2rem;font-weight:700;letter-spacing:0.04em;margin-bottom:8px}
+.header .subtitle{font-size:1rem;color:var(--text-secondary);margin-bottom:16px}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;
+  border-radius:12px;font-size:0.75rem;font-weight:600;letter-spacing:0.02em}
+.badge--blue{background:var(--blue-wash);color:var(--blue)}
+.badge--aqua{background:var(--aqua-wash);color:var(--aqua)}
+.badge--good{background:var(--good-wash);color:var(--good)}
+
+/* Stat tiles */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;margin-bottom:48px}
+.stat{background:var(--surface-1);border-radius:12px;padding:20px;
+  border:1px solid var(--grid)}
+.stat__label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:0.06em;margin-bottom:8px}
+.stat__value{font-size:1.75rem;font-weight:700;line-height:1}
+.stat__detail{font-size:0.8rem;color:var(--text-secondary);margin-top:6px}
+.stat__value--blue{color:var(--blue)}
+.stat__value--aqua{color:var(--aqua)}
+.stat__value--good{color:var(--good)}
+
+/* Sections */
+.section{margin-bottom:48px}
+.section__title{font-size:1.125rem;font-weight:600;margin-bottom:20px;
+  display:flex;align-items:center;gap:8px}
+.section__title::before{content:"";width:3px;height:18px;border-radius:2px;
+  background:var(--blue)}
+
+/* Gate progress */
+.gates{display:flex;flex-direction:column;gap:8px}
+.gate{display:grid;grid-template-columns:72px 1fr 100px;align-items:center;
+  gap:12px;padding:12px 16px;background:var(--surface-1);border-radius:8px;
+  border:1px solid var(--grid)}
+.gate__id{font-weight:700;font-size:0.875rem;font-variant-numeric:tabular-nums}
+.gate__bar-track{height:8px;background:var(--surface-3);border-radius:4px;overflow:hidden}
+.gate__bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease}
+.gate__status{font-size:0.75rem;font-weight:600;text-align:right;display:flex;
+  align-items:center;justify-content:flex-end;gap:6px}
+.gate__name{font-size:0.8rem;color:var(--text-secondary);margin-top:2px}
+.gate--complete .gate__bar-fill{background:var(--good);width:100%}
+.gate--complete .gate__status{color:var(--good)}
+.gate--progress .gate__bar-fill{background:var(--blue);width:25%}
+.gate--progress .gate__status{color:var(--blue)}
+.gate--pending .gate__bar-fill{background:var(--text-muted);width:0%}
+.gate--pending .gate__status{color:var(--text-muted)}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.gate--complete .status-dot{background:var(--good)}
+.gate--progress .status-dot{background:var(--blue)}
+.gate--pending .status-dot{background:var(--text-muted)}
+
+/* Architecture */
+.arch{display:grid;grid-template-columns:1fr;gap:2px;margin-top:12px}
+.arch__row{display:grid;gap:2px}
+.arch__row--3{grid-template-columns:1fr 1.4fr 1fr}
+.arch__row--1{grid-template-columns:1fr}
+.arch__cell{background:var(--surface-1);padding:16px;text-align:center;
+  border:1px solid var(--grid)}
+.arch__cell:first-child{border-radius:8px 0 0 0}
+.arch__row--3 .arch__cell:last-child{border-radius:0 8px 0 0}
+.arch__row--1:last-child .arch__cell{border-radius:0 0 8px 8px}
+.arch__cell-title{font-size:0.8rem;font-weight:700;margin-bottom:4px}
+.arch__cell-desc{font-size:0.7rem;color:var(--text-muted);line-height:1.4}
+.arch__cell--decision{border-top:3px solid var(--blue)}
+.arch__cell--governance{border-top:3px solid var(--aqua)}
+.arch__cell--domain{border-top:3px solid var(--orange)}
+.arch__cell--data{border-top:3px solid var(--yellow)}
+
+/* Stack */
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:12px}
+.stack__group{background:var(--surface-1);border-radius:8px;padding:16px;
+  border:1px solid var(--grid)}
+.stack__group-title{font-size:0.8rem;font-weight:600;color:var(--text-secondary);
+  margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em}
+.stack__item{display:flex;align-items:center;gap:8px;padding:6px 0;
+  font-size:0.85rem;color:var(--text-primary)}
+.stack__dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* Decision envelope */
+.envelope{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:8px}
+.env-card{background:var(--surface-1);border-radius:8px;padding:14px;
+  border:1px solid var(--grid);border-left:3px solid}
+.env-card__outcome{font-size:0.8rem;font-weight:700;margin-bottom:4px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.env-card__desc{font-size:0.75rem;color:var(--text-secondary);line-height:1.4}
+.env--supported{border-left-color:var(--good)}
+.env--investigate{border-left-color:var(--warning)}
+.env--abstain{border-left-color:var(--blue)}
+.env--block{border-left-color:var(--critical)}
+.env--degraded{border-left-color:var(--serious)}
+
+/* CI pipeline */
+.pipeline{display:flex;flex-wrap:wrap;align-items:center;gap:0}
+.pipe-step{display:flex;align-items:center;gap:0}
+.pipe-box{background:var(--surface-1);border:1px solid var(--grid);
+  border-radius:6px;padding:8px 14px;font-size:0.8rem;font-weight:600;
+  display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pipe-arrow{color:var(--text-muted);font-size:0.75rem;padding:0 4px}
+.pipe-check{color:var(--good);font-size:0.9rem}
+
+/* Footer */
+.footer{text-align:center;padding-top:32px;border-top:1px solid var(--grid);
+  font-size:0.75rem;color:var(--text-muted)}
+.footer a{color:var(--blue);text-decoration:none}
+
+/* Responsive */
+@media(max-width:640px){
+  .gate{grid-template-columns:60px 1fr 80px}
+  .arch__row--3{grid-template-columns:1fr}
+  .pipeline{flex-direction:column;align-items:flex-start}
+  .pipe-arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>SOVEREIGN OPS</h1>
+  <p class="subtitle">Domain-Aware Reliability and Abstention for Mission-Critical Telemetry</p>
+  <div class="badges">
+    <span class="badge badge--blue">v0.1.0</span>
+    <span class="badge badge--aqua">Apache 2.0</span>
+    <span class="badge badge--good">CI ✓ Passing</span>
+  </div>
+</header>
+
+<!-- KPI Row -->
+<section class="stats">
+  <div class="stat">
+    <div class="stat__label">Tests</div>
+    <div class="stat__value stat__value--good">61</div>
+    <div class="stat__detail">All passing · 5 modules</div>
+  </div>
+  <div class="stat">
+    <div class="stat__label">Contract Types</div>
+    <div class="stat__value stat__value--blue">15</div>
+    <div class="stat__detail">Immutable · Pydantic v2</div>
+  </div>
+  <div class="stat">
+    <div class="stat__label">Datasets</div>
+    <div class="stat__value stat__value--aqua">2</div>
+    <div class="stat__detail">ESA + EDP · 11.8 GB</div>
+  </div>
+  <div class="stat">
+    <div class="stat__label">CI Checks</div>
+    <div class="stat__value">7</div>
+    <div class="stat__detail">lint → types → test → audit</div>
+  </div>
+  <div class="stat">
+    <div class="stat__label">Zenodo DOIs</div>
+    <div class="stat__value">2</div>
+    <div class="stat__detail">Concept + Version pinned</div>
+  </div>
+</section>
+
+<!-- Gate Progress -->
+<section class="section">
+  <h2 class="section__title">Development Gates</h2>
+  <div class="gates">
+    <div class="gate gate--complete">
+      <div><div class="gate__id">G0</div><div class="gate__name">Foundation</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
+    </div>
+    <div class="gate gate--complete">
+      <div><div class="gate__id">G1</div><div class="gate__name">Data Sovereignty</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> COMPLETE</div>
+    </div>
+    <div class="gate gate--progress">
+      <div><div class="gate__id">G2</div><div class="gate__name">Structural Audit</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> IN PROGRESS</div>
+    </div>
+    <div class="gate gate--pending">
+      <div><div class="gate__id">G3</div><div class="gate__name">Domain Preprocessing</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    </div>
+    <div class="gate gate--pending">
+      <div><div class="gate__id">G4</div><div class="gate__name">Baseline Models</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    </div>
+    <div class="gate gate--pending">
+      <div><div class="gate__id">G5</div><div class="gate__name">Abstention Protocol</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    </div>
+    <div class="gate gate--pending">
+      <div><div class="gate__id">G6</div><div class="gate__name">Evaluation Engine</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    </div>
+    <div class="gate gate--pending">
+      <div><div class="gate__id">G7</div><div class="gate__name">Cross-Domain Governance</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    </div>
+    <div class="gate gate--pending">
+      <div><div class="gate__id">G8</div><div class="gate__name">Deployment Hardening</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    </div>
+    <div class="gate gate--pending">
+      <div><div class="gate__id">G9</div><div class="gate__name">Publication</div></div>
+      <div class="gate__bar-track"><div class="gate__bar-fill"></div></div>
+      <div class="gate__status"><span class="status-dot"></span> PLANNED</div>
+    </div>
+  </div>
+</section>
+
+<!-- Decision Envelope -->
+<section class="section">
+  <h2 class="section__title">Decision Envelope — Five-Outcome Taxonomy</h2>
+  <div class="envelope">
+    <div class="env-card env--supported">
+      <div class="env-card__outcome">SUPPORTED_ALERT</div>
+      <div class="env-card__desc">Evidence from ≥1 model supports investigation</div>
+    </div>
+    <div class="env-card env--investigate">
+      <div class="env-card__outcome">INVESTIGATE</div>
+      <div class="env-card__desc">Mixed evidence; human review warranted</div>
+    </div>
+    <div class="env-card env--abstain">
+      <div class="env-card__outcome">ABSTAIN</div>
+      <div class="env-card__desc">Data quality or coverage too low to decide</div>
+    </div>
+    <div class="env-card env--block">
+      <div class="env-card__outcome">BLOCK_DATA_INTEGRITY</div>
+      <div class="env-card__desc">Source provenance or hash verification failed</div>
+    </div>
+    <div class="env-card env--degraded">
+      <div class="env-card__outcome">DEGRADED_SERVICE</div>
+      <div class="env-card__desc">Upstream component unavailable</div>
+    </div>
+  </div>
+</section>
+
+<!-- Architecture -->
+<section class="section">
+  <h2 class="section__title">Architecture</h2>
+  <div class="arch">
+    <div class="arch__row arch__row--1">
+      <div class="arch__cell arch__cell--decision" style="border-radius:8px 8px 0 0">
+        <div class="arch__cell-title">Decision Envelope</div>
+        <div class="arch__cell-desc">outcome · evidence[] · reasons[] · dataset_id<br>Five outcomes with typed citations and cryptographic provenance</div>
+      </div>
+    </div>
+    <div class="arch__row arch__row--3">
+      <div class="arch__cell arch__cell--domain">
+        <div class="arch__cell-title">ESA Domain</div>
+        <div class="arch__cell-desc">Spacecraft telemetry<br>3 missions · 11.6 GB<br>CC BY 3.0 IGO</div>
+      </div>
+      <div class="arch__cell arch__cell--governance">
+        <div class="arch__cell-title">Shared Governance</div>
+        <div class="arch__cell-desc">Contracts (Pydantic v2)<br>Abstention Protocol<br>Evaluation Engine<br>Audit &amp; Provenance</div>
+      </div>
+      <div class="arch__cell arch__cell--domain">
+        <div class="arch__cell-title">EDP Domain</div>
+        <div class="arch__cell-desc">Wind turbine SCADA<br>4 turbines · 173.7 MB<br>CC BY 4.0</div>
+      </div>
+    </div>
+    <div class="arch__row arch__row--1">
+      <div class="arch__cell arch__cell--data" style="border-radius:0 0 8px 8px">
+        <div class="arch__cell-title">Sovereign Data Layer</div>
+        <div class="arch__cell-desc">SHA-256 + MD5 dual verification · DOI-pinned sources · Acquisition receipts · ZIP safety · Resumable downloads</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CI Pipeline -->
+<section class="section">
+  <h2 class="section__title">CI Pipeline</h2>
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-box"><span class="pipe-check">✓</span> ruff check</div>
+      <span class="pipe-arrow">→</span>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-box"><span class="pipe-check">✓</span> ruff format</div>
+      <span class="pipe-arrow">→</span>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-box"><span class="pipe-check">✓</span> mypy strict</div>
+      <span class="pipe-arrow">→</span>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-box"><span class="pipe-check">✓</span> pytest (61)</div>
+      <span class="pipe-arrow">→</span>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-box"><span class="pipe-check">✓</span> smoke HTTP</div>
+      <span class="pipe-arrow">→</span>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-box"><span class="pipe-check">✓</span> secrets scan</div>
+      <span class="pipe-arrow">→</span>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-box"><span class="pipe-check">✓</span> pip-audit</div>
+    </div>
+  </div>
+</section>
+
+<!-- Technology Stack -->
+<section class="section">
+  <h2 class="section__title">Technology Stack</h2>
+  <div class="stack">
+    <div class="stack__group">
+      <div class="stack__group-title">Core</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--blue)"></span> Python 3.12 · strict typing</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--blue)"></span> Pydantic v2 · immutable contracts</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--blue)"></span> FastAPI · async REST</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--blue)"></span> uv · locked dependencies</div>
+    </div>
+    <div class="stack__group">
+      <div class="stack__group-title">Data &amp; ML</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--aqua)"></span> Polars · PyArrow · Parquet</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--aqua)"></span> DuckDB · analytical queries</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--aqua)"></span> scikit-learn · PyTorch</div>
+    </div>
+    <div class="stack__group">
+      <div class="stack__group-title">Quality &amp; CI</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--good)"></span> mypy --strict · full coverage</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--good)"></span> ruff · lint + format</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--good)"></span> GitHub Actions · 7-step pipeline</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--good)"></span> detect-secrets · pip-audit</div>
+    </div>
+    <div class="stack__group">
+      <div class="stack__group-title">Observability (target)</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--text-muted)"></span> OpenTelemetry · traces</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--text-muted)"></span> Prometheus · metrics</div>
+      <div class="stack__item"><span class="stack__dot" style="background:var(--text-muted)"></span> Grafana · dashboards</div>
+    </div>
+  </div>
+</section>
+
+<!-- Key Design Principles -->
+<section class="section">
+  <h2 class="section__title">Key Design Principles</h2>
+  <div class="stack" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+    <div class="stack__group">
+      <div class="stack__group-title">Contract-First</div>
+      <div class="stack__item" style="line-height:1.5;color:var(--text-secondary)">
+        All data flows through immutable Pydantic models (extra="forbid", frozen=True).
+        Canonical JSON serialization with SHA-256 digest for deterministic hashing.
+      </div>
+    </div>
+    <div class="stack__group">
+      <div class="stack__group-title">Domain Isolation</div>
+      <div class="stack__item" style="line-height:1.5;color:var(--text-secondary)">
+        Evidence cannot cross domain boundaries — enforced at the type level.
+        No ESA model output ever enters an EDP decision envelope.
+      </div>
+    </div>
+    <div class="stack__group">
+      <div class="stack__group-title">Cryptographic Provenance</div>
+      <div class="stack__item" style="line-height:1.5;color:var(--text-secondary)">
+        SHA-256 chains from source bytes through every decision. DOI-pinned datasets
+        with dual-hash verification and acquisition audit receipts.
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>ShockBridge Pulse Research Lab · <a href="https://shockbridgepulse.com">shockbridgepulse.com</a></p>
+  <p style="margin-top:6px">DOI: <a href="https://doi.org/10.5281/zenodo.24364517">10.5281/zenodo.24364517</a> · Apache 2.0</p>
+</footer>
+
+</body>
+</html>

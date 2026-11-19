@@ -31,22 +31,22 @@ Each decision carries typed evidence citations, model provenance hashes, and an 
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   Decision Envelope                      │
-│  outcome · evidence[] · reasons[] · dataset_id           │
-├──────────────┬──────────────────────┬───────────────────┤
-│  ESA Domain  │  Shared Governance   │   EDP Domain      │
-│  Models &    │  ─────────────────   │   Models &        │
-│  Preprocessing│ Contracts (Pydantic) │  Preprocessing   │
-│              │  Abstention Protocol │                   │
-│              │  Evaluation Engine   │                   │
-│              │  Audit & Provenance  │                   │
-├──────────────┴──────────────────────┴───────────────────┤
-│              Sovereign Data Layer                        │
-│  SHA-256 + MD5 dual verification · DOI-pinned sources   │
-│  Acquisition receipts · ZIP safety · Resumable downloads│
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    DE["<b>Decision Envelope</b><br/>outcome · evidence[] · reasons[] · dataset_id"]
+    ESA["<b>ESA Domain</b><br/>Spacecraft telemetry<br/>3 missions · 11.6 GB"]
+    GOV["<b>Shared Governance</b><br/>Contracts · Abstention Protocol<br/>Evaluation Engine · Audit"]
+    EDP["<b>EDP Domain</b><br/>Wind turbine SCADA<br/>4 turbines · 173.7 MB"]
+    SDL["<b>Sovereign Data Layer</b><br/>SHA-256 + MD5 · DOI-pinned sources · Resumable acquisition"]
+
+    DE --> ESA & GOV & EDP
+    ESA & GOV & EDP --> SDL
+
+    style DE fill:#1a3a5c,stroke:#3987e5,color:#f0efec
+    style ESA fill:#3a2010,stroke:#d95926,color:#f0efec
+    style GOV fill:#0a3020,stroke:#199e70,color:#f0efec
+    style EDP fill:#3a2010,stroke:#d95926,color:#f0efec
+    style SDL fill:#302a08,stroke:#c98500,color:#f0efec
 ```
 
 **Key architectural decisions:**
@@ -110,6 +110,7 @@ uv run --locked python scripts/verify.py
 
 | Document | Purpose |
 |---|---|
+| [**Status Dashboard**](docs/dashboard.html) | Visual project overview — gates, metrics, architecture |
 | [Product Contract](PRODUCT_CONTRACT.md) | 8 binding boundaries the system must respect |
 | [Architecture](ARCHITECTURE.md) | Implemented vs. target design, trust boundaries |
 | [Evaluation Protocol](EVALUATION_PROTOCOL.md) | Holm-corrected multiple comparisons, chronological splits |
@@ -117,6 +118,8 @@ uv run --locked python scripts/verify.py
 | [Dataset Registry](DATASET_REGISTRY.md) | Source metadata, DOIs, access constraints |
 | [Data Rights](DATA_RIGHTS.md) | License audit per dataset |
 | [Source Review](docs/SOURCE_REVIEW.md) | Provenance verification procedures |
+| [G0 Report](docs/G0_REPORT.md) | Foundation gate — completion evidence |
+| [G1 Report](docs/G1_REPORT.md) | Data sovereignty gate — completion evidence |
 
 ## Evaluation methodology
 
