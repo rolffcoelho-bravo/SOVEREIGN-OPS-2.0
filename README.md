@@ -71,11 +71,16 @@ The project follows a **10-gate staged development** model (G0–G9). Current st
 | Gate | Status | Description |
 |---|---|---|
 | **G0** | ✅ PASS | Foundation — contracts, API skeleton, CI, threat model, evaluation design |
-| **G1** | ✅ PASS | Data sovereignty — pinned registry, cryptographic acquisition, integrity verification, provenance API |
-| **G2** | 🔄 Next | Structural data audit — schema conformance, quality profiling |
-| G3–G9 | Planned | Domain preprocessing → models → evaluation → governance → deployment |
+| **G1** | ✅ PASS | Data sovereignty — pinned registry, cryptographic acquisition, integrity verification |
+| **G2** | ✅ PASS | Structural audit — schema conformance, quality profiling, domain adapters |
+| **G3** | ✅ PASS | Baseline models — Z-Score (MAD), Isolation Forest, detector protocol |
+| **G4** | ✅ PASS | DARP Core — pipeline orchestration, decision engine, evidence chains |
+| **G5** | 🔄 In Progress | Confirmatory evaluation — Wilcoxon signed-rank, Holm-Bonferroni correction |
+| G6–G9 | Planned | Observability → Containerization → Documentation → Publication |
 
-**G1 delivers (cumulative):** typed contracts with canonical JSON + SHA-256 provenance, FastAPI with liveness/readiness/provenance/gates endpoints, pinned data registry (2 datasets, real DOIs, file checksums), cryptographic dataset acquisition with integrity verification, full CI pipeline, evaluation protocol draft, threat model, and product contract boundaries.
+**Current metrics:** 252 tests · 18 source modules · 4,786 lines · 30 Pydantic contract types · 12 API endpoints · mypy --strict · ruff · 100% CI pass
+
+**G5 adds:** pure-Python Wilcoxon signed-rank test (exact enumeration ≤25 pairs, normal approximation >25), Holm-Bonferroni step-down FWER correction with monotonicity enforcement, comparative evaluation runner (multiple detectors × K chronological splits → pairwise tests → corrected p-values → `ComparisonReport` with SHA-256 provenance).
 
 See [Architecture](docs/ARCHITECTURE.md) for design decisions and [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for the full gate sequence.
 
@@ -97,7 +102,7 @@ uv run --locked ruff check .
 # Start the API (development)
 uv run --locked uvicorn sovereign_ops.api:app --host 127.0.0.1 --port 8000
 curl http://127.0.0.1:8000/health/live
-# → {"status":"alive","stage":"G2","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
+# → {"status":"alive","stage":"G5","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
 ```
 
 For the complete verification sequence (lint, format, types, tests, secrets scan, dependency audit):
@@ -110,7 +115,7 @@ uv run --locked python scripts/verify.py
 
 | Document | Purpose |
 |---|---|
-| [**Status Dashboard**](docs/dashboard.html) | Visual project overview — gates, metrics, architecture |
+| [**Status Dashboard**](https://rolffcoelho-bravo.github.io/SOVEREIGN-OPS-2.0/dashboard.html) | Interactive project overview — gates, metrics, architecture |
 | [Product Contract](PRODUCT_CONTRACT.md) | 8 binding boundaries the system must respect |
 | [Architecture](ARCHITECTURE.md) | Implemented vs. target design, trust boundaries |
 | [Evaluation Protocol](EVALUATION_PROTOCOL.md) | Holm-corrected multiple comparisons, chronological splits |
@@ -148,18 +153,28 @@ This is a confirmatory evaluation design: the protocol is frozen before test dat
 
 ```
 sovereign-ops-2.0/
-├── src/sovereign_ops/       # Python package
-│   ├── contracts.py         # Immutable Pydantic contracts
-│   ├── adapters.py          # Domain adapter protocols
-│   ├── api.py               # FastAPI application
-│   ├── audit.py             # Validation and audit interfaces
-│   ├── source_verifier.py   # Cryptographic source verification
-│   └── esa_acquisition.py   # ESA dataset acquisition pipeline
-├── tests/                   # Pytest suite (synthetic fixtures only)
-├── scripts/                 # Verification, acquisition, and audit scripts
-├── docs/                    # Gate reports, ADRs, implementation plan
-├── evidence/                # Machine-readable verification artifacts
-└── .github/workflows/       # CI pipeline
+├── src/sovereign_ops/         # Python package (18 modules)
+│   ├── contracts.py           # Immutable Pydantic contracts (14 types)
+│   ├── schemas.py             # Domain-specific schema definitions
+│   ├── adapters.py            # Domain adapter protocols
+│   ├── api.py                 # FastAPI application (12 endpoints)
+│   ├── esa_parser.py          # ESA telemetry parser
+│   ├── edp_parser.py          # EDP SCADA parser
+│   ├── esa_acquisition.py     # ESA dataset acquisition pipeline
+│   ├── source_verifier.py     # Cryptographic source verification
+│   ├── quality_profiler.py    # Data quality profiling engine
+│   ├── detectors.py           # Z-Score (MAD) + Isolation Forest
+│   ├── splits.py              # Chronological train/cal/test splits
+│   ├── evaluation.py          # Abstention-aware P/R/F1 evaluation
+│   ├── pipeline.py            # DARP pipeline orchestrator
+│   ├── decision_engine.py     # Five-outcome decision envelope
+│   ├── statistics.py          # Wilcoxon + Holm-Bonferroni (G5)
+│   └── comparative.py         # Multi-detector comparison runner (G5)
+├── tests/                     # Pytest suite (252 tests, synthetic fixtures)
+├── scripts/                   # Verification, acquisition, and audit scripts
+├── docs/                      # Dashboard, gate reports, architecture docs
+├── evidence/                  # Machine-readable verification artifacts
+└── .github/workflows/         # CI pipeline (7-step)
 ```
 
 ## Public and private boundary

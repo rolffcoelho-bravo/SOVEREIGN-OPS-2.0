@@ -6,6 +6,7 @@ Tests the full provenance chain: points → split → fit → predict → evalua
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from typing import Final
 
 import pytest
 
@@ -22,7 +23,7 @@ from sovereign_ops.pipeline import PipelineResult, run_pipeline
 # ---------------------------------------------------------------------------
 
 _DUMMY_SHA = "a" * 64
-_DATASET_ID = "ESA-AD-v2"
+_DATASET_ID: Final = "ESA-AD-v2"
 _BASE_TIME = datetime(2023, 1, 1, tzinfo=UTC)
 
 
@@ -35,7 +36,7 @@ def _make_manifest() -> AcquisitionManifest:
         rights_review_reference="review-001",
         files=(
             AcquiredFile(
-                source_url="https://zenodo.org/records/15237121/files/data.csv",
+                source_url="https://zenodo.org/records/15237121/files/data.csv",  # type: ignore[arg-type]
                 relative_path="data.csv",
                 size_bytes=1024,
                 sha256=_DUMMY_SHA,
@@ -198,7 +199,7 @@ class TestPipelineValidation:
             rights_review_reference="review-002",
             files=(
                 AcquiredFile(
-                    source_url="https://data.mendeley.com/datasets/zjxjnjp3xs/2",
+                    source_url="https://data.mendeley.com/datasets/zjxjnjp3xs/2",  # type: ignore[arg-type]
                     relative_path="scada.csv",
                     size_bytes=2048,
                     sha256=_DUMMY_SHA,
@@ -256,7 +257,7 @@ class TestPipelineResultImmutability:
         )
 
         with pytest.raises(AttributeError, match="immutable"):
-            result.dataset_id = "EDP-SCADA-v2"  # type: ignore[assignment]
+            result.dataset_id = "EDP-SCADA-v2"
 
     def test_new_attribute_blocked(self) -> None:
         points, labels = _make_points(20)
@@ -268,4 +269,4 @@ class TestPipelineResultImmutability:
         )
 
         with pytest.raises(AttributeError, match="immutable"):
-            result.hacked = True  # type: ignore[attr-defined]
+            result.hacked = True

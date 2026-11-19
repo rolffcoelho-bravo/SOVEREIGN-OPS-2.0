@@ -149,6 +149,32 @@ def test_decision_protocol_returns_policy_and_outcomes() -> None:
         assert actionable == ["SUPPORTED_ALERT", "INVESTIGATE"]
 
 
+def test_comparison_protocol_returns_methodology() -> None:
+    with TestClient(create_app()) as client:
+        response = client.get("/pipeline/comparison-protocol")
+        assert response.status_code == 200
+        body = response.json()
+        assert body["name"] == "DARP Confirmatory Comparison"
+        assert body["statistical_test"] == "Wilcoxon Signed-Rank"
+        assert body["correction_method"] == "Holm-Bonferroni (step-down FWER)"
+        assert body["significance_level"] == 0.05
+        assert body["min_pairs"] == 5
+        assert body["exact_threshold"] == 25
+        assert body["metric"] == "f1"
+
+        # Four pipeline steps in order
+        steps = body["steps"]
+        assert len(steps) == 4
+        step_names = [s["name"] for s in steps]
+        assert step_names == [
+            "Multi-configuration scoring",
+            "Pairwise Wilcoxon signed-rank",
+            "Holm-Bonferroni correction",
+            "ComparisonReport generation",
+        ]
+        assert all(s["step"] == i + 1 for i, s in enumerate(steps))
+
+
 def test_openapi_schema_includes_all_routes() -> None:
     with TestClient(create_app()) as client:
         doc = client.get("/openapi.json").json()
@@ -162,3 +188,5 @@ def test_openapi_schema_includes_all_routes() -> None:
         # G4 endpoints
         assert "/pipeline/config" in paths
         assert "/pipeline/decision-protocol" in paths
+        # G5 endpoint
+        assert "/pipeline/comparison-protocol" in paths

@@ -7,6 +7,7 @@ policy thresholds, and case management.
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from typing import Final
 
 import pytest
 from pydantic import ValidationError
@@ -29,7 +30,7 @@ from sovereign_ops.pipeline import PipelineResult, run_pipeline
 # ---------------------------------------------------------------------------
 
 _DUMMY_SHA = "a" * 64
-_DATASET_ID = "ESA-AD-v2"
+_DATASET_ID: Final = "ESA-AD-v2"
 _BASE_TIME = datetime(2023, 1, 1, tzinfo=UTC)
 
 
@@ -42,7 +43,7 @@ def _make_manifest() -> AcquisitionManifest:
         rights_review_reference="review-001",
         files=(
             AcquiredFile(
-                source_url="https://zenodo.org/records/15237121/files/data.csv",
+                source_url="https://zenodo.org/records/15237121/files/data.csv",  # type: ignore[arg-type]
                 relative_path="data.csv",
                 size_bytes=1024,
                 sha256=_DUMMY_SHA,
@@ -145,7 +146,7 @@ class TestDecisionPolicy:
     def test_policy_immutable(self) -> None:
         p = DecisionPolicy()
         with pytest.raises(AttributeError, match="immutable"):
-            p.min_f1 = 0.9  # type: ignore[misc]
+            p.min_f1 = 0.9
 
 
 # ---------------------------------------------------------------------------
@@ -313,7 +314,7 @@ class TestMakeCase:
         case = make_case(decision=decision, case_id="case-004")
 
         with pytest.raises(ValidationError):
-            case.status = "APPROVED"  # type: ignore[misc]
+            case.status = "APPROVED"  # type: ignore[assignment]
 
     def test_case_decision_provenance(self) -> None:
         """Case preserves the full evidence chain."""

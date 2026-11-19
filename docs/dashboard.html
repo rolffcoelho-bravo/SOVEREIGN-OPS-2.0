@@ -239,9 +239,9 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
   <h1>SOVEREIGN OPS</h1>
   <p class="subtitle">Domain-Aware Reliability Protocol — Abstention-First Anomaly Detection</p>
   <div class="badges">
-    <span class="badge badge--blue">v0.1.0 · G5</span>
+    <span class="badge badge--blue">v0.1.0 · G5 In Progress</span>
     <span class="badge badge--aqua">Apache 2.0</span>
-    <span class="badge badge--good">CI ✓ 199 Tests</span>
+    <span class="badge badge--good">CI ✓ 252 Tests</span>
   </div>
 </header>
 
@@ -251,22 +251,22 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
     <div class="stat__glow" style="background:var(--good)"></div>
     <div class="stat__icon">🧪</div>
     <div class="stat__label">Tests</div>
-    <div class="stat__value stat__value--good" data-count="199">0</div>
-    <div class="stat__detail">14 test modules · 100% passing</div>
+    <div class="stat__value stat__value--good" data-count="252">0</div>
+    <div class="stat__detail">17 test modules · 100% passing</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--blue)"></div>
     <div class="stat__icon">📐</div>
     <div class="stat__label">Source Modules</div>
-    <div class="stat__value stat__value--blue" data-count="16">0</div>
-    <div class="stat__detail">4,008 lines · mypy --strict</div>
+    <div class="stat__value stat__value--blue" data-count="18">0</div>
+    <div class="stat__detail">4,786 lines · mypy --strict</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--purple)"></div>
     <div class="stat__icon">📜</div>
     <div class="stat__label">Contract Types</div>
-    <div class="stat__value stat__value--purple" data-count="26">0</div>
-    <div class="stat__detail">Immutable · Pydantic v2</div>
+    <div class="stat__value stat__value--purple" data-count="30">0</div>
+    <div class="stat__detail">22 frozen · Pydantic v2</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--aqua)"></div>
@@ -278,8 +278,8 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
   <div class="stat animate">
     <div class="stat__icon">🔌</div>
     <div class="stat__label">API Endpoints</div>
-    <div class="stat__value" data-count="11">0</div>
-    <div class="stat__detail">health · provenance · pipeline · decisions</div>
+    <div class="stat__value" data-count="12">0</div>
+    <div class="stat__detail">health · provenance · pipeline · comparison</div>
   </div>
   <div class="stat animate">
     <div class="stat__icon">🏷️</div>
@@ -391,12 +391,12 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
   <div class="chart-grid">
     <!-- Test Distribution -->
     <div class="chart-card">
-      <div class="chart-card__title">Test Distribution by Module <span>199 total</span></div>
+      <div class="chart-card__title">Test Distribution by Module <span>252 total</span></div>
       <div class="bar-chart" id="testChart"></div>
     </div>
     <!-- Source Lines Treemap -->
     <div class="chart-card">
-      <div class="chart-card__title">Source Code Heatmap <span>4,008 lines</span></div>
+      <div class="chart-card__title">Source Code Heatmap <span>4,786 lines</span></div>
       <div class="treemap" id="treemap" style="grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr)"></div>
     </div>
     <!-- Module Composition Donut -->
@@ -410,27 +410,27 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
             <linearGradient id="d3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9070e0"/><stop offset="100%" stop-color="#a890f0"/></linearGradient>
             <linearGradient id="d4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#e06030"/><stop offset="100%" stop-color="#f08050"/></linearGradient>
           </defs>
-          <!-- API+Parsers (1595 lines = 39.8%) -->
+          <!-- API+Parsers (1596 lines = 34%) -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d1)" stroke-width="18"
-            stroke-dasharray="113 170" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
-          <!-- Contracts+Schemas (741 = 18.5%) -->
+            stroke-dasharray="96 187" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <!-- Contracts+Schemas (741 = 16%) -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d2)" stroke-width="18"
-            stroke-dasharray="52 231" stroke-dashoffset="-113" transform="rotate(-90 60 60)"/>
-          <!-- ML Pipeline (1021 = 25.5%) -->
+            stroke-dasharray="45 238" stroke-dashoffset="-96" transform="rotate(-90 60 60)"/>
+          <!-- ML+Statistics (1990 = 42%) -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d3)" stroke-width="18"
-            stroke-dasharray="72 211" stroke-dashoffset="-165" transform="rotate(-90 60 60)"/>
-          <!-- Infrastructure (651 = 16.2%) -->
+            stroke-dasharray="119 164" stroke-dashoffset="-141" transform="rotate(-90 60 60)"/>
+          <!-- Infrastructure (367 = 8%) -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d4)" stroke-width="18"
-            stroke-dasharray="46 237" stroke-dashoffset="-237" transform="rotate(-90 60 60)"/>
+            stroke-dasharray="23 260" stroke-dashoffset="-260" transform="rotate(-90 60 60)"/>
           <circle cx="60" cy="60" r="36" fill="var(--surface-1)"/>
-          <text x="60" y="58" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="800">16</text>
+          <text x="60" y="58" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="800">18</text>
           <text x="60" y="70" text-anchor="middle" fill="var(--text-muted)" font-size="7" font-weight="600">MODULES</text>
         </svg>
         <div class="donut-legend">
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--blue)"></div> API + Parsers (40%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--aqua)"></div> Contracts + Schemas (18%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--purple)"></div> ML Pipeline (26%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--orange)"></div> Infrastructure (16%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--blue)"></div> API + Parsers (34%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--aqua)"></div> Contracts + Schemas (16%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--purple)"></div> ML + Statistics (42%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--orange)"></div> Infrastructure (8%)</div>
         </div>
       </div>
     </div>
@@ -496,6 +496,68 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
         <div class="wf-row__bar-fill" style="background:linear-gradient(90deg,var(--warning),#ffd060);width:40%">Priority 5 — Review</div>
       </div>
       <div class="wf-row__priority">P5</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ G5: STATISTICAL COMPARISON ═══════════ -->
+<section class="section">
+  <h2 class="section__title">G5 — Confirmatory Evaluation Protocol</h2>
+  <p class="section__subtitle" style="margin-bottom:20px;margin-top:-12px">Wilcoxon signed-rank + Holm-Bonferroni family-wise error control</p>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-card__title">Statistical Pipeline</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:6px;background:var(--purple-wash);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0">1</div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;color:var(--purple)">Multiple Detector Configs</div>
+            <div style="font-size:0.72rem;color:var(--text-secondary)">K chronological splits per detector × domain</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:6px;background:var(--blue-wash);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0">2</div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;color:var(--blue)">Pairwise Wilcoxon Signed-Rank</div>
+            <div style="font-size:0.72rem;color:var(--text-secondary)">Exact enumeration (n ≤ 25) · normal approx (n > 25)</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:6px;background:var(--aqua-wash);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0">3</div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;color:var(--aqua)">Holm-Bonferroni Correction</div>
+            <div style="font-size:0.72rem;color:var(--text-secondary)">Step-down FWER control · monotonicity enforced</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:6px;background:var(--good-wash);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0">4</div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;color:var(--good)">ComparisonReport</div>
+            <div style="font-size:0.72rem;color:var(--text-secondary)">SHA-256 provenance · immutable · audit-ready</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card__title">G5 Contract Types <span>4 new</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="padding:10px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--purple)">
+          <div style="font-size:0.82rem;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">DetectorScore</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">model_id · split_index · metric · score · dataset_id</div>
+        </div>
+        <div style="padding:10px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--blue)">
+          <div style="font-size:0.82rem;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">PairwiseTest</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">model_a · model_b · statistic · p_value · n_pairs</div>
+        </div>
+        <div style="padding:10px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--aqua)">
+          <div style="font-size:0.82rem;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">CorrectedTest</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">rank · raw_p_value · corrected_p_value · rejected · alpha</div>
+        </div>
+        <div style="padding:10px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
+          <div style="font-size:0.82rem;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">ComparisonReport</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">dataset_id · metric · pairwise_tests · corrected_tests · provenance</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -668,7 +730,7 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> ruff check</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> ruff format</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> mypy --strict</div><span class="pipe-arrow">→</span></div>
-    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pytest (199)</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pytest (252)</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> smoke HTTP</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> secrets scan</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pip-audit</div></div>
@@ -762,11 +824,12 @@ if (radial) {
 
 // ── Test Distribution Bar Chart ──
 const testData = [
-  {name:'contracts',v:41},{name:'schemas',v:26},{name:'decision',v:18},
-  {name:'esa_parser',v:17},{name:'detectors',v:16},{name:'g3_ctr',v:14},
-  {name:'esa_parser',v:13},{name:'api',v:12},{name:'splits',v:11},
-  {name:'pipeline',v:10},{name:'eval',v:8},{name:'edp_inv',v:5},
-  {name:'esa_acq',v:4},{name:'src_ver',v:4}
+  {name:'statistics',v:40},{name:'contracts',v:30},{name:'schemas',v:26},
+  {name:'decision',v:18},{name:'esa_parser',v:17},{name:'detectors',v:16},
+  {name:'g3_ctr',v:14},{name:'edp_parser',v:13},{name:'comparative',v:12},
+  {name:'api',v:13},{name:'splits',v:11},{name:'pipeline',v:10},
+  {name:'eval',v:8},{name:'edp_inv',v:4},{name:'esa_acq',v:4},
+  {name:'src_ver',v:4}
 ];
 const maxTest = Math.max(...testData.map(d=>d.v));
 const testChart = document.getElementById('testChart');
@@ -781,10 +844,11 @@ testData.forEach(d => {
 
 // ── Treemap (Source Lines) ──
 const srcData = [
-  {name:'api',v:619,c:'var(--blue)'},{name:'edp_parser',v:501,c:'var(--orange)'},
-  {name:'esa_parser',v:475,c:'var(--orange)'},{name:'contracts',v:418,c:'var(--aqua)'},
-  {name:'detectors',v:342,c:'var(--purple)'},{name:'schemas',v:323,c:'var(--aqua)'},
-  {name:'decision',v:286,c:'var(--purple)'},{name:'pipeline',v:280,c:'var(--purple)'},
+  {name:'api',v:715,c:'var(--blue)'},{name:'edp_parser',v:501,c:'var(--orange)'},
+  {name:'esa_parser',v:475,c:'var(--orange)'},{name:'statistics',v:467,c:'var(--purple)'},
+  {name:'contracts',v:418,c:'var(--aqua)'},{name:'detectors',v:342,c:'var(--purple)'},
+  {name:'schemas',v:323,c:'var(--aqua)'},{name:'decision',v:286,c:'var(--purple)'},
+  {name:'pipeline',v:280,c:'var(--purple)'},{name:'comparative',v:218,c:'var(--purple)'},
   {name:'quality',v:183,c:'var(--aqua)'},{name:'splits',v:151,c:'var(--purple)'},
   {name:'verifier',v:137,c:'var(--blue)'},{name:'eval',v:112,c:'var(--purple)'},
   {name:'esa_acq',v:112,c:'var(--blue)'},{name:'adapters',v:35,c:'var(--blue)'},
@@ -794,7 +858,7 @@ const treemap = document.getElementById('treemap');
 srcData.slice(0, 12).forEach(d => {
   const cell = document.createElement('div');
   cell.className = 'treemap-cell';
-  const alpha = 0.4 + (d.v / 619) * 0.5;
+  const alpha = 0.4 + (d.v / 620) * 0.5;
   cell.style.background = `color-mix(in srgb, ${d.c} ${Math.round(alpha*100)}%, var(--surface-2))`;
   if (d.v >= 300) { cell.style.gridColumn = 'span 2'; }
   cell.innerHTML = `<div class="treemap-cell__name">${d.name}</div><div class="treemap-cell__val">${d.v} lines</div>`;
@@ -803,7 +867,7 @@ srcData.slice(0, 12).forEach(d => {
 
 // ── Gate Test Growth Chart ──
 const gateGrowth = [
-  {name:'G0',v:38},{name:'G1',v:72},{name:'G2',v:110},{name:'G3',v:169},{name:'G4',v:199}
+  {name:'G0',v:38},{name:'G1',v:72},{name:'G2',v:110},{name:'G3',v:169},{name:'G4',v:199},{name:'G5',v:252}
 ];
 const maxGate = Math.max(...gateGrowth.map(d=>d.v));
 const gateChart = document.getElementById('gateTestChart');

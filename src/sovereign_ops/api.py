@@ -5,8 +5,9 @@ Readiness: the data registry is loaded and structurally valid.
 Provenance: immutable metadata about registered datasets and gate status.
 Quality: G2 schema definitions and conformance metadata.
 Pipeline: G4 DARP Core — pipeline configuration and decision protocol metadata.
+Comparison: G5 confirmatory evaluation — statistical comparison protocol metadata.
 
-No data ingestion, inference, or live infrastructure connection exists at G0–G4.
+No data ingestion, inference, or live infrastructure connection exists at G0–G5.
 """
 
 from __future__ import annotations
@@ -216,6 +217,40 @@ class DecisionProtocolResponse(BaseModel):
     outcomes: tuple[DecisionOutcomeInfo, ...]
     confidence_formula: str = "coverage × f1"
     domain_isolation: bool = True
+
+
+# -- G5 models / comparative evaluation --
+
+
+class ComparisonStepInfo(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    step: int
+    name: str
+    description: str
+
+
+class ComparisonProtocolResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    name: str = "DARP Confirmatory Comparison"
+    version: str = "1.0"
+    statistical_test: str = "Wilcoxon Signed-Rank"
+    correction_method: str = "Holm-Bonferroni (step-down FWER)"
+    significance_level: float = 0.05
+    min_pairs: int = 5
+    exact_threshold: int = 25
+    splitting_strategy: str = "K chronological splits (default K=5)"
+    metric: str = "f1"
+    steps: tuple[ComparisonStepInfo, ...]
+    description: str = (
+        "Multiple detector configurations are evaluated over K chronological "
+        "splits.  For each pair of detectors, a Wilcoxon signed-rank test "
+        "compares their per-split F1 scores.  P-values are then corrected "
+        "using Holm-Bonferroni step-down procedure to control the family-wise "
+        "error rate.  The result is a ComparisonReport with pairwise "
+        "significance verdicts and an overall ranking."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -608,6 +643,67 @@ def create_app() -> FastAPI:
                     description=(
                         "Anomaly signals present but confidence below the "
                         "alert threshold.  Human review warranted."
+                    ),
+                ),
+            ),
+        )
+
+    # -- G5 endpoints --
+
+    @application.get(
+        "/pipeline/comparison-protocol",
+        response_model=ComparisonProtocolResponse,
+        tags=["pipeline"],
+        summary="DARP confirmatory comparison protocol",
+    )
+    def comparison_protocol() -> ComparisonProtocolResponse:
+        """Confirmatory evaluation: Wilcoxon + Holm-Bonferroni methodology.
+
+        Describes the statistical pipeline for comparing multiple detector
+        configurations: K chronological splits → pairwise Wilcoxon
+        signed-rank tests → Holm-Bonferroni FWER correction →
+        ComparisonReport with significance verdicts.
+        """
+        return ComparisonProtocolResponse(
+            steps=(
+                ComparisonStepInfo(
+                    step=1,
+                    name="Multi-configuration scoring",
+                    description=(
+                        "Each detector configuration is evaluated over K "
+                        "chronological splits.  Per-split F1 scores are "
+                        "collected as DetectorScore contracts with SHA-256 "
+                        "provenance linking back to the pipeline evidence."
+                    ),
+                ),
+                ComparisonStepInfo(
+                    step=2,
+                    name="Pairwise Wilcoxon signed-rank",
+                    description=(
+                        "For every pair of detectors, a two-sided Wilcoxon "
+                        "signed-rank test compares their K paired F1 scores.  "
+                        "Exact enumeration is used for ≤25 pairs; normal "
+                        "approximation with continuity correction for >25."
+                    ),
+                ),
+                ComparisonStepInfo(
+                    step=3,
+                    name="Holm-Bonferroni correction",
+                    description=(
+                        "Raw p-values from all pairwise tests are corrected "
+                        "using the Holm-Bonferroni step-down procedure.  This "
+                        "controls the family-wise error rate while being less "
+                        "conservative than classical Bonferroni."
+                    ),
+                ),
+                ComparisonStepInfo(
+                    step=4,
+                    name="ComparisonReport generation",
+                    description=(
+                        "An immutable ComparisonReport contract records all "
+                        "pairwise results, corrected p-values, significance "
+                        "verdicts (at α=0.05), and an overall ranking of "
+                        "detector configurations by mean F1 score."
                     ),
                 ),
             ),
