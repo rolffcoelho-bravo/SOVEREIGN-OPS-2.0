@@ -3,6 +3,11 @@
 This increment adds read-only ESA v2 and EDP v2 local file checkers and tests. It
 requires the three exact v2 files outside Git. No archive was downloaded or
 inspected on this cloud machine because the user keeps dataset files locally.
+The local ESA acquisition command now downloads the three registered archives
+to a user-selected folder outside Git, checks free disk space and publisher
+checksums, resumes only with confirmed HTTP byte ranges, and writes its receipt
+only after all files pass. Its operation on the real release is NOT_EXECUTED;
+synthetic network fixtures test only its control flow.
 The ESA checker compares official published sizes/MD5, computes local SHA-256, and
 rejects symlinked sources, unsafe ZIP member names and duplicate entries.
 Its receipt says FILE_NOTICES_PENDING. The v2 record-level licence is

@@ -100,6 +100,21 @@ licences are separate. No upstream benchmark implementation is vendored here.
 
 ## G1 local source verification (in progress)
 
+To download the three exact ESA v2 archives on your own computer, provide a
+dataset folder and a separate receipt path, both outside the Git checkout:
+
+```sh
+uv run --locked python scripts/acquire_local_esa.py /path/to/esa-v2 \
+  --output /path/to/private-receipts/esa-v2-integrity.json
+```
+
+The command checks free disk space, supports resuming `.partial` files when the
+server confirms the byte range, compares published sizes and MD5 values,
+computes SHA-256, and writes a receipt only after all three archives pass. It
+requires more than 11.6 GB free for a fresh download plus a 1 GiB reserve;
+allow substantially more for later safe extraction and derived data. It never
+adds dataset bytes to Git. File notices and archive contents still need review.
+
 The ESA v2 integrity checker reads three archives from a folder **outside** this
 Git repository, compares their byte sizes and publisher MD5 values, computes
 SHA-256 and checks ZIP directory names. It does not extract files, process
