@@ -1,5 +1,8 @@
 # G4 — DARP Core Report
 
+> **Evidence scope:** This gate report records an engineering milestone verified with synthetic fixtures. It does not certify acquisition, structural audit, or empirical results on the publisher datasets. See [Status Audit](STATUS_AUDIT.md) for current evidence status.
+
+
 **Gate:** G4 — Cross-domain decision protocol with shared abstention vocabulary  
 **Status:** COMPLETE  
 **Date:** 2024-12  

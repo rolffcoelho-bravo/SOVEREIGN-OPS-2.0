@@ -393,6 +393,49 @@ class TestHolmBonferroni:
 
 
 class TestCompareDetectors:
+    def test_duplicate_score_rejected(self) -> None:
+        scores = _make_scores("a", [0.5]) + _make_scores("b", [0.4])
+        with pytest.raises(ValueError, match="Duplicate score"):
+            compare_detectors(scores + [scores[0]])
+
+    def test_mismatched_split_hash_rejected(self) -> None:
+        scores = [
+            DetectorScore(
+                dataset_id="ESA-AD-v2",
+                model_id="a",
+                split_index=0,
+                f1=0.5,
+                coverage=1.0,
+                abstention_rate=0.0,
+                split_sha256="a" * 64,
+            ),
+            DetectorScore(
+                dataset_id="ESA-AD-v2",
+                model_id="b",
+                split_index=0,
+                f1=0.4,
+                coverage=1.0,
+                abstention_rate=0.0,
+                split_sha256="b" * 64,
+            ),
+        ]
+        with pytest.raises(ValueError, match="different windows"):
+            compare_detectors(scores)
+
+    def test_undefined_f1_rejected(self) -> None:
+        scores = _make_scores("a", [0.5]) + [
+            DetectorScore(
+                dataset_id="ESA-AD-v2",
+                model_id="b",
+                split_index=0,
+                f1=None,
+                coverage=1.0,
+                abstention_rate=0.0,
+            )
+        ]
+        with pytest.raises(ValueError, match="undefined"):
+            compare_detectors(scores)
+
     def test_two_detectors_basic(self) -> None:
         """Basic 2-detector comparison on ESA domain."""
         scores = _make_scores("zscore", [0.8, 0.82, 0.78, 0.81, 0.79]) + _make_scores(

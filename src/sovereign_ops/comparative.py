@@ -1,4 +1,4 @@
-"""Comparative evaluation runner for the G5 confirmatory layer.
+"""Exploratory comparative evaluation on disjoint chronological blocks.
 
 Orchestrates multiple detector × split runs, collects
 ``DetectorScore`` results, and feeds them into the Holm-Bonferroni
@@ -7,7 +7,7 @@ corrected comparison pipeline (``statistics.compare_detectors``).
 The workflow:
 
     1. Receive a set of detector configs and telemetry data
-    2. Generate K chronological splits (sliding window or fixed-fraction)
+    2. Partition timestamps into K disjoint chronological blocks
     3. Run each detector on each split via ``run_pipeline``
     4. Collect F1 and coverage per (detector, split) pair
     5. Feed into ``compare_detectors`` for statistical comparison
@@ -74,56 +74,33 @@ class ComparativeResult:
 # ---------------------------------------------------------------------------
 
 
-def _generate_split_fracs(
-    n_splits: int,
-    *,
-    train_base: float = 0.6,
-    test_frac: float = 0.2,
-) -> list[tuple[float, float, float]]:
-    """Generate split fractions for K chronological evaluations.
-
-    For K > 1, varies the training fraction slightly to create
-    different chronological boundaries while keeping the test fraction
-    constant.  This simulates "how well does the detector generalize
-    across different training windows?"
-
-    Parameters
-    ----------
-    n_splits:
-        Number of distinct chronological splits.
-    train_base:
-        Base training fraction (default 0.6).
-    test_frac:
-        Fixed test fraction (default 0.2).
-
-    Returns
-    -------
-    List of (train_frac, calibration_frac, test_frac) tuples.
-    """
+def _chronological_blocks(
+    points: list[TelemetryPoint], labels: list[bool], n_splits: int
+) -> list[tuple[list[TelemetryPoint], list[bool]]]:
+    """Divide timestamp groups into disjoint blocks, preserving label alignment."""
     if n_splits < 1:
         raise ValueError(f"Need at least 1 split, got {n_splits}")
-
-    if n_splits == 1:
-        cal = 1.0 - train_base - test_frac
-        return [(train_base, cal, test_frac)]
-
-    fracs: list[tuple[float, float, float]] = []
-    # Distribute training fractions between train_base ± delta
-    delta = min(0.1, (1.0 - test_frac - 0.3) / (n_splits - 1))
-
+    if len(points) != len(labels):
+        raise ValueError("Points and labels must have equal length")
+    pairs = sorted(zip(points, labels, strict=True), key=lambda pair: pair[0].observed_at)
+    groups: list[list[tuple[TelemetryPoint, bool]]] = []
+    for pair in pairs:
+        if not groups or groups[-1][0][0].observed_at != pair[0].observed_at:
+            groups.append([])
+        groups[-1].append(pair)
+    if len(groups) < n_splits:
+        raise ValueError("Need at least one distinct timestamp per split")
+    blocks: list[tuple[list[TelemetryPoint], list[bool]]] = []
     for i in range(n_splits):
-        if n_splits == 1:
-            shift = 0.0
-        else:
-            shift = -delta + 2 * delta * i / (n_splits - 1)
-        train = train_base + shift
-        cal = round(1.0 - train - test_frac, 6)
-        if cal < 0.05:
-            cal = 0.05
-            train = round(1.0 - cal - test_frac, 6)
-        fracs.append((round(train, 6), cal, test_frac))
-
-    return fracs
+        block_pairs = [
+            pair
+            for group in groups[i * len(groups) // n_splits : (i + 1) * len(groups) // n_splits]
+            for pair in group
+        ]
+        if len(block_pairs) < 10:
+            raise ValueError("Each chronological block needs at least 10 observations")
+        blocks.append(([p for p, _ in block_pairs], [label for _, label in block_pairs]))
+    return blocks
 
 
 # ---------------------------------------------------------------------------
@@ -141,7 +118,10 @@ def run_comparative_evaluation(
     alpha: float = 0.05,
     metric: Literal["f1", "coverage"] = "f1",
 ) -> ComparativeResult:
-    """Run all detectors on K chronological splits and compare.
+    """Compare detectors on disjoint blocks of historical observations.
+
+    These results are exploratory until the dataset and evaluation protocol
+    are audited and frozen. Adjacent blocks may still be serially dependent.
 
     Parameters
     ----------
@@ -178,33 +158,36 @@ def run_comparative_evaluation(
     if len(domains) != 1:
         raise ValueError(f"Cross-domain comparison prohibited: {domains}")
 
-    split_fracs = _generate_split_fracs(n_splits)
+    blocks = _chronological_blocks(points, labels, n_splits)
 
     all_results: list[PipelineResult] = []
     all_scores: list[DetectorScore] = []
 
-    for split_idx, (train_f, cal_f, test_f) in enumerate(split_fracs):
+    for split_idx, (block_points, block_labels) in enumerate(blocks):
         for config in configs:
             result = run_pipeline(
-                points=points,
-                labels=labels,
+                points=block_points,
+                labels=block_labels,
                 manifest=manifest,
                 config=config,
-                train_frac=train_f,
-                calibration_frac=cal_f,
-                test_frac=test_f,
             )
             all_results.append(result)
 
             # Extract score for statistical comparison
             eval_result = result.evaluation
+            if metric == "f1" and eval_result.f1 is None:
+                raise ValueError(
+                    f"F1 is undefined for model {config.model_id} on block {split_idx}; "
+                    "choose a defined metric or revise the predeclared evaluation design"
+                )
             score = DetectorScore(
                 dataset_id=config.dataset_id,
                 model_id=config.model_id,
                 split_index=split_idx,
-                f1=eval_result.f1 if eval_result.f1 is not None else 0.0,
+                f1=eval_result.f1,
                 coverage=eval_result.coverage,
                 abstention_rate=eval_result.abstention_rate,
+                split_sha256=result.split_spec.sha256_digest(),
             )
             all_scores.append(score)
 

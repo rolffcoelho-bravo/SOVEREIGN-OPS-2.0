@@ -1,5 +1,8 @@
 # G1 Report — Data Sovereignty
 
+> **Evidence scope:** This gate report records an engineering milestone verified with synthetic fixtures. It does not certify acquisition, structural audit, or empirical results on the publisher datasets. See [Status Audit](STATUS_AUDIT.md) for current evidence status.
+
+
 GATE: **G1**
 
 STATUS: **COMPLETE** — All acquisition, integrity verification, cryptographic

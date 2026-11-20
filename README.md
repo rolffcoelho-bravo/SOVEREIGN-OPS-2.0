@@ -71,16 +71,16 @@ The project follows a **10-gate staged development** model (G0–G9). Current st
 | Gate | Status | Description |
 |---|---|---|
 | **G0** | ✅ PASS | Foundation — contracts, API skeleton, CI, threat model, evaluation design |
-| **G1** | ✅ PASS | Data sovereignty — pinned registry, cryptographic acquisition, integrity verification |
-| **G2** | ✅ PASS | Structural audit — schema conformance, quality profiling, domain adapters |
-| **G3** | ✅ PASS | Baseline models — Z-Score (MAD), Isolation Forest, detector protocol |
-| **G4** | ✅ PASS | DARP Core — pipeline orchestration, decision engine, evidence chains |
-| **G5** | 🔄 In Progress | Confirmatory evaluation — Wilcoxon signed-rank, Holm-Bonferroni correction |
+| **G1** | Code complete; data pending | Pinned registry, acquisition and integrity tooling; source bytes not audited locally |
+| **G2** | Synthetic validation only | Schema conformance, quality profiling and domain adapters |
+| **G3** | Synthetic validation only | Z-Score (MAD), Isolation Forest and detector protocol |
+| **G4** | Synthetic validation only | Pipeline orchestration, decision engine and evidence chains |
+| **G5** | Exploratory code only | Disjoint chronological blocks, Wilcoxon signed-rank and Holm correction; confirmatory study blocked |
 | G6–G9 | Planned | Observability → Containerization → Documentation → Publication |
 
-**Current metrics:** 252 tests · 18 source modules · 4,786 lines · 30 Pydantic contract types · 12 API endpoints · mypy --strict · ruff · 100% CI pass
+The automated suite uses synthetic fixtures. The public repository contains no empirical ESA or EDP benchmark results. See [Status Audit](docs/STATUS_AUDIT.md) for the evidence boundary and local next steps.
 
-**G5 adds:** pure-Python Wilcoxon signed-rank test (exact enumeration ≤25 pairs, normal approximation >25), Holm-Bonferroni step-down FWER correction with monotonicity enforcement, comparative evaluation runner (multiple detectors × K chronological splits → pairwise tests → corrected p-values → `ComparisonReport` with SHA-256 provenance).
+**G5 code adds:** pure-Python Wilcoxon signed-rank test (exact enumeration ≤25 pairs, normal approximation >25), Holm-Bonferroni step-down correction, and a comparative runner that evaluates detectors on disjoint chronological blocks. Reports are marked `EXPLORATORY_ONLY`; serial dependence and the unfrozen real-data protocol prevent confirmatory claims.
 
 See [Architecture](docs/ARCHITECTURE.md) for design decisions and [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for the full gate sequence.
 

@@ -113,6 +113,7 @@ class TestRunComparativeEvaluation:
             manifest=_make_manifest(),
             configs=[_make_zscore_config(), _make_iforest_config()],
             n_splits=3,
+            metric="coverage",
         )
 
         assert isinstance(result, ComparativeResult)
@@ -121,6 +122,34 @@ class TestRunComparativeEvaluation:
         assert result.report.n_splits == 3
         assert len(result.pipeline_results) == 6  # 2 detectors × 3 splits
         assert len(result.scores) == 6
+        assert result.report.inference_status == "EXPLORATORY_ONLY"
+        windows = [result.pipeline_results[i].split_spec.test_window for i in (0, 2, 4)]
+        assert windows[0].end <= windows[1].start
+        assert windows[1].end <= windows[2].start
+        assert len({result.scores[i].split_sha256 for i in (0, 2, 4)}) == 3
+
+    def test_undefined_f1_is_not_zero_filled(self) -> None:
+        points, _ = _make_points(50)
+        with pytest.raises(ValueError, match="F1 is undefined"):
+            run_comparative_evaluation(
+                points=points,
+                labels=[False] * len(points),
+                manifest=_make_manifest(),
+                configs=[_make_zscore_config(), _make_iforest_config()],
+                n_splits=2,
+            )
+
+    def test_rejects_blocks_too_small_to_split(self) -> None:
+        points, labels = _make_points(20)
+        with pytest.raises(ValueError, match="at least 10 observations"):
+            run_comparative_evaluation(
+                points=points,
+                labels=labels,
+                manifest=_make_manifest(),
+                configs=[_make_zscore_config(), _make_iforest_config()],
+                n_splits=3,
+                metric="coverage",
+            )
 
     def test_report_has_provenance(self) -> None:
         """Report must have a valid SHA-256 provenance chain."""
@@ -131,6 +160,7 @@ class TestRunComparativeEvaluation:
             manifest=_make_manifest(),
             configs=[_make_zscore_config(), _make_iforest_config()],
             n_splits=2,
+            metric="coverage",
         )
 
         assert len(result.report.scores_sha256) == 64
@@ -145,6 +175,7 @@ class TestRunComparativeEvaluation:
             manifest=_make_manifest(),
             configs=[_make_zscore_config(), _make_iforest_config()],
             n_splits=2,
+            metric="coverage",
         )
 
         model_ids = {s.model_id for s in result.scores}
@@ -169,6 +200,7 @@ class TestRunComparativeEvaluation:
                 manifest=_make_manifest(),
                 configs=mixed_configs,
                 n_splits=2,
+                metric="coverage",
             )
 
     def test_single_detector_raises(self) -> None:
@@ -181,6 +213,7 @@ class TestRunComparativeEvaluation:
                 manifest=_make_manifest(),
                 configs=[_make_zscore_config()],
                 n_splits=2,
+                metric="coverage",
             )
 
     def test_result_immutable(self) -> None:
@@ -192,6 +225,7 @@ class TestRunComparativeEvaluation:
             manifest=_make_manifest(),
             configs=[_make_zscore_config(), _make_iforest_config()],
             n_splits=2,
+            metric="coverage",
         )
 
         with pytest.raises(AttributeError, match="immutable"):
@@ -206,6 +240,7 @@ class TestRunComparativeEvaluation:
             manifest=_make_manifest(),
             configs=[_make_zscore_config(), _make_iforest_config()],
             n_splits=1,
+            metric="coverage",
         )
 
         assert result.report.n_splits == 1
@@ -220,6 +255,7 @@ class TestRunComparativeEvaluation:
             manifest=_make_manifest(),
             configs=[_make_zscore_config(), _make_iforest_config()],
             n_splits=2,
+            metric="coverage",
         )
 
         for score in result.scores:
@@ -234,39 +270,33 @@ class TestRunComparativeEvaluation:
             manifest=_make_manifest(),
             configs=[_make_zscore_config(), _make_iforest_config()],
             n_splits=3,
+            metric="coverage",
         )
 
         for score in result.scores:
-            assert score.f1 >= 0.0
+            assert score.f1 is None or score.f1 >= 0.0
             assert score.coverage >= 0.0
             assert score.abstention_rate >= 0.0
 
 
-class TestSplitFracGeneration:
-    """Test the split fraction generation helper."""
+class TestChronologicalBlocks:
+    """Test that observations and labels stay aligned without timestamp reuse."""
 
-    def test_single_split_default_fracs(self) -> None:
-        from sovereign_ops.comparative import _generate_split_fracs
+    def test_disjoint_groups_and_labels(self) -> None:
+        from sovereign_ops.comparative import _chronological_blocks
 
-        fracs = _generate_split_fracs(1)
-        assert len(fracs) == 1
-        train, cal, test = fracs[0]
-        assert abs(train + cal + test - 1.0) < 1e-10
-
-    def test_multiple_splits_sum_to_one(self) -> None:
-        from sovereign_ops.comparative import _generate_split_fracs
-
-        for n in [2, 3, 5]:
-            fracs = _generate_split_fracs(n)
-            assert len(fracs) == n
-            for train, cal, test in fracs:
-                assert abs(train + cal + test - 1.0) < 1e-6
-                assert train > 0
-                assert cal > 0
-                assert test > 0
+        points, labels = _make_points(30)
+        blocks = _chronological_blocks(points, labels, 3)
+        assert [len(block_points) for block_points, _ in blocks] == [10, 10, 10]
+        assert [block_labels for _, block_labels in blocks] == [
+            labels[:10],
+            labels[10:20],
+            labels[20:],
+        ]
 
     def test_zero_splits_raises(self) -> None:
-        from sovereign_ops.comparative import _generate_split_fracs
+        from sovereign_ops.comparative import _chronological_blocks
 
+        points, labels = _make_points(30)
         with pytest.raises(ValueError, match="at least 1"):
-            _generate_split_fracs(0)
+            _chronological_blocks(points, labels, 0)

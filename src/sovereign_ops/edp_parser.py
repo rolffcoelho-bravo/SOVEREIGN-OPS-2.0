@@ -5,7 +5,7 @@ declared EDP schemas, and emits ``TelemetryPoint`` contracts.
 
 The EDP dataset comprises:
 
-- **Turbine workbooks** (T01, T06, T07, T09, T11): 10-minute SCADA readings
+- **Turbine workbooks** (T01, T06, T07, T11): 10-minute SCADA readings
   with operational signals (power, wind speed, temperatures, etc.).
 - **Failures workbook**: Maintenance events with start/end timestamps,
   component, and cause classification.
@@ -46,7 +46,7 @@ __all__ = [
 ]
 
 # Turbine IDs present in the dataset
-TURBINE_IDS: tuple[str, ...] = ("T01", "T06", "T07", "T09", "T11")
+TURBINE_IDS: tuple[str, ...] = ("T01", "T06", "T07", "T11")
 
 
 def _sha256_file(path: Path) -> str:
@@ -422,7 +422,7 @@ class EDPScadaParser:
         """Yield ``TelemetryPoint`` contracts from turbine SCADA workbooks.
 
         Each point is pinned to its source file by SHA-256.  Only
-        turbine workbooks (T01, T06, T07, T09, T11) are iterated —
+        turbine workbooks (T01, T06, T07, T11) are iterated —
         Failures, Signals, MetMast, etc. are excluded.
 
         Signal columns (everything except Timestamp) each produce

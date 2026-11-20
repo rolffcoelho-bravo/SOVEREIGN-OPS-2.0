@@ -1,6 +1,6 @@
 # Technical Report: Domain-Aware Reliability and Abstention for Mission-Critical Telemetry
 
-**Version:** 0.1.0 (G0 Foundation)
+**Version:** 0.1.0 (engineering draft; see current status below)
 **Date:** 2026-11-19
 **Author:** Rodolfo Pereira, ShockBridge Pulse Research Lab
 
@@ -12,7 +12,7 @@ Mission-critical telemetry systems — spacecraft housekeeping, wind-turbine SCA
 
 This report presents **Sovereign Ops**, a research software platform that implements a **Domain-Aware Reliability Protocol (DARP)**: a shared governance layer for alerting and abstention across physically distinct telemetry domains. The key contribution is not a new anomaly detector but a structured decision framework that separates *what is shared* (contracts, abstention vocabulary, evaluation protocol, provenance) from *what must remain domain-specific* (preprocessing, physical models, event definitions).
 
-The platform currently operates at Gate 0 (foundation): typed contracts, verification infrastructure, evaluation design, and provenance tooling are implemented and tested. No empirical model results exist yet — the confirmatory evaluation protocol is frozen before any model sees test data.
+The repository now contains G0–G5 engineering code, tested with synthetic fixtures. No empirical model results exist. The real-data evaluation protocol is still a draft and is **not frozen**; confirmatory evaluation is blocked until source acquisition, rights and structural audits, and the freeze checklist are complete. See [Status Audit](STATUS_AUDIT.md).
 
 ## 1. Research question
 
@@ -114,7 +114,7 @@ This creates an unbroken provenance chain from published source to local bytes t
 
 ## 4. Evaluation methodology
 
-The evaluation protocol is designed as a **confirmatory study**:
+The evaluation protocol proposes a **confirmatory study**; it has not yet been executed or frozen:
 
 1. **Protocol frozen before test data** — the evaluation design, metrics, and splits are locked before any model sees test data. Post-hoc changes create a new exploratory study.
 
@@ -133,43 +133,45 @@ The project follows a 10-gate staged development (G0–G9), where each gate has 
 | Gate | Description | Status |
 |---|---|---|
 | G0 | Foundation: contracts, API, CI, evaluation design | ✅ PASS |
-| G1 | Source verification: cryptographic dataset acquisition | 🔄 In progress |
-| G2 | Structural data audit: schema conformance, quality profiling | Planned |
-| G3 | Domain preprocessing: ESA and EDP parsers, feature engineering | Planned |
-| G4 | Baseline models: per-domain anomaly detection | Planned |
-| G5 | Decision protocol: abstention engine, evidence aggregation | Planned |
+| G1 | Acquisition and verification tooling | Code implemented; real acquisition pending |
+| G2 | Schema and quality tooling | Synthetic validation only |
+| G3 | Per-domain baseline detectors | Synthetic validation only |
+| G4 | DARP pipeline and decision logic | Synthetic validation only |
+| G5 | Statistical comparison tooling | Exploratory code only; study blocked |
 | G6 | Cross-domain governance evaluation | Planned |
 | G7 | Observability: OpenTelemetry, Prometheus, Grafana dashboards | Planned |
 | G8 | LLM integration: read-only tool-calling agent for triage | Planned |
 | G9 | Deployment: Docker Compose, documentation, Zenodo deposit | Planned |
 
-Each gate produces machine-readable evidence in `evidence/g<N>/`. Gate reports document exactly what was verified, what passed, and what limitations remain.
+Gate reports record engineering milestones. Their `COMPLETE` labels do not certify real-data acquisition or empirical benchmark results.
 
 ## 6. Current state and limitations
 
-### What exists (G0)
+### What exists in code
 
-- 171 lines of typed contracts covering the full decision pipeline
-- 30 passing tests with synthetic fixtures
+- Typed contracts covering the decision pipeline
+- An automated suite using synthetic fixtures
 - Full CI pipeline: lint → format → type check → test → secret scan → dependency audit
-- FastAPI skeleton with liveness endpoint
+- FastAPI metadata endpoints
 - Source registry with DOI-pinned datasets and rights review
 - Evaluation protocol draft with ESA-ADB benchmark mapping
 - Threat model and product contract boundaries
 - Cryptographic acquisition and verification scripts for ESA and EDP datasets
+- ESA and EDP parsers, baseline detectors, decision logic, and exploratory comparison code
 
 ### What does not exist yet
 
-- No dataset parsers or domain preprocessing
-- No trained models or anomaly scores
+- No verified local acquisition receipts or real-data structural audit in the repository
+- No real-data trained models or anomaly scores
 - No empirical evaluation results
+- No frozen confirmatory protocol
 - No LLM integration or agent tooling
 - No deployment infrastructure
 - No production API endpoints
 
 ### Honest assessment
 
-G0 demonstrates engineering discipline: the type system, CI pipeline, provenance tooling, and evaluation design are production-grade. But discipline alone does not prove capability. The research question cannot be answered until real data flows through the contract system (G2) and models produce real decision envelopes (G5).
+The code demonstrates the proposed interfaces and control flow. The research question remains unanswered until verified real data flows through the system under a frozen evaluation protocol.
 
 ## 7. Related work
 

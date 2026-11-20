@@ -1,7 +1,7 @@
 """Holm-Bonferroni corrected multiple comparisons for DARP evaluation.
 
-This module implements the confirmatory evaluation layer (G5) of the
-gated development process.  It provides:
+This module implements statistical machinery for G5. Its outputs are
+exploratory until the source data and evaluation protocol are frozen. It provides:
 
 1. **Paired statistical tests** — Wilcoxon signed-rank test for
    comparing two detectors on the same held-out chronological splits.
@@ -54,9 +54,10 @@ class DetectorScore(BaseModel):
     dataset_id: DatasetId
     model_id: str
     split_index: Annotated[int, Field(strict=True, ge=0)]
-    f1: FiniteFloat
+    f1: FiniteFloat | None
     coverage: FiniteFloat
     abstention_rate: FiniteFloat
+    split_sha256: str | None = None
 
     def canonical_json(self) -> str:
         """Deterministic JSON for reproducible hashing."""
@@ -124,6 +125,7 @@ class ComparisonReport(BaseModel):
     corrected_tests: tuple[CorrectedTest, ...]
     any_significant: bool
     scores_sha256: str
+    inference_status: Literal["EXPLORATORY_ONLY"] = "EXPLORATORY_ONLY"
 
     def canonical_json(self) -> str:
         return json.dumps(self.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
@@ -409,10 +411,19 @@ def compare_detectors(
 
     # Group by model_id
     model_scores: dict[str, dict[int, float]] = {}
+    split_hashes: dict[int, str] = {}
     for s in scores:
         if s.model_id not in model_scores:
             model_scores[s.model_id] = {}
+        if s.split_index in model_scores[s.model_id]:
+            raise ValueError(f"Duplicate score for {s.model_id} on split {s.split_index}")
+        if s.split_sha256 is not None:
+            previous = split_hashes.setdefault(s.split_index, s.split_sha256)
+            if previous != s.split_sha256:
+                raise ValueError(f"Detectors used different windows on split {s.split_index}")
         val = s.f1 if metric == "f1" else s.coverage
+        if val is None:
+            raise ValueError(f"{metric} is undefined for {s.model_id} on split {s.split_index}")
         model_scores[s.model_id][s.split_index] = val
 
     models = sorted(model_scores.keys())

@@ -1,5 +1,9 @@
 # Implementation plan
 
+> This is the original gate plan. Later commits added G1–G5 engineering code with
+> synthetic tests, but the real-data prerequisites below remain unexecuted.
+> Use [Status Audit](STATUS_AUDIT.md) for the current evidence boundary.
+
 ## Gate boundaries
 
 | Gate | Deliverable | Current state |

@@ -1,5 +1,8 @@
 # G2 Report — Structural Audit
 
+> **Evidence scope:** This gate report records an engineering milestone verified with synthetic fixtures. It does not certify acquisition, structural audit, or empirical results on the publisher datasets. See [Status Audit](STATUS_AUDIT.md) for current evidence status.
+
+
 GATE: **G2**
 
 STATUS: **COMPLETE** — All schema validation, domain-specific parsing, quality
@@ -50,7 +53,7 @@ schema introspection.
 - `validate_workbook()`: in-memory validation of XLSX/failure data against
   schema — returns `SchemaConformanceReport`
 - `inspect()`: reads real XLSX via openpyxl (lazy import), processes only
-  registered turbine files (T01, T06, T07, T09, T11)
+  registered turbine files (T01, T06, T07, T11)
 - `iter_points()`: yields one `TelemetryPoint` per signal column per row,
   asset_id from filename stem
 - Auto-selects schema: file_id containing "failure" → EDP_FAILURES_SCHEMA,
