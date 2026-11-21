@@ -161,6 +161,35 @@ class TestZScoreDetector:
 
 
 class TestIsolationForestDetector:
+    def test_scores_and_abstention_are_batch_invariant(self) -> None:
+        detector = IsolationForestDetector(n_estimators=20)
+        detector.fit(np.random.default_rng(42).normal(size=100))
+        values = np.array([-5.0, 0.0, 0.5, 5.0, float("nan")])
+        together = detector.score(values)
+        individually = np.concatenate([detector.score(values[i : i + 1]) for i in range(5)])
+        np.testing.assert_allclose(together, individually, rtol=0, atol=1e-14)
+        points = _make_points(values[:4].tolist())
+        config = _make_config("IsolationForest", abstention_threshold=0.3)
+        assert detector.predict(points, config) == [
+            detector.predict([point], config)[0] for point in points
+        ]
+
+    def test_empty_and_all_missing_batches(self) -> None:
+        detector = IsolationForestDetector(n_estimators=10)
+        detector.fit(np.arange(20, dtype=np.float64))
+        assert detector.score(np.array([], dtype=np.float64)).size == 0
+        assert np.isnan(detector.score(np.array([float("nan"), float("nan")]))).all()
+        point = _make_points([0.0])[0].model_copy(update={"value": None})
+        prediction = detector.predict([point], _make_config("IsolationForest"))[0]
+        assert prediction.abstained and prediction.anomaly_score is None
+
+    def test_invalid_refit_invalidates_previous_model(self) -> None:
+        detector = IsolationForestDetector(n_estimators=10)
+        detector.fit(np.arange(20, dtype=np.float64))
+        with pytest.raises(ValueError):
+            detector.fit(np.array([float("inf"), 1.0]))
+        assert not detector.is_fitted
+
     def test_fit_and_score(self) -> None:
         detector = IsolationForestDetector()
         rng = np.random.default_rng(42)
@@ -223,6 +252,25 @@ class TestIsolationForestDetector:
 
 
 class TestBuildDetector:
+    @pytest.mark.parametrize("family", ["ZScore", "IsolationForest"])
+    def test_nonfinite_or_multidimensional_inputs_rejected(self, family: str) -> None:
+        detector = build_detector(_make_config(family))
+        detector.fit(np.arange(20, dtype=np.float64))
+        for invalid in (np.array([float("inf")]), np.ones((2, 2))):
+            with pytest.raises(ValueError, match="one-dimensional"):
+                detector.score(invalid)
+        with pytest.raises(ValueError, match="at least 2"):
+            detector.fit(np.array([1.0]))
+        assert not detector.is_fitted
+
+    def test_prediction_identity_must_match(self) -> None:
+        detector = ZScoreDetector()
+        detector.fit(np.arange(20, dtype=np.float64))
+        with pytest.raises(ValueError, match="family"):
+            detector.predict(_make_points([1.0]), _make_config("IsolationForest"))
+        with pytest.raises(ValueError, match="domain"):
+            detector.predict(_make_points([1.0], dataset_id="EDP-SCADA-v2"), _make_config())
+
     def test_build_zscore(self) -> None:
         config = _make_config("ZScore")
         detector = build_detector(config)

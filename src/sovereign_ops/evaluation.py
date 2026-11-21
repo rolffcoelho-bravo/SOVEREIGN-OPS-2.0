@@ -60,6 +60,22 @@ def evaluate_predictions(
         )
 
     total = len(predictions)
+    if total == 0:
+        raise ValueError("Evaluation requires at least one prediction")
+    if split_spec.dataset_id != config.dataset_id:
+        raise ValueError("Split and configuration domains must match")
+    seen = set()
+    for pred in predictions:
+        if pred.dataset_id != config.dataset_id or pred.model_id != config.model_id:
+            raise ValueError("Prediction domain and model must match the configuration")
+        if not split_spec.test_window.start <= pred.observed_at < split_spec.test_window.end:
+            raise ValueError("Prediction must fall within the test window")
+        key = (pred.asset_id, pred.signal_id, pred.observed_at)
+        if key in seen:
+            raise ValueError("Duplicate prediction keys cannot be evaluated")
+        seen.add(key)
+        if pred.abstained != (pred.is_anomaly is None):
+            raise ValueError("Prediction decision must be absent exactly when abstaining")
     tp = fp = tn = fn = abstained = 0
 
     for pred, is_anomaly in zip(predictions, labels, strict=True):
@@ -76,7 +92,7 @@ def evaluate_predictions(
         else:
             tn += 1
 
-    abstention_rate = abstained / total if total > 0 else 0.0
+    abstention_rate = abstained / total
     coverage = 1.0 - abstention_rate
 
     decided = tp + fp + tn + fn
@@ -90,8 +106,8 @@ def evaluate_predictions(
             precision = tp / (tp + fp)
         if tp + fn > 0:
             recall = tp / (tp + fn)
-        if precision is not None and recall is not None and (precision + recall) > 0:
-            f1 = 2 * precision * recall / (precision + recall)
+        if 2 * tp + fp + fn > 0:
+            f1 = 2 * tp / (2 * tp + fp + fn)
 
     return EvaluationResult(
         dataset_id=config.dataset_id,

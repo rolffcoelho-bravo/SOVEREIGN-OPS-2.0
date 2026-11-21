@@ -153,8 +153,9 @@ def _build_evidence(
 def _make_protocol_sha256() -> str:
     """Deterministic hash of the evaluation protocol specification."""
     protocol_spec = (
-        "abstention-aware-evaluation:v1.0:"
-        "splitting=chronological:"
+        "abstention-aware-evaluation:v1.2:"
+        "splitting=chronological_timestamp_groups:"
+        "scope=single_asset_signal_unit:iforest_scale=training:f1=count_based:"
         "metrics=precision,recall,f1,coverage,abstention_rate"
     )
     return hashlib.sha256(protocol_spec.encode()).hexdigest()
@@ -175,7 +176,7 @@ def run_pipeline(
     Parameters
     ----------
     points:
-        Telemetry observations, one per label.
+        Telemetry observations for one asset, signal and unit, one per label.
     labels:
         Ground-truth anomaly labels (``True`` = anomalous).
     manifest:
@@ -183,11 +184,11 @@ def run_pipeline(
     config:
         Detector configuration to instantiate and run.
     train_frac:
-        Fraction of observations for training (default 0.6).
+        Fraction of distinct timestamps for training (default 0.6).
     calibration_frac:
-        Fraction for calibration (default 0.2).
+        Fraction reserved for calibration (default 0.2). Currently unused.
     test_frac:
-        Fraction for test (default 0.2).
+        Fraction of distinct timestamps for test (default 0.2).
 
     Returns
     -------
@@ -209,9 +210,14 @@ def run_pipeline(
     dataset_id = config.dataset_id
     if manifest.dataset_id != dataset_id:
         raise ValueError(f"Manifest domain '{manifest.dataset_id}' != config domain '{dataset_id}'")
+    source_hashes = {entry.sha256 for entry in manifest.files}
     for pt in points:
         if pt.dataset_id != dataset_id:
             raise ValueError(f"Point domain '{pt.dataset_id}' != pipeline domain '{dataset_id}'")
+        if pt.source_sha256 not in source_hashes:
+            raise ValueError("Point source hash is absent from the acquisition manifest")
+    if len({(pt.asset_id, pt.signal_id, pt.unit) for pt in points}) != 1:
+        raise ValueError("Univariate pipeline requires a single asset, signal and unit")
 
     # 1. Chronological split
     split_spec = chronological_split(
@@ -230,6 +236,10 @@ def run_pipeline(
         (pt.observed_at, pt.asset_id, pt.signal_id): label
         for pt, label in zip(points, labels, strict=True)
     }
+    if len(point_to_label) != len(points):
+        raise ValueError(
+            "Duplicate observation keys require an explicit reconciliation policy before fitting"
+        )
     test_labels = [
         point_to_label[(pt.observed_at, pt.asset_id, pt.signal_id)] for pt in test_points
     ]

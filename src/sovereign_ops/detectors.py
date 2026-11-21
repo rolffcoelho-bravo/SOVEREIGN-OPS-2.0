@@ -92,6 +92,7 @@ class AnomalyDetector(Protocol):
 class _BaseDetector(ABC):
     """Shared plumbing for all concrete detectors."""
 
+    family: str
     _fitted: bool = False
 
     @property
@@ -112,6 +113,10 @@ class _BaseDetector(ABC):
         """Score + threshold + abstain → DetectorPrediction list."""
         if not self._fitted:
             raise RuntimeError("Detector must be fitted before prediction")
+        if config.family != self.family:
+            raise ValueError("Detector family must match the prediction configuration")
+        if any(point.dataset_id != config.dataset_id for point in points):
+            raise ValueError("Prediction points must match the configuration domain")
 
         values = np.array(
             [p.value if p.value is not None else float("nan") for p in points],
@@ -193,6 +198,9 @@ class ZScoreDetector(_BaseDetector):
         self._fitted = False
 
     def fit(self, values: NDArray[np.float64]) -> None:
+        self._fitted = False
+        if values.ndim != 1 or np.isinf(values).any():
+            raise ValueError("Expected a one-dimensional array of finite values or NaN")
         clean = values[~np.isnan(values)]
         if len(clean) < 2:
             raise ValueError("Need at least 2 non-NaN values to fit ZScore detector")
@@ -206,6 +214,8 @@ class ZScoreDetector(_BaseDetector):
         if not self._fitted:
             raise RuntimeError("Detector must be fitted before scoring")
 
+        if values.ndim != 1 or np.isinf(values).any():
+            raise ValueError("Expected a one-dimensional array of finite values or NaN")
         result = np.full(len(values), np.nan, dtype=np.float64)
         mask = ~np.isnan(values)
         z = np.abs(values[mask] - self._median) / self._mad
@@ -222,11 +232,9 @@ class ZScoreDetector(_BaseDetector):
 class IsolationForestDetector(_BaseDetector):
     """Anomaly detector using scikit-learn's IsolationForest.
 
-    Wraps the sklearn implementation, normalizing its output from
-    [-1, 1] decision_function to [0, 1] anomaly scores.
-
-    Falls back to a pure-NumPy percentile-based approach if
-    scikit-learn is unavailable, keeping the dependency optional.
+    Scales decision_function using training-only magnitudes and clips to
+    [0, 1]. The fitted decision boundary remains 0.5. Scores are independent
+    of scoring-batch composition and are not calibrated probabilities.
     """
 
     family = "IsolationForest"
@@ -242,38 +250,30 @@ class IsolationForestDetector(_BaseDetector):
         self._contamination = contamination
         self._random_state = random_state
         self._fitted = False
-        self._use_sklearn = True
-
-        # Training-data quantiles (fallback path)
-        self._q01: float = 0.0
-        self._q99: float = 1.0
-        self._median: float = 0.0
+        self._score_scale: float = 1.0
 
         # sklearn model (lazy import)
         self._model: object | None = None
 
     def fit(self, values: NDArray[np.float64]) -> None:
+        self._fitted = False
+        if values.ndim != 1 or np.isinf(values).any():
+            raise ValueError("Expected a one-dimensional array of finite values or NaN")
         clean = values[~np.isnan(values)]
         if len(clean) < 2:
             raise ValueError("Need at least 2 non-NaN values to fit IsolationForest")
 
-        try:
-            from sklearn.ensemble import IsolationForest
+        from sklearn.ensemble import IsolationForest
 
-            model = IsolationForest(
-                n_estimators=self._n_estimators,
-                contamination=self._contamination,
-                random_state=self._random_state,
-            )
-            model.fit(clean.reshape(-1, 1))
-            self._model = model
-            self._use_sklearn = True
-        except ImportError:
-            # Fallback: use percentile-based approach
-            self._q01 = float(np.percentile(clean, 1))
-            self._q99 = float(np.percentile(clean, 99))
-            self._median = float(np.median(clean))
-            self._use_sklearn = False
+        model = IsolationForest(
+            n_estimators=self._n_estimators,
+            contamination=self._contamination,
+            random_state=self._random_state,
+        )
+        model.fit(clean.reshape(-1, 1))
+        self._model = model
+        training_scores = model.decision_function(clean.reshape(-1, 1))
+        self._score_scale = max(float(np.max(np.abs(training_scores))), 1e-10)
 
         self._fitted = True
 
@@ -281,24 +281,19 @@ class IsolationForestDetector(_BaseDetector):
         if not self._fitted:
             raise RuntimeError("Detector must be fitted before scoring")
 
+        if values.ndim != 1 or np.isinf(values).any():
+            raise ValueError("Expected a one-dimensional array of finite values or NaN")
         result = np.full(len(values), np.nan, dtype=np.float64)
         mask = ~np.isnan(values)
         clean = values[mask]
+        if not len(clean):
+            return result
 
-        if self._use_sklearn and self._model is not None:
-            from sklearn.ensemble import IsolationForest
+        from sklearn.ensemble import IsolationForest
 
-            model: IsolationForest = self._model
-            # decision_function returns positive for inliers, negative for outliers
-            raw = model.decision_function(clean.reshape(-1, 1))
-            # Normalize: map [-max_abs, +max_abs] → [0, 1] with anomalies near 1
-            max_abs = max(float(np.max(np.abs(raw))), 1e-10)
-            result[mask] = 0.5 - raw / (2.0 * max_abs)
-        else:
-            # Fallback: percentile-distance scoring
-            iqr = max(self._q99 - self._q01, 1e-10)
-            dist = np.abs(clean - self._median) / iqr
-            result[mask] = 1.0 - 1.0 / (1.0 + dist)
+        model: IsolationForest = self._model
+        raw = model.decision_function(clean.reshape(-1, 1))
+        result[mask] = np.clip(0.5 - raw / (2.0 * self._score_scale), 0.0, 1.0)
 
         return result
 

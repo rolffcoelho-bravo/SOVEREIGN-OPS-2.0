@@ -1,4 +1,4 @@
-"""Inventory local EDP v2 candidate workbooks without copying them into Git."""
+"""Inventory a legacy ten-workbook candidate folder without verifying release identity."""
 
 import argparse
 import json
@@ -8,8 +8,10 @@ from sovereign_ops.source_verifier import inventory_edp_workbooks
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("source_dir", type=Path, help="Directory of 10 EDP v2 workbooks")
+    parser = argparse.ArgumentParser(
+        description=__doc__, epilog="Use acquire_local_edp.py for the pinned publisher release."
+    )
+    parser.add_argument("source_dir", type=Path, help="Legacy directory of 10 candidate workbooks")
     parser.add_argument(
         "--output", required=True, type=Path, help="Receipt path outside this Git repo"
     )

@@ -89,6 +89,39 @@ def _make_config() -> DetectorConfig:
 class TestRunPipeline:
     """Core pipeline execution and provenance chain."""
 
+    def test_unregistered_source_hash_rejected(self) -> None:
+        points, labels = _make_points(20)
+        points[0] = points[0].model_copy(update={"source_sha256": "b" * 64})
+        with pytest.raises(ValueError, match="source hash is absent"):
+            run_pipeline(
+                points=points, labels=labels, manifest=_make_manifest(), config=_make_config()
+            )
+
+    @pytest.mark.parametrize(
+        "field,value",
+        [
+            ("asset_id", "sat-002"),
+            ("signal_id", "power"),
+            ("unit", "kelvin"),
+        ],
+    )
+    def test_mixed_univariate_scope_rejected(self, field: str, value: str) -> None:
+        points, labels = _make_points(20)
+        points[-1] = points[-1].model_copy(update={field: value})
+        with pytest.raises(ValueError, match="single asset, signal and unit"):
+            run_pipeline(
+                points=points, labels=labels, manifest=_make_manifest(), config=_make_config()
+            )
+
+    def test_duplicate_observation_cannot_overwrite_a_label(self) -> None:
+        points, labels = _make_points(20)
+        points.append(points[-1])
+        labels.append(not labels[-1])
+        with pytest.raises(ValueError, match="Duplicate observation keys"):
+            run_pipeline(
+                points=points, labels=labels, manifest=_make_manifest(), config=_make_config()
+            )
+
     def test_full_pipeline_produces_result(self) -> None:
         points, labels = _make_points(20)
         result = run_pipeline(

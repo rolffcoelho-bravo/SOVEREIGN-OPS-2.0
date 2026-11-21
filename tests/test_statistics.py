@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import random
+from itertools import product
 
 import pytest
 from pydantic import ValidationError
@@ -209,6 +210,45 @@ class TestComparisonReport:
 
 
 class TestWilcoxonSignedRank:
+    @pytest.mark.parametrize(
+        "magnitudes,ranks",
+        [
+            ([1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0]),
+            ([1.0, 1.0, 2.0, 2.0], [1.5, 1.5, 3.5, 3.5]),
+            ([1.0, 1.0, 1.0], [2.0, 2.0, 2.0]),
+        ],
+    )
+    def test_exact_distribution_against_exhaustive_oracle(
+        self, magnitudes: list[float], ranks: list[float]
+    ) -> None:
+        sign_vectors = list(product((-1, 1), repeat=len(ranks)))
+        rank_total = sum(ranks)
+        statistics = []
+        for signs in sign_vectors:
+            positive = sum(rank for rank, sign in zip(ranks, signs, strict=True) if sign > 0)
+            statistics.append(min(positive, rank_total - positive))
+        for signs, observed in zip(sign_vectors, statistics, strict=True):
+            differences = [m * s for m, s in zip(magnitudes, signs, strict=True)]
+            result = wilcoxon_signed_rank(differences, [0.0] * len(ranks), model_a="a", model_b="b")
+            expected = sum(value <= observed for value in statistics) / len(statistics)
+            assert result.statistic == observed
+            assert result.p_value == expected
+
+    def test_twenty_five_pairs_exact_tail(self) -> None:
+        result = wilcoxon_signed_rank(
+            list(map(float, range(1, 26))), [0.0] * 25, model_a="a", model_b="b"
+        )
+        assert result.p_value == 2 / (2**25)
+
+    @pytest.mark.parametrize("invalid", [float("nan"), float("inf"), -float("inf")])
+    def test_nonfinite_pairs_rejected(self, invalid: float) -> None:
+        with pytest.raises(ValueError, match="finite"):
+            wilcoxon_signed_rank([invalid], [0.0], model_a="a", model_b="b")
+
+    def test_large_balanced_sample_has_p_one(self) -> None:
+        result = wilcoxon_signed_rank([1.0, -1.0] * 15, [0.0] * 30, model_a="a", model_b="b")
+        assert result.p_value == 1.0
+
     def test_identical_scores_p_one(self) -> None:
         """When all differences are zero, p-value must be 1.0."""
         result = wilcoxon_signed_rank(

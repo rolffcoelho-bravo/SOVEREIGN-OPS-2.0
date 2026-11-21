@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, FiniteFloat
@@ -176,9 +177,13 @@ def wilcoxon_signed_rank(
     n = len(scores_a)
     if n < 1:
         raise ValueError("Need at least 1 paired observation")
+    if not all(math.isfinite(value) for value in (*scores_a, *scores_b)):
+        raise ValueError("Paired scores must be finite")
 
     # Compute differences and handle tied/zero pairs
     diffs = [a - b for a, b in zip(scores_a, scores_b, strict=True)]
+    if not all(math.isfinite(diff) for diff in diffs):
+        raise ValueError("Paired differences must be finite")
 
     # Remove zero differences (ties)
     nonzero = [(i, d) for i, d in enumerate(diffs) if abs(d) > 1e-15]
@@ -215,7 +220,7 @@ def wilcoxon_signed_rank(
     w_minus = sum(ranks[idx] for idx, d in nonzero if d < 0)
     t_stat = min(w_plus, w_minus)
 
-    # For small samples, compute exact p-value using enumeration
+    # For small samples, compute the exact rank-sum distribution
     # For larger samples (n_nonzero > 25), use normal approximation
     n_nonzero = len(nonzero)
     all_ranks = sorted(ranks[idx] for idx, _ in nonzero)
@@ -236,27 +241,28 @@ def wilcoxon_signed_rank(
 
 
 def _exact_wilcoxon_p(t_stat: float, ranks: list[float]) -> float:
-    """Exact two-sided p-value via rank-sum enumeration.
+    """Exact two-sided sign-permutation p-value via dynamic programming.
 
-    Enumerates all 2^n sign assignments and counts how many produce
-    a W+ or W- as extreme as the observed statistic.
+    Doubled average ranks are integers, including ties. Counts preserve the
+    multiplicity of every sign assignment without visiting all 2**n masks.
+    The caller bounds the exact path to 25 nonzero pairs.
     """
-    n = len(ranks)
-    total = 1 << n  # 2^n
-    count = 0
-
-    for mask in range(total):
-        w_plus = 0.0
-        for bit in range(n):
-            if mask & (1 << bit):
-                w_plus += ranks[bit]
-        w_minus = sum(ranks) - w_plus
-        t_min = min(w_plus, w_minus)
-        if t_min <= t_stat + 1e-15:
-            count += 1
-
-    p = count / total
-    return min(p, 1.0)
+    scaled_ranks = [round(2 * rank) for rank in ranks]
+    rank_sum = sum(scaled_ranks)
+    counts = [0] * (rank_sum + 1)
+    counts[0] = 1
+    reachable = 0
+    for rank in scaled_ranks:
+        for subtotal in range(reachable, -1, -1):
+            counts[subtotal + rank] += counts[subtotal]
+        reachable += rank
+    cutoff = round(2 * t_stat)
+    extreme = sum(
+        count
+        for subtotal, count in enumerate(counts)
+        if min(subtotal, rank_sum - subtotal) <= cutoff
+    )
+    return min(extreme / (1 << len(ranks)), 1.0)
 
 
 def _normal_approx_wilcoxon_p(t_stat: float, n: int, ranks: list[float]) -> float:
@@ -276,7 +282,7 @@ def _normal_approx_wilcoxon_p(t_stat: float, n: int, ranks: list[float]) -> floa
     sd_w = math.sqrt(var_w)
 
     # z with continuity correction
-    z = (abs(t_stat - mean_w) - 0.5) / sd_w
+    z = max(0.0, abs(t_stat - mean_w) - 0.5) / sd_w
 
     # Two-sided p-value from standard normal
     p = 2.0 * _normal_cdf(-abs(z))

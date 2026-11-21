@@ -87,6 +87,27 @@ class TestChronologicalSplit:
         spec = chronological_split("EDP-SCADA-v2", points)
         assert spec.dataset_id == "EDP-SCADA-v2"
 
+    def test_timestamp_groups_are_indivisible(self) -> None:
+        points = _make_points(10)
+        points.extend(points[0].model_copy(update={"signal_id": f"signal-{i}"}) for i in range(17))
+        spec = chronological_split("ESA-AD-v2", points)
+        train, calibration, test = partition_points(points, spec)
+        assert calibration is not None
+        assert [len(train), len(calibration), len(test)] == [23, 2, 2]
+        assert {p.observed_at for p in train}.isdisjoint(p.observed_at for p in calibration)
+        assert {p.observed_at for p in test}.isdisjoint(p.observed_at for p in train + calibration)
+
+    @pytest.mark.parametrize("train_frac,test_frac", [(0.0, 0.8), (0.8, 0.0), (float("nan"), 0.2)])
+    def test_invalid_partition_fractions(self, train_frac: float, test_frac: float) -> None:
+        with pytest.raises(ValueError):
+            chronological_split(
+                "ESA-AD-v2",
+                _make_points(10),
+                train_frac=train_frac,
+                calibration_frac=0.2,
+                test_frac=test_frac,
+            )
+
 
 # ---------------------------------------------------------------------------
 # partition_points

@@ -71,6 +71,11 @@ def test_symlinked_source_is_rejected(tmp_path: Path) -> None:
     target = source / "ESA-Mission3.zip"
     moved = tmp_path / "third.zip"
     target.rename(moved)
-    target.symlink_to(moved)
+    try:
+        target.symlink_to(moved)
+    except OSError as exc:
+        if getattr(exc, "winerror", None) == 1314:
+            pytest.skip("Windows account lacks permission to create symbolic links")
+        raise
     with pytest.raises(SourceVerificationError, match="linked source"):
         verify_esa_archives(source, registry)

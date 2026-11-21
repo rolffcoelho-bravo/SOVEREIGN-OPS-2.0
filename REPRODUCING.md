@@ -63,31 +63,59 @@ License: CC BY 3.0 IGO.
 ### EDP Onshore Wind Farm SCADA v2
 
 ```bash
-uv run --locked python scripts/inventory_local_edp.py /path/to/edp-v2 \
-  --output /path/to/private-receipts/edp-v2-local-inventory.json
+uv run --locked python scripts/acquire_local_edp.py /path/to/edp-v2 \
+  --output /path/to/private-receipts/edp-v2-source-audit.json --inspect-workbooks
 ```
 
 DOI: [10.17632/zjxjnjp3xs.2](https://data.mendeley.com/datasets/zjxjnjp3xs/2).
 License: CC BY 4.0.
 
+Add `--verify-only` for an offline check of an already downloaded release.
+The registry pins all 14 publisher files. The optional workbook inspection
+records sheet dimensions, headers, schema differences, and aggregate failure
+log counts.
+
+For a complete streaming quality scan of the four primary turbine workbooks,
+add `--profile-view F95`. Use `--profile-view F99` in a separate run for the
+alternative filtered view. The report includes per-column missingness, invalid
+values, duplicate observation keys, time coverage, cadence gaps and source
+hashes. Gap counts describe the interval between each file's first and last
+valid observations. Keep the output local.
+
+On the reviewed Windows machine, use `OPENBLAS_NUM_THREADS=1` and
+`OMP_NUM_THREADS=1` for tests and analysis to bound numerical-library thread
+allocation. A local account without symlink privileges skips the dedicated
+symlink-creation test. The Linux CI still exercises that test.
+
 ### Verification receipts
 
-Each script produces a JSON receipt recording: source URL, DOI, file sizes,
-SHA-256 and MD5 hashes, download timestamp, and ZIP directory validation.
-These receipts establish the provenance chain from published source to local
-bytes and are stored **outside** the Git repository.
+Both verifiers produce a JSON receipt outside Git with the DOI, per-file
+source URLs, measured sizes, SHA-256 hashes, and verification timestamp. ESA
+also records the publisher MD5 used for comparison. Treat the receipt as
+evidence of file integrity while the file-level rights review remains open.
 
 ## Step 4: Structural data audit (G2)
 
-*Planned.* Once datasets are acquired and verified, the structural audit
-validates schema conformance, data quality profiles, and timestamp coverage
-against the evaluation protocol's requirements.
+The EDP workbook inspection covers the publisher workbook structure and checks
+the failure log. Read the [Status Audit](docs/STATUS_AUDIT.md) for the measured
+scope and the remaining quality profiling and timestamp-semantic decisions.
 
 ## Step 5: Model training and evaluation (G3+)
 
-*Planned.* The evaluation protocol ([EVALUATION_PROTOCOL.md](EVALUATION_PROTOCOL.md))
-is frozen before any model sees test data. Chronological splits, Holm-corrected
-comparisons, and abstention-aware scoring ensure honest evaluation.
+Real-data modeling remains pending source reconciliation and a frozen
+[evaluation protocol](EVALUATION_PROTOCOL.md). The synthetic pipeline accepts
+one asset, signal and unit per run. It rejects repeated observation keys and
+source hashes absent from the acquisition manifest. Fractions apply to distinct
+timestamps, with ties kept together. Calibration rows are reserved but their
+use for selecting thresholds is still pending.
+
+Isolation Forest scales scores using training-only decision magnitudes and
+clips them to [0, 1]. Previously configured abstention thresholds need fresh
+validation after this change. Scores are not calibrated probabilities.
+Evaluation rejects empty inputs and mismatched prediction identities, duplicate
+keys or observations outside the test window. F1 uses confusion counts and
+is zero when TP is zero and FP+FN is positive. It remains undefined when all
+decisions are true negatives or every observation abstains.
 
 ## Reproducibility guarantees
 

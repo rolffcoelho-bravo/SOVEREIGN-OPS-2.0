@@ -7,10 +7,9 @@ The EDP dataset comprises:
 
 - **Turbine workbooks** (T01, T06, T07, T11): 10-minute SCADA readings
   with operational signals (power, wind speed, temperatures, etc.).
-- **Failures workbook**: Maintenance events with start/end timestamps,
-  component, and cause classification.
-- **Supporting workbooks**: Signals, MetMast, ActivePower-Curves, LandCover
-  (not parsed in G2 — acknowledged for completeness).
+- **Failures workbook**: Confirmed events with a logged timestamp, component,
+  and remarks.
+- **Supporting workbooks**: Meteorological mast data and turbine event logs.
 
 Like the ESA parser, this module never downloads data — it operates on files
 already acquired by the G1 pipeline and verified via ``AcquisitionManifest``.
@@ -29,6 +28,10 @@ from sovereign_ops.contracts import (
     DataQualityReport,
     TelemetryPoint,
     TimeWindow,
+)
+from sovereign_ops.edp_source_schemas import (
+    EDP_SOURCE_FAILURES_SCHEMA,
+    EDP_SOURCE_SCADA_SCHEMA,
 )
 from sovereign_ops.schemas import (
     EDP_FAILURES_SCHEMA,
@@ -201,6 +204,9 @@ class EDPScadaParser:
     dependency required for testing).
     """
 
+    def __init__(self, *, filter_view: Literal["F95", "F99"] = "F95") -> None:
+        self.filter_view = filter_view
+
     @property
     def dataset_id(self) -> Literal["EDP-SCADA-v2"]:
         return "EDP-SCADA-v2"
@@ -211,8 +217,12 @@ class EDPScadaParser:
         for entry in manifest.files:
             if entry.relative_path.endswith(".xlsx"):
                 xlsx_path = root / entry.relative_path
-                if xlsx_path.exists():
-                    result.append((xlsx_path, entry.sha256))
+                if not xlsx_path.is_file() or xlsx_path.is_symlink():
+                    raise FileNotFoundError(f"Missing or linked XLSX: {entry.relative_path}")
+                asset, _, view = xlsx_path.stem.rpartition("_")
+                if asset in TURBINE_IDS and view in ("F95", "F99") and view != self.filter_view:
+                    continue
+                result.append((xlsx_path, entry.sha256))
         return result
 
     @staticmethod
@@ -248,7 +258,13 @@ class EDPScadaParser:
             Column-level conformance with violation details.
         """
         if schema is None:
-            schema = EDP_FAILURES_SCHEMA if "failure" in file_id.lower() else EDP_SCADA_SCHEMA
+            stem = Path(file_id).stem
+            if stem == "Combined-Failure-Logbook-2016-2017":
+                schema = EDP_SOURCE_FAILURES_SCHEMA
+            elif stem.endswith(("_F95", "_F99")) and stem.split("_")[0] in TURBINE_IDS:
+                schema = EDP_SOURCE_SCADA_SCHEMA
+            else:
+                schema = EDP_FAILURES_SCHEMA if "failure" in file_id.lower() else EDP_SCADA_SCHEMA
 
         total_rows = len(rows)
         violations: list[ColumnViolation] = []
@@ -425,8 +441,9 @@ class EDPScadaParser:
         turbine workbooks (T01, T06, T07, T11) are iterated —
         Failures, Signals, MetMast, etc. are excluded.
 
-        Signal columns (everything except Timestamp) each produce
-        one ``TelemetryPoint`` per row.
+        Each signal column produces one ``TelemetryPoint`` per row.
+        The default publisher view is F95. Set ``filter_view="F99"`` for a
+        separate pass over the alternative view.
 
         Raises
         ------
@@ -458,44 +475,41 @@ class EDPScadaParser:
                     f"SHA-256 mismatch for {xlsx_path.name}: source integrity compromised"
                 )
 
-            file_sha = _sha256_file(xlsx_path)
-
-            wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
-            ws = wb.active
-            if ws is None:
-                wb.close()
-                continue
-
-            header = [str(c.value or "") for c in next(ws.iter_rows(max_row=1))]
-
-            ts_col = "Timestamp"
-            ts_idx = header.index(ts_col) if ts_col in header else None
-            signal_cols = [(i, col) for i, col in enumerate(header) if col != ts_col and col]
-
-            for row_cells in ws.iter_rows(min_row=2, values_only=True):
-                row_values = list(row_cells)
-                if ts_idx is None or ts_idx >= len(row_values):
-                    continue
-                observed_at = _coerce_datetime(row_values[ts_idx])
-                if observed_at is None:
-                    continue
-
-                # Extract turbine ID from filename
-                asset_id = stem
-
-                for col_idx, signal_name in signal_cols:
-                    if col_idx >= len(row_values):
+            wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True, keep_links=False)
+            try:
+                ws = wb.active
+                if ws is None:
+                    raise ValueError(f"No active sheet in {xlsx_path.name}")
+                rows = ws.iter_rows(values_only=True)
+                header = [str(value or "") for value in next(rows, ())]
+                if "Timestamp" not in header or len(set(header)) != len(header):
+                    raise ValueError(f"Missing Timestamp or duplicate headers in {xlsx_path.name}")
+                ts_idx = header.index("Timestamp")
+                id_idx = header.index("Turbine_ID") if "Turbine_ID" in header else None
+                expected_asset, _, view = stem.rpartition("_")
+                if expected_asset in TURBINE_IDS and view in ("F95", "F99") and id_idx is None:
+                    raise ValueError(f"Missing Turbine_ID in {xlsx_path.name}")
+                signal_cols = [
+                    (i, col) for i, col in enumerate(header) if col and i not in (ts_idx, id_idx)
+                ]
+                for row in rows:
+                    observed_at = _coerce_datetime(row[ts_idx])
+                    if observed_at is None:
                         continue
-                    value = _coerce_float(row_values[col_idx])
-
-                    yield TelemetryPoint(
-                        dataset_id=self.dataset_id,
-                        asset_id=asset_id,
-                        signal_id=signal_name,
-                        observed_at=observed_at,
-                        value=value,
-                        unit=None,
-                        source_sha256=file_sha,
-                    )
-
-            wb.close()
+                    asset_id = str(row[id_idx]) if id_idx is not None else stem
+                    if id_idx is not None and (
+                        asset_id not in TURBINE_IDS or not stem.startswith(asset_id)
+                    ):
+                        raise ValueError(f"Turbine_ID conflicts with filename: {xlsx_path.name}")
+                    for col_idx, signal_name in signal_cols:
+                        yield TelemetryPoint(
+                            dataset_id=self.dataset_id,
+                            asset_id=asset_id,
+                            signal_id=signal_name,
+                            observed_at=observed_at,
+                            value=_coerce_float(row[col_idx]),
+                            unit=None,
+                            source_sha256=expected_sha,
+                        )
+            finally:
+                wb.close()

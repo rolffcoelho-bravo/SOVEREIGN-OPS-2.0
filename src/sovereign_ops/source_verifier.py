@@ -97,6 +97,20 @@ def verify_esa_archives(source_dir: Path, registry_path: Path) -> dict[str, Any]
     }
 
 
+def _check_edp_workbook(path: Path) -> None:
+    try:
+        names = _check_zip_directory(path)
+    except (zipfile.BadZipFile, OSError) as exc:
+        raise SourceVerificationError(f"Unreadable workbook ZIP: {path.name}") from exc
+    if "[Content_Types].xml" not in names or "xl/workbook.xml" not in names:
+        raise SourceVerificationError(f"Missing XLSX structure: {path.name}")
+    if any(
+        name.startswith("xl/externallinks/") or name.endswith("vbaproject.bin")
+        for name in map(str.casefold, names)
+    ):
+        raise SourceVerificationError(f"Active or external workbook content: {path.name}")
+
+
 def inventory_edp_workbooks(source_dir: Path) -> dict[str, Any]:
     """Inventory local v2 candidates without asserting publisher file identity."""
     source_dir = source_dir.resolve(strict=True)
@@ -114,17 +128,7 @@ def inventory_edp_workbooks(source_dir: Path) -> dict[str, Any]:
         size, sha256, _ = _hash_file(path)
         if size == 0:
             raise SourceVerificationError(f"Empty workbook: {path.name}")
-        try:
-            names = _check_zip_directory(path)
-        except (zipfile.BadZipFile, OSError) as exc:
-            raise SourceVerificationError(f"Unreadable workbook ZIP: {path.name}") from exc
-        if "[Content_Types].xml" not in names or "xl/workbook.xml" not in names:
-            raise SourceVerificationError(f"Missing XLSX structure: {path.name}")
-        if any(
-            name.startswith("xl/externalLinks/") or name.endswith("vbaProject.bin")
-            for name in names
-        ):
-            raise SourceVerificationError(f"Active or external workbook content: {path.name}")
+        _check_edp_workbook(path)
         receipts.append({"name": path.name, "size_bytes": size, "sha256": sha256})
     return {
         "dataset_id": "EDP-SCADA-v2",

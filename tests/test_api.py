@@ -36,13 +36,17 @@ def test_readiness_reports_registry_status() -> None:
 def test_provenance_returns_registered_datasets() -> None:
     with TestClient(create_app()) as client:
         response = client.get("/provenance/registry")
-        if response.status_code == 200:
-            body = response.json()
-            assert len(body["registry_sha256"]) == 64
-            assert body["schema_version"] == "1"
-            assert len(body["datasets"]) == 2
-            ids = {d["dataset_id"] for d in body["datasets"]}
-            assert ids == {"ESA-AD-v2", "EDP-SCADA-v2"}
+        assert response.status_code == 200
+        body = response.json()
+        assert len(body["registry_sha256"]) == 64
+        assert body["schema_version"] == "1"
+        assert {
+            dataset["dataset_id"]: (dataset["file_count"], dataset["total_size_bytes"])
+            for dataset in body["datasets"]
+        } == {
+            "ESA-AD-v2": (3, 11609189449),
+            "EDP-SCADA-v2": (14, 188823550),
+        }
 
 
 def test_gates_endpoint_returns_development_progress() -> None:
@@ -76,12 +80,15 @@ def test_quality_schemas_returns_all_schemas() -> None:
         assert response.status_code == 200
         body = response.json()
         schemas = body["schemas"]
-        assert len(schemas) == 3  # ESA, EDP SCADA, EDP failures
+        assert len(schemas) == 5  # ESA, two legacy layouts, and two publisher EDP layouts
         ids = {s["dataset_id"] for s in schemas}
         assert ids == {"ESA-AD-v2", "EDP-SCADA-v2"}
         for s in schemas:
             assert len(s["sha256"]) == 64
             assert s["column_count"] == len(s["columns"])
+        source_scada = next(s for s in schemas if s["column_count"] == 83)
+        assert "Turbine_ID" in source_scada["columns"]
+        assert "Gen_RPM_Avg" in source_scada["columns"]
 
 
 def test_quality_schemas_by_dataset() -> None:
@@ -154,7 +161,8 @@ def test_comparison_protocol_returns_methodology() -> None:
         response = client.get("/pipeline/comparison-protocol")
         assert response.status_code == 200
         body = response.json()
-        assert body["name"] == "DARP Confirmatory Comparison"
+        assert body["name"] == "DARP Exploratory Comparison"
+        assert body["inference_status"] == "EXPLORATORY_ONLY"
         assert body["statistical_test"] == "Wilcoxon Signed-Rank"
         assert body["correction_method"] == "Holm-Bonferroni (step-down FWER)"
         assert body["significance_level"] == 0.05

@@ -6,8 +6,14 @@ row data, so no openpyxl dependency is required for the test suite.
 
 from __future__ import annotations
 
+import hashlib
 from datetime import UTC, datetime
+from pathlib import Path
 
+import openpyxl  # type: ignore[import-untyped]
+from pydantic import HttpUrl
+
+from sovereign_ops.contracts import AcquiredFile, AcquisitionManifest
 from sovereign_ops.edp_parser import EDPScadaParser
 from sovereign_ops.schemas import (
     EDP_FAILURES_SCHEMA,
@@ -73,6 +79,43 @@ class TestEDPParserIdentity:
     def test_dataset_id(self) -> None:
         parser = EDPScadaParser()
         assert parser.dataset_id == "EDP-SCADA-v2"
+
+    def test_publisher_workbooks_keep_filter_views_separate(self, tmp_path: Path) -> None:
+        timestamp = datetime(2016, 1, 1, tzinfo=UTC)
+        acquired = []
+        for view in ("F95", "F99"):
+            name = f"T01_{view}.xlsx"
+            path = tmp_path / name
+            book = openpyxl.Workbook()
+            book.active.append(["Turbine_ID", "Timestamp", "Gen_RPM_Avg"])
+            book.active.append(["T01", timestamp.isoformat(), 12])
+            book.save(path)
+            book.close()
+            acquired.append(
+                AcquiredFile(
+                    source_url=HttpUrl("https://data.mendeley.com/"),
+                    relative_path=name,
+                    size_bytes=path.stat().st_size,
+                    sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                    downloaded_at=timestamp,
+                )
+            )
+        manifest = AcquisitionManifest(
+            dataset_id="EDP-SCADA-v2",
+            doi="10.17632/zjxjnjp3xs.2",
+            version="2",
+            license_id="CC-BY-4.0",
+            rights_review_reference="synthetic-test",
+            files=tuple(acquired),
+        )
+        primary = list(EDPScadaParser().iter_points(tmp_path, manifest))
+        sensitivity = list(EDPScadaParser(filter_view="F99").iter_points(tmp_path, manifest))
+        assert len(primary) == len(sensitivity) == 1
+        assert primary[0].asset_id == sensitivity[0].asset_id == "T01"
+        assert primary[0].signal_id == sensitivity[0].signal_id == "Gen_RPM_Avg"
+        assert primary[0].observed_at == timestamp
+        assert primary[0].source_sha256 == acquired[0].sha256
+        assert sensitivity[0].source_sha256 == acquired[1].sha256
 
 
 # ---------------------------------------------------------------------------

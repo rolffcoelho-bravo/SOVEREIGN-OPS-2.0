@@ -16,9 +16,9 @@ for ESA, XLSX for EDP).
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import AwareDatetime, Field
 
@@ -27,6 +27,7 @@ from sovereign_ops.contracts import (
     Contract,
     DataQualityReport,
     DatasetId,
+    TimeWindow,
 )
 from sovereign_ops.schemas import SchemaConformanceReport
 
@@ -50,6 +51,7 @@ class QualityProfile(Contract):
     files_checked: Annotated[int, Field(strict=True, ge=0)]
     files_conforming: Annotated[int, Field(strict=True, ge=0)]
     overall_conforms: bool
+    excluded_files: tuple[str, ...] = ()
 
 
 def profile_dataset(
@@ -58,6 +60,7 @@ def profile_dataset(
     manifest: AcquisitionManifest,
     *,
     profiled_at: AwareDatetime | None = None,
+    filter_view: Literal["F95", "F99"] = "F95",
 ) -> QualityProfile:
     """Run a full quality profile for a dataset.
 
@@ -71,6 +74,9 @@ def profile_dataset(
         The acquisition manifest from G1.
     profiled_at
         Override timestamp for deterministic testing.
+    filter_view
+        Publisher EDP SCADA view to profile. Defaults to F95. Other release
+        files are recorded in ``excluded_files`` for this SCADA profile.
 
     Returns
     -------
@@ -89,6 +95,73 @@ def profile_dataset(
         from datetime import UTC
 
         profiled_at = datetime.now(UTC)
+
+    if dataset_id == "EDP-SCADA-v2":
+        source_entries = [
+            entry
+            for entry in manifest.files
+            if Path(entry.relative_path).name
+            in {f"{asset}_{filter_view}.xlsx" for asset in ("T01", "T06", "T07", "T11")}
+        ]
+        if source_entries:
+            from sovereign_ops.edp_source_audit import profile_scada_workbook
+
+            source_profiles = [
+                profile_scada_workbook(
+                    root,
+                    {
+                        "name": entry.relative_path,
+                        "source_url": str(entry.source_url),
+                        "size_bytes": entry.size_bytes,
+                        "sha256": entry.sha256,
+                    },
+                )
+                for entry in source_entries
+            ]
+            starts = [
+                p.first_observed_at for p in source_profiles if p.first_observed_at is not None
+            ]
+            ends = [p.last_observed_at for p in source_profiles if p.last_observed_at is not None]
+            if not starts or not ends:
+                raise ValueError("No valid timezone-aware SCADA observations to profile")
+            rows = sum(p.rows for p in source_profiles)
+            missing = sum(sum(p.missing_by_column.values()) for p in source_profiles)
+            issues = tuple(
+                f"{p.file}: {p.duplicate_observation_keys} duplicate keys, "
+                f"{p.missing_grid_slots} missing grid slots, {p.out_of_order_rows} reversed rows, "
+                f"{p.off_grid_rows} off-grid observations, schema_conforms={p.schema_conforms}"
+                for p in source_profiles
+                if (
+                    p.duplicate_observation_keys
+                    or p.missing_grid_slots
+                    or p.out_of_order_rows
+                    or p.off_grid_rows
+                    or not p.schema_conforms
+                )
+            )
+            quality = DataQualityReport(
+                dataset_id=dataset_id,
+                source_manifest_sha256=manifest.sha256_digest(),
+                window=TimeWindow(start=min(starts), end=max(ends) + timedelta(microseconds=1)),
+                rows=rows,
+                missing_fraction=missing / (rows * 83),
+                duplicate_rows=sum(p.duplicate_rows for p in source_profiles),
+                issues=issues,
+            )
+            reports = tuple(p.conformance_report() for p in source_profiles)
+            included = {p.file for p in source_profiles}
+            return QualityProfile(
+                dataset_id=dataset_id,
+                profiled_at=profiled_at,
+                conformance_reports=reports,
+                quality_report=quality,
+                files_checked=len(reports),
+                files_conforming=sum(r.conforms for r in reports),
+                overall_conforms=all(r.conforms for r in reports),
+                excluded_files=tuple(
+                    f.relative_path for f in manifest.files if f.relative_path not in included
+                ),
+            )
 
     conformance_reports: list[SchemaConformanceReport] = []
 

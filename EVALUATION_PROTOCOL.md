@@ -42,6 +42,14 @@ pipeline or install unmodified PyPI TimeEval as a substitute in G0.
 
 ## EDP chronological, turbine-aware design
 
+The 2026-11-20 source audit found 28 failure-log rows across five turbines.
+Seven rows refer to T09, whose SCADA workbook is absent from this v2 release.
+The remaining 21 rows require event-identity and temporal eligibility checks.
+All logged failure times are timezone-naive Excel datetimes. Confirm their
+timezone and operational meaning before deriving pre-failure labels. Source
+SCADA timestamps include UTC offsets, and the two filtered views have different
+observation coverage. Preserve gaps when building windows and measuring exposure.
+
 Proposed partitions: 2016-01-01 through 2016-12-31 training; 2017-01-01 through
 2017-06-30 validation; 2017-07-01 through 2017-12-31 held-out test, expressed as
 half-open UTC intervals at exact midnight boundaries in the frozen config.

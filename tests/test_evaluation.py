@@ -154,7 +154,7 @@ class TestEdgeCases:
 
         assert result.precision is None  # 0/(0+0) → undefined
         assert result.recall == 0.0
-        assert result.f1 is None
+        assert result.f1 == 0.0
 
     def test_all_predicted_positive(self) -> None:
         predictions = [
@@ -177,8 +177,41 @@ class TestEdgeCases:
         assert r1.sha256_digest() == r2.sha256_digest()
 
     def test_empty_evaluation(self) -> None:
-        """Zero predictions → valid result with zero totals."""
-        result = evaluate_predictions([], [], split_spec=_split(), config=_config())
-        assert result.total_samples == 0
-        assert result.abstention_rate == 0.0
-        assert result.precision is None
+        with pytest.raises(ValueError, match="at least one prediction"):
+            evaluate_predictions([], [], split_spec=_split(), config=_config())
+
+    @pytest.mark.parametrize(
+        "decisions,labels,expected",
+        [
+            ([True, False], [False, True], 0.0),
+            ([True, True], [False, False], 0.0),
+            ([False, False], [False, False], None),
+        ],
+    )
+    def test_count_based_f1(
+        self, decisions: list[bool], labels: list[bool], expected: float | None
+    ) -> None:
+        predictions = [_pred(value, idx=i) for i, value in enumerate(decisions)]
+        result = evaluate_predictions(predictions, labels, split_spec=_split(), config=_config())
+        assert result.f1 == expected
+
+    @pytest.mark.parametrize(
+        "updates,reason",
+        [
+            ({"dataset_id": "EDP-SCADA-v2"}, "domain and model"),
+            ({"model_id": "different-model"}, "domain and model"),
+            ({"observed_at": _BASE}, "test window"),
+            ({"is_anomaly": None}, "decision must be absent"),
+            ({"abstained": True}, "decision must be absent"),
+        ],
+    )
+    def test_invalid_prediction_context(self, updates: dict[str, object], reason: str) -> None:
+        prediction = _pred(True).model_copy(update=updates)
+        with pytest.raises(ValueError, match=reason):
+            evaluate_predictions([prediction], [True], split_spec=_split(), config=_config())
+
+    def test_duplicate_predictions_rejected(self) -> None:
+        with pytest.raises(ValueError, match="Duplicate prediction"):
+            evaluate_predictions(
+                [_pred(True), _pred(True)], [True, True], split_spec=_split(), config=_config()
+            )

@@ -1,13 +1,13 @@
 # Dataset registry
 
 Canonical machine-readable source definitions: [DATASET_REGISTRY.json](DATASET_REGISTRY.json).
-These are download plans, not manifests of acquired files. All local SHA-256
-values and actual byte sizes remain `PENDING_SOURCE_DOWNLOAD`.
+The acquisition commands and provenance API use this same registry. It records
+publisher metadata. Local receipts record which bytes were actually verified.
 
 | ID | Exact release | Official URL | Current state |
 |---|---|---|---|
 | ESA-AD-v2 | DOI 10.5281/zenodo.15237121 | https://zenodo.org/records/15237121 | NOT_DOWNLOADED; record licence CC BY 3.0 IGO confirmed, file notices pending |
-| EDP-SCADA-v2 | DOI 10.17632/zjxjnjp3xs.2 | https://data.mendeley.com/datasets/zjxjnjp3xs/2 | NOT_DOWNLOADED; licence observed, file review pending |
+| EDP-SCADA-v2 | DOI 10.17632/zjxjnjp3xs.2 | https://data.mendeley.com/datasets/zjxjnjp3xs/2 | 14 publisher entries pinned with SHA-256; see the status audit for local evidence |
 
 ## ESA acquisition requirements
 
@@ -24,11 +24,12 @@ No archive was downloaded, extracted, parsed, or hashed in G0.
 
 ## EDP acquisition requirements
 
-Open the exact Mendeley v2 page and use its file list/Download All Files. The page
-reports 10 Excel files and 173.7 MB total; these are publisher statements, not
-measured byte sizes. Record the actual per-file names, version-specific URLs,
-sizes, publisher checksums if provided, local SHA-256, and file notices in G1.
-The original EDP portal is a provenance link, not a silent replacement for v2.
+The versioned [Mendeley file listing](https://data.mendeley.com/public-api/datasets/zjxjnjp3xs/files?folder_id=root&version=2)
+enumerates **14 files (188,823,550 bytes)**. The set contains eight turbine
+workbooks, two year-specific alarm logs, one mast workbook, one failure workbook,
+and two fault-log PNGs. Use the pinned per-file listing for integrity checks.
+The landing-page description of 10 Excel files and 173.7 MB differs from the
+file listing. The original EDP portal documents the upstream source.
 
 The page describes filtered SCADA, not a raw/unfiltered telemetry release. Keep
 95% and 99.9% filtered views separate with linked observation identity. Do not

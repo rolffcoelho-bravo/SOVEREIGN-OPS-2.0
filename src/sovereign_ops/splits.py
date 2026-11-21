@@ -11,6 +11,7 @@ cryptographic verification of reproducibility via ``SplitSpec.sha256_digest()``.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 from datetime import datetime
 
@@ -38,7 +39,8 @@ def chronological_split(
     """Build a ``SplitSpec`` from a time-sorted sequence of telemetry points.
 
     The fractions must sum to 1.0 (within floating-point tolerance).
-    Points are sorted by ``observed_at``; ties are stable-sorted.
+    Fractions apply to distinct timestamps. Observations sharing a timestamp
+    remain in the same partition.
 
     Parameters
     ----------
@@ -47,7 +49,7 @@ def chronological_split(
     points:
         Must contain at least 10 observations.
     train_frac, calibration_frac, test_frac:
-        Proportions of the total time range assigned to each window.
+        Proportions of distinct timestamps assigned to each window.
         Set ``calibration_frac=0`` to skip the calibration window.
 
     Returns
@@ -67,19 +69,26 @@ def chronological_split(
         (calibration_frac, "calibration_frac"),
         (test_frac, "test_frac"),
     ]:
-        if frac < 0:
-            raise ValueError(f"{name} must be non-negative, got {frac}")
+        if not math.isfinite(frac) or frac < 0:
+            raise ValueError(f"{name} must be finite and non-negative, got {frac}")
 
     total = train_frac + calibration_frac + test_frac
     if abs(total - 1.0) > 1e-9:
         raise ValueError(f"Fractions must sum to 1.0, got {total:.10f}")
+    if train_frac == 0 or test_frac == 0:
+        raise ValueError("Training and test fractions must be positive")
+    if any(point.dataset_id != dataset_id for point in points):
+        raise ValueError("Point domains must match the split domain")
 
-    sorted_times: list[datetime] = sorted(p.observed_at for p in points)
+    sorted_times: list[datetime] = sorted({p.observed_at for p in points})
     n = len(sorted_times)
+    remaining_windows = 2 if calibration_frac > 0 else 1
+    if n < remaining_windows + 1:
+        raise ValueError("Need a distinct timestamp for each requested partition")
 
-    train_end_idx = max(1, int(n * train_frac))
+    train_end_idx = min(n - remaining_windows, max(1, int(n * train_frac)))
     if calibration_frac > 0:
-        cal_end_idx = max(train_end_idx + 1, int(n * (train_frac + calibration_frac)))
+        cal_end_idx = min(n - 1, max(train_end_idx + 1, int(n * (train_frac + calibration_frac))))
     else:
         cal_end_idx = train_end_idx
 

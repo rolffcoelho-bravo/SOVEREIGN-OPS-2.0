@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "kind": "SOURCE_REGISTRY_NOT_ACQUISITION_MANIFEST",
-  "reviewed_at": "2026-11-18T21:32:10.499617+00:00",
+  "reviewed_at": "2026-11-18T22:32:10.499617+01:00",
   "datasets": [
     {
       "id": "ESA-AD-v2",
@@ -41,7 +41,10 @@
           "actual_size_bytes": "PENDING_SOURCE_DOWNLOAD",
           "sha256": "PENDING_SOURCE_DOWNLOAD"
         }
-      ]
+      ],
+      "name": "ESA Spacecraft Anomaly Dataset v2",
+      "domain": "spacecraft-telemetry",
+      "sector": "space"
     },
     {
       "id": "EDP-SCADA-v2",
@@ -54,11 +57,99 @@
       "license_evidence_url": "https://data.mendeley.com/datasets/zjxjnjp3xs/2",
       "license_scope": "Version-specific page; individual file notices still to review",
       "acknowledgement": "Credit Krzysztof Kijanowski, Tomasz Barszcz, Wieslaw Staszewski, Phong Dao and original source EDP; cite exact DOI, link CC BY 4.0 and identify modifications.",
-      "published_size_description": "10 Excel files; 173.7 MB as reported by publisher, not exact byte measurements",
-      "file_inventory_status": "PENDING_SOURCE_DOWNLOAD",
-      "actual_size_bytes": "PENDING_SOURCE_DOWNLOAD",
-      "sha256": "PENDING_SOURCE_DOWNLOAD",
-      "files": []
+      "file_inventory_status": "PUBLISHER_FILE_METADATA_PINNED",
+      "files": [
+        {
+          "name": "2016 fault log.png",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/9386a057-63b8-4199-9413-1eac0e12fc0a/file_downloaded",
+          "published_size_bytes": 66677,
+          "published_checksum": "sha256:7229b209bf193eba0da546726a36759e042cabd13344face86b7050276cb0336"
+        },
+        {
+          "name": "2017 fault log.png",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/058a524c-8f09-4367-ad6e-f5be1b8e90ac/file_downloaded",
+          "published_size_bytes": 47771,
+          "published_checksum": "sha256:7b37392d0a9758c0aaa6a1c07d71c6852d3c42b42473800b760f80f1cef3db30"
+        },
+        {
+          "name": "Combined-Failure-Logbook-2016-2017.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/034dd515-8eae-44ee-8d99-537de6b9c4f4/file_downloaded",
+          "published_size_bytes": 6054,
+          "published_checksum": "sha256:4fa7d7761bc6a7b09794a7c7ef8d73bcbf5edcd77cfb04ecc8470dd546640ee2"
+        },
+        {
+          "name": "Combined-MetMast-SCADA-2016-2017.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/e9488959-c6b6-4478-81b3-a64990a57d83/file_downloaded",
+          "published_size_bytes": 13577197,
+          "published_checksum": "sha256:7f3362e88f52f248fc5a7bbb42573daf0baffad929b996299bfeabc58738783d"
+        },
+        {
+          "name": "T01_F95.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/5eacca26-d9f4-437b-8082-322c86348011/file_downloaded",
+          "published_size_bytes": 20702793,
+          "published_checksum": "sha256:655fb713768651d432bfaf990c3dd4795d522950e86c89a701ef4258cf28801b"
+        },
+        {
+          "name": "T01_F99.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/6c3a6348-959d-4ed6-8028-e587055441b2/file_downloaded",
+          "published_size_bytes": 20824770,
+          "published_checksum": "sha256:6bc53a294093e70a2a1dc1a95376a9fd56c7635e0ef5d36a2d2f95d43757c452"
+        },
+        {
+          "name": "T06_F95.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/8b13666d-1494-4413-bab8-cd29178927fc/file_downloaded",
+          "published_size_bytes": 20285336,
+          "published_checksum": "sha256:67614ab630f271bae146c5b000b9c52a83e074dd28816edf1f255e3cd3b58209"
+        },
+        {
+          "name": "T06_F99.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/8dfb1277-d77c-4389-9b01-f6c4b6d61ed5/file_downloaded",
+          "published_size_bytes": 20516149,
+          "published_checksum": "sha256:6f372493c862ed1998b9acea25b41007495a1bf14830c246c5a0977a081deba7"
+        },
+        {
+          "name": "T07_F95.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/185bf5dc-d643-4e83-b76f-838a3289e1c1/file_downloaded",
+          "published_size_bytes": 20767989,
+          "published_checksum": "sha256:cd8a8ddd76bc34b18f2573158291389020fa97b3c904408272a0f87fa895fa37"
+        },
+        {
+          "name": "T07_F99.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/bf728fca-cbea-4efc-8065-53c81c293f6d/file_downloaded",
+          "published_size_bytes": 20985035,
+          "published_checksum": "sha256:f29a0366dfc59c99bcaa3efd9905dca2e160fbd023d2239555ff0f2b8deca6f6"
+        },
+        {
+          "name": "T11_F95.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/a8bc7c1f-2428-405c-9c10-b2bc06ce9fde/file_downloaded",
+          "published_size_bytes": 22161912,
+          "published_checksum": "sha256:b1373f7aa6b852b8c81ffc1cd5d4fcc3ccece6a292024d83bdc37c9ac97c2ccb"
+        },
+        {
+          "name": "T11_F99.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/a8be1f9d-c864-4246-85af-2515024b9b4b/file_downloaded",
+          "published_size_bytes": 22439798,
+          "published_checksum": "sha256:7b3940e34d48bfe513af6c6cd4ec034ea49d2ac740c8e4c26b095165b5c890f2"
+        },
+        {
+          "name": "Wind Turbines Logs 2017.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/a1e69df8-4e18-4047-b2ff-006fb89cf3e9/file_downloaded",
+          "published_size_bytes": 3392271,
+          "published_checksum": "sha256:ea55cacb94a930e927acb190909142a7df7ea544109ca986e34e4df9d9356271"
+        },
+        {
+          "name": "Wind-Turbines-Logs-2016.xlsx",
+          "source_url": "https://data.mendeley.com/public-files/datasets/zjxjnjp3xs/files/ae510451-18dd-4eaf-9cc2-2783a2e51809/file_downloaded",
+          "published_size_bytes": 3049798,
+          "published_checksum": "sha256:297dc37961aa2ece795f652bfeebe4ac6d47d0d21c6fe8f7a647228763ae3868"
+        }
+      ],
+      "metadata_url": "https://data.mendeley.com/public-api/datasets/zjxjnjp3xs/files?folder_id=root&version=2",
+      "file_metadata_reviewed_on": "2026-11-20",
+      "published_total_size_bytes": 188823550,
+      "name": "EDP Wind Turbine SCADA Dataset v2",
+      "domain": "wind-turbine-scada",
+      "sector": "energy"
     }
   ]
 }

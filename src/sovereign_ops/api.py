@@ -5,7 +5,7 @@ Readiness: the data registry is loaded and structurally valid.
 Provenance: immutable metadata about registered datasets and gate status.
 Quality: G2 schema definitions and conformance metadata.
 Pipeline: G4 DARP Core — pipeline configuration and decision protocol metadata.
-Comparison: G5 confirmatory evaluation — statistical comparison protocol metadata.
+Comparison: G5 exploratory statistical comparison metadata.
 
 No data ingestion, inference, or live infrastructure connection exists at G0–G5.
 """
@@ -21,6 +21,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict
 
 from sovereign_ops import __version__
+from sovereign_ops.edp_source_schemas import EDP_SOURCE_FAILURES_SCHEMA, EDP_SOURCE_SCADA_SCHEMA
 from sovereign_ops.schemas import (
     EDP_FAILURES_SCHEMA,
     EDP_SCADA_SCHEMA,
@@ -32,7 +33,7 @@ from sovereign_ops.schemas import (
 # Registry loading
 # ---------------------------------------------------------------------------
 
-_REGISTRY_PATH = Path(__file__).resolve().parents[2] / "data" / "registry.json"
+_REGISTRY_PATH = Path(__file__).resolve().parents[2] / "DATASET_REGISTRY.json"
 
 
 def _load_registry() -> dict[str, Any]:
@@ -233,23 +234,25 @@ class ComparisonStepInfo(BaseModel):
 class ComparisonProtocolResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    name: str = "DARP Confirmatory Comparison"
+    name: str = "DARP Exploratory Comparison"
+    inference_status: Literal["EXPLORATORY_ONLY"] = "EXPLORATORY_ONLY"
     version: str = "1.0"
     statistical_test: str = "Wilcoxon Signed-Rank"
     correction_method: str = "Holm-Bonferroni (step-down FWER)"
     significance_level: float = 0.05
     min_pairs: int = 5
     exact_threshold: int = 25
-    splitting_strategy: str = "K chronological splits (default K=5)"
+    splitting_strategy: str = "K disjoint chronological blocks (default K=5)"
     metric: str = "f1"
     steps: tuple[ComparisonStepInfo, ...]
     description: str = (
-        "Multiple detector configurations are evaluated over K chronological "
-        "splits.  For each pair of detectors, a Wilcoxon signed-rank test "
+        "Multiple detector configurations are evaluated over K disjoint chronological "
+        "blocks. For each pair of detectors, a Wilcoxon signed-rank test "
         "compares their per-split F1 scores.  P-values are then corrected "
         "using Holm-Bonferroni step-down procedure to control the family-wise "
         "error rate.  The result is a ComparisonReport with pairwise "
-        "significance verdicts and an overall ranking."
+        "significance verdicts and an overall ranking. Results remain exploratory "
+        "until the real-data protocol and inference units are validated and frozen."
     )
 
 
@@ -259,7 +262,12 @@ class ComparisonProtocolResponse(BaseModel):
 
 _SCHEMA_REGISTRY: dict[str, tuple[DatasetSchema, ...]] = {
     "ESA-AD-v2": (ESA_SCHEMA,),
-    "EDP-SCADA-v2": (EDP_SCADA_SCHEMA, EDP_FAILURES_SCHEMA),
+    "EDP-SCADA-v2": (
+        EDP_SCADA_SCHEMA,
+        EDP_FAILURES_SCHEMA,
+        EDP_SOURCE_SCADA_SCHEMA,
+        EDP_SOURCE_FAILURES_SCHEMA,
+    ),
 }
 
 
@@ -323,31 +331,31 @@ GATES: tuple[GateStatus, ...] = (
         gate="G1",
         name="Data Sovereignty",
         status="COMPLETE",
-        description="Acquisition, integrity verification, cryptographic provenance, rights audit",
+        description="Acquisition and integrity tooling; empirical readiness is tracked separately",
     ),
     GateStatus(
         gate="G2",
         name="Structural Audit",
         status="COMPLETE",
-        description="Schema validation, domain-specific parsing, quality reporting",
+        description="Schema and parser implementation; publisher-source audits in progress",
     ),
     GateStatus(
         gate="G3",
         name="Baseline Models",
         status="COMPLETE",
-        description="Single-domain anomaly detectors with abstention-aware evaluation",
+        description="Single-domain detector code tested on synthetic inputs",
     ),
     GateStatus(
         gate="G4",
         name="DARP Core",
         status="COMPLETE",
-        description="Cross-domain decision protocol with shared abstention vocabulary",
+        description="Decision and abstention protocol tested on synthetic inputs",
     ),
     GateStatus(
         gate="G5",
         name="Confirmatory Evaluation",
         status="IN_PROGRESS",
-        description="Holm-corrected multiple comparisons on held-out chronological splits",
+        description="Exploratory comparison code; confirmatory protocol and data audit pending",
     ),
     GateStatus(
         gate="G6",
@@ -448,11 +456,11 @@ def create_app() -> FastAPI:
                     name=ds["name"],
                     doi=ds["doi"],
                     version=ds["version"],
-                    license_id=ds["license"]["id"],
+                    license_id=ds["license_candidate"],
                     domain=ds["domain"],
                     sector=ds["sector"],
                     file_count=len(ds.get("files", [])),
-                    total_size_bytes=ds.get("total_size_bytes", 0),
+                    total_size_bytes=ds["published_total_size_bytes"],
                 )
             )
         return ProvenanceResponse(

@@ -1,7 +1,8 @@
 # Data rights review
 
-Reviewed 2026-11-18 from official metadata and source repositories. This is a
-technical provenance record; no data has been acquired or redistributed.
+Record-level rights were reviewed on 2026-11-18 from official metadata and
+source repositories. See the status audit for the 2026-11-20 local acquisition
+and inspection scope.
 
 | Material | Observed licence | Decision at G0 |
 |---|---|---|
@@ -9,7 +10,7 @@ technical provenance record; no data has been acquired or redistributed.
 | Zenodo ESA v2 record 15237121 | CC BY 3.0 IGO in embedded v2 page metadata | Record-level licence confirmed; inspect file-level notices before redistribution |
 | EDP Mendeley version 2 | CC BY 4.0 displayed on version-specific page | Metadata licence confirmed; individual file coverage and notices must be checked at G1 |
 | ESA-ADB top-level code | MIT at reviewed commit | Not vendored or executed; individual algorithms have separate licences |
-| ShockBridge original code | PENDING_OWNER_SELECTION | Do not label as MIT/Apache or claim open-source licensing yet |
+| ShockBridge original code | Apache-2.0 | See [LICENSE](LICENSE) for the released software |
 
 ## Attribution and separation
 
@@ -46,3 +47,12 @@ For each exact release preserve the official licence text/reference, retrieval
 time and hash, file-level scope, required attribution, permitted local use and
 distribution, reviewer identity, and evidence for approval. Unknown permission
 means BLOCKED. Raw data and confidential information never enter either Git repo.
+
+### EDP v2 publisher material
+
+The Mendeley v2 page displays CC BY 4.0 for DOI `10.17632/zjxjnjp3xs.2`.
+The same version's file listing identifies all 14 files by SHA-256. The local
+audit found zero workbook ZIP members named like a licence or notice. This scan
+covered ZIP member names. File-level conditions and redistribution approval
+remain pending. The acquisition receipt records integrity verification and
+keeps this rights review open.

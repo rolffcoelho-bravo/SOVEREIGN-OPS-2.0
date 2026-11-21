@@ -1,0 +1,127 @@
+"""Schemas pinned from the publisher-verified EDP v2 workbook headers."""
+
+from sovereign_ops.schemas import ColumnDtype, ColumnSpec, DatasetSchema
+
+SCADA_SIGNALS: tuple[str, ...] = (
+    "Gen_RPM_Max",
+    "Gen_RPM_Min",
+    "Gen_RPM_Avg",
+    "Gen_RPM_Std",
+    "Gen_Bear_Temp_Avg",
+    "Gen_Phase1_Temp_Avg",
+    "Gen_Phase2_Temp_Avg",
+    "Gen_Phase3_Temp_Avg",
+    "Hyd_Oil_Temp_Avg",
+    "Gear_Oil_Temp_Avg",
+    "Gear_Bear_Temp_Avg",
+    "Nac_Temp_Avg",
+    "Rtr_RPM_Max",
+    "Rtr_RPM_Min",
+    "Rtr_RPM_Avg",
+    "Amb_WindSpeed_Max",
+    "Amb_WindSpeed_Min",
+    "Amb_WindSpeed_Avg",
+    "Amb_WindSpeed_Std",
+    "Amb_WindDir_Relative_Avg",
+    "Amb_WindDir_Abs_Avg",
+    "Amb_Temp_Avg",
+    "Prod_LatestAvg_ActPwrGen0",
+    "Prod_LatestAvg_ActPwrGen1",
+    "Prod_LatestAvg_ActPwrGen2",
+    "Prod_LatestAvg_TotActPwr",
+    "Prod_LatestAvg_ReactPwrGen0",
+    "Prod_LatestAvg_ReactPwrGen1",
+    "Prod_LatestAvg_ReactPwrGen2",
+    "Prod_LatestAvg_TotReactPwr",
+    "HVTrafo_Phase1_Temp_Avg",
+    "HVTrafo_Phase2_Temp_Avg",
+    "HVTrafo_Phase3_Temp_Avg",
+    "Grd_InverterPhase1_Temp_Avg",
+    "Cont_Top_Temp_Avg",
+    "Cont_Hub_Temp_Avg",
+    "Cont_VCP_Temp_Avg",
+    "Gen_SlipRing_Temp_Avg",
+    "Spin_Temp_Avg",
+    "Blds_PitchAngle_Min",
+    "Blds_PitchAngle_Max",
+    "Blds_PitchAngle_Avg",
+    "Blds_PitchAngle_Std",
+    "Cont_VCP_ChokcoilTemp_Avg",
+    "Grd_RtrInvPhase1_Temp_Avg",
+    "Grd_RtrInvPhase2_Temp_Avg",
+    "Grd_RtrInvPhase3_Temp_Avg",
+    "Cont_VCP_WtrTemp_Avg",
+    "Grd_Prod_Pwr_Avg",
+    "Grd_Prod_CosPhi_Avg",
+    "Grd_Prod_Freq_Avg",
+    "Grd_Prod_VoltPhse1_Avg",
+    "Grd_Prod_VoltPhse2_Avg",
+    "Grd_Prod_VoltPhse3_Avg",
+    "Grd_Prod_CurPhse1_Avg",
+    "Grd_Prod_CurPhse2_Avg",
+    "Grd_Prod_CurPhse3_Avg",
+    "Grd_Prod_Pwr_Max",
+    "Grd_Prod_Pwr_Min",
+    "Grd_Busbar_Temp_Avg",
+    "Rtr_RPM_Std",
+    "Amb_WindSpeed_Est_Avg",
+    "Grd_Prod_Pwr_Std",
+    "Grd_Prod_ReactPwr_Avg",
+    "Grd_Prod_ReactPwr_Max",
+    "Grd_Prod_ReactPwr_Min",
+    "Grd_Prod_ReactPwr_Std",
+    "Grd_Prod_PsblePwr_Avg",
+    "Grd_Prod_PsblePwr_Max",
+    "Grd_Prod_PsblePwr_Min",
+    "Grd_Prod_PsblePwr_Std",
+    "Grd_Prod_PsbleInd_Avg",
+    "Grd_Prod_PsbleInd_Max",
+    "Grd_Prod_PsbleInd_Min",
+    "Grd_Prod_PsbleInd_Std",
+    "Grd_Prod_PsbleCap_Avg",
+    "Grd_Prod_PsbleCap_Max",
+    "Grd_Prod_PsbleCap_Min",
+    "Grd_Prod_PsbleCap_Std",
+    "Gen_Bear2_Temp_Avg",
+    "Nac_Direction_Avg",
+)
+
+EDP_SOURCE_SCADA_SCHEMA = DatasetSchema(
+    dataset_id="EDP-SCADA-v2",
+    file_pattern="T??_F*.xlsx",
+    description=(
+        "Publisher EDP v2 filtered SCADA. Native identifiers and 81 measured signals. "
+        "Numeric ranges and units require a source dictionary before physical validation."
+    ),
+    timestamp_column="Timestamp",
+    strict_columns=True,
+    columns=(
+        ColumnSpec(name="Turbine_ID", dtype=ColumnDtype.STRING),
+        ColumnSpec(
+            name="Timestamp",
+            dtype=ColumnDtype.DATETIME,
+            description="Publisher ISO-8601 UTC observation time",
+        ),
+        *(
+            ColumnSpec(name=name, dtype=ColumnDtype.FLOAT64, nullable=True)
+            for name in SCADA_SIGNALS
+        ),
+    ),
+)
+
+EDP_SOURCE_FAILURES_SCHEMA = DatasetSchema(
+    dataset_id="EDP-SCADA-v2",
+    file_pattern="Combined-Failure-Logbook-2016-2017.xlsx",
+    description=(
+        "Publisher failure records. Timestamp timezone and event availability semantics "
+        "must be resolved before constructing prediction labels."
+    ),
+    timestamp_column="Timestamp",
+    strict_columns=True,
+    columns=(
+        ColumnSpec(name="Turbine_ID", dtype=ColumnDtype.STRING),
+        ColumnSpec(name="Component", dtype=ColumnDtype.STRING),
+        ColumnSpec(name="Timestamp", dtype=ColumnDtype.DATETIME),
+        ColumnSpec(name="Remarks", dtype=ColumnDtype.STRING, nullable=True),
+    ),
+)
