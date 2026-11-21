@@ -79,6 +79,14 @@ They do not certify downloaded telemetry, licence applicability, or benchmark pe
 
 ## Filtering discrepancy checked on 2026-11-21
 
+The duplicate-key diagnostic found repeated 02:00–02:50 rows on 2016-10-30
+and 2017-10-29. The [Portuguese clock record for 2016](https://www.timeanddate.com/time/change/portugal?year=2016)
+and [2017](https://www.timeanddate.com/time/change/portugal?year=2017) places
+the repeated local hour at 01:00. The [Central European 2017 record](https://www.timeanddate.com/time/change/germany?year=2017)
+places it at 02:00. This is a hypothesis about a processing timezone, not
+proof of the source conversion. The workbook strings carry `Z`; those duplicate
+rows therefore cannot both be distinct UTC instants as currently represented.
+
 The [Mendeley v2 description](https://data.mendeley.com/datasets/zjxjnjp3xs/2)
 states 95% and 99.9%. Its linked
 [filtering paper](https://www.mdpi.com/1996-1073/18/22/5954), especially Sections

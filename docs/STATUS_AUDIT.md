@@ -86,6 +86,18 @@ The 42 repeated observation keys require a declared reconciliation policy
 because their full rows differ. Model fitting now rejects repeated keys, and
 chronological splitting keeps each timestamp group within one partition.
 
+The 2026-11-21 duplicate diagnostic located all 42 repeated keys. Each group
+has two conflicting rows. Every group occurs at 02:00–02:50 on either
+2016-10-30 or 2017-10-29, the two European autumn clock-change dates.
+T01/T07/T11 have six groups in each year; T06 has six in 2017 only. This is
+strong evidence for a clock-handling problem, but does not identify the original
+instants. Continental Portugal repeats 01:00 locally on these dates, while a
+02:00 repeated hour is characteristic of Central European local time. The files
+claim a UTC offset. Do not assign an hour to either member from row order.
+The local receipt contains source hashes, row numbers and differing column names,
+not measurements. Check publisher timestamp generation and F99 before proposing
+a transformation. The current F95 ingestion block is correct.
+
 ## ESA v2 measured evidence
 
 The [Zenodo v2 record](https://zenodo.org/records/15237121) lists three archives

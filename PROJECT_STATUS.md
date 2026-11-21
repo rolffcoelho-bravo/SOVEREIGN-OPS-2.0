@@ -2,9 +2,10 @@
 
 ## Current milestone
 
-G1 native EDP ingestion acceptance, following the source-contract work in
-`docs/STATUS_AUDIT.md`. **Implementation complete and verified locally.**
-Empirical G1/G2 acceptance remains open.
+G1 EDP duplicate-group diagnostic. All four F95 workbooks were scanned twice
+with publisher hash checks. A local receipt records conflict locations and
+differing column names without exporting measurements. Ingestion remains blocked
+for the affected files. Empirical G1/G2 acceptance remains open.
 
 Acceptance criteria:
 
@@ -73,13 +74,21 @@ increment. The supplied workflow is saved at workspace level, outside this repo.
 
 ## Exact next action
 
-Build a bounded duplicate-group diagnostic for the four F95 workbooks. Preserve
-source hashes, row locations, timestamps and differing-column names in a local
-receipt. Determine whether repeated times share an event/timezone pattern before
-proposing a declared reconciliation policy. Keep all conflicting rows blocked;
-do not silently keep the first/last row or label cadence gaps as physical outages.
-Resolve source filtering and failure-time meaning before creating labels or
-freezing a split. Do not rerun completed source scans unless new evidence is needed.
+Investigate source timestamp generation and timezone provenance. All 42 F95
+repeated keys are 02:00–02:50 on 2016-10-30 or 2017-10-29, the two European
+autumn clock-change dates. Every pair differs in measurements. This supports a
+clock-change hypothesis, but cannot establish the true original instants or a
+safe offset assignment. Continental Portugal repeats 01:00 locally, while
+02:00 is characteristic of Central European local time. Seek publisher
+processing code or data dictionary; compare F99 and source event logs before
+proposing a reconciliation policy. Keep conflicting rows blocked and do not
+label cadence gaps as physical outages. Resolve failure-time meaning before
+creating labels or freezing a split.
+
+The diagnostic command is `python scripts/diagnose_edp_duplicates.py
+<external-data-dir> --output <external-receipt.json>`. The local receipt is
+`sovereign-ops-local/evidence/edp-v2-F95-duplicates-2026-11-21.json`.
+Focused synthetic test, Ruff and strict mypy passed. No fitted model was run.
 
 Research-review finding: the Mendeley v2 page says the alternative filtering
 threshold is 99.9%, but its cited filtering paper uses 99%. Keep the filename

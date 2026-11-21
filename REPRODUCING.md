@@ -102,6 +102,13 @@ partial results on an exception or interruption. This API is not a durable,
 transactional ingest store. The real T01 F95 check on 2026-11-21 completed with
 52,085 rows and a `BLOCKED` decision for 12 repeated observation keys.
 
+Run `python scripts/diagnose_edp_duplicates.py /path/to/edp-v2 --output
+/path/to/private-receipts/edp-v2-F95-duplicates.json` for a bounded diagnostic
+of all four F95 workbooks. It verifies publisher hashes, scans twice and saves
+only repeated timestamps, row locations, differing field names and source hashes.
+The data stay outside Git. This report diagnoses conflicts and never resolves
+them or approves ingestion.
+
 On the reviewed Windows machine, use `OPENBLAS_NUM_THREADS=1` and
 `OMP_NUM_THREADS=1` for tests and analysis to bound numerical-library thread
 allocation. A local account without symlink privileges skips the dedicated
