@@ -22,10 +22,10 @@ Acceptance criteria:
 
 Branch: `codex/edp-source-contract`.
 Upstream base: `a63b47483fb8cd3eaef9035c95863b050b32682d`.
-Verified prior work is preserved in commit `24fdffc`. Latest implementation
-commit: `066e81e` (native EDP ingestion acceptance). A subsequent documentation
-checkpoint records the research review. No push or private-repository mutation
-was performed.
+Verified prior work is preserved in commit `24fdffc`. Native ingestion was
+committed as `066e81e`; the event ledger as `772243d`. The public working
+branch is pushed as `origin/codex/edp-source-contract`. No main-branch or
+private-repository mutation was performed.
 
 Completed source work includes 14 EDP files verified by publisher hashes,
 native source schemas, four full F95 scans, and a single API/source registry.
@@ -69,7 +69,7 @@ Failure-log timezone/semantics, duplicate reconciliation, filtering provenance,
 file-level rights review and F99 sensitivity profiling remain open. ESA requires
 verified whole archives and a nested-channel adapter. Model calibration,
 observation-level decision evidence and fitted-model provenance remain open.
-Private repository work, paid services, deployments and pushes are outside this
+Private repository work, paid services and deployments are outside this
 increment. The supplied workflow is saved at workspace level, outside this repo.
 
 ## Exact next action
