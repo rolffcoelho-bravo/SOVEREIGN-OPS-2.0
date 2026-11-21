@@ -88,6 +88,21 @@ The command succeeds when the audit completes, including when it records a
 `BLOCKED` ingestion decision. Read that field before using any source. Structural
 acceptance does not approve rights or establish failure-label semantics.
 
+To reproduce the provisional seven-day pre-event exposure diagnostic, keep
+the output outside the checkout:
+
+```bash
+uv run --locked python scripts/analyze_edp_exposure.py /path/to/edp-v2 \
+  --output /path/to/private-receipts/edp-v2-exposure.json
+```
+
+This verifies the full release against publisher hashes before reading F95
+timestamp presence and the failure log. The receipt reports UTC, Lisbon and
+Berlin interpretations of offset-naive failure times, including both folds
+where a local clock hour repeats. All event eligibility remains undetermined;
+see [the exposure method](docs/EXPOSURE_SENSITIVITY_METHOD.md) before using
+the counts.
+
 Native telemetry ingestion now performs a complete profile of every selected
 workbook before yielding any points. It rejects ambiguous/invalid timestamps,
 invalid cells or headers, conflicting asset IDs, repeated observation keys,

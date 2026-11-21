@@ -1,5 +1,42 @@
 # Status audit — updated 2026-11-21
 
+## Current research advance: source-clock exposure sensitivity
+
+The verified failure-log inventory has 28 rows: seven T09 rows have no SCADA
+asset and 21 rows match one of the four F95 assets. The 21 matches are
+`UNDETERMINED` for eligibility. A separate local diagnostic measured distinct
+F95 timestamp presence in seven-day, half-open pre-record windows under three
+explicit interpretations of each naive failure time: UTC, Europe/Lisbon, and
+Europe/Berlin. The CLI reverified all 14 publisher files before analysis.
+
+Each window has 1,008 possible ten-minute slots. Across candidate rows and
+the stated assumptions, observed presence ranges from **159 to 867 slots**
+(15.8%–86.0%). **18 of 21** candidates have different counts between the
+three clock interpretations, but their largest within-row range is only
+**12 slots** (1.19 percentage points). No candidate's event time fell inside
+an ambiguous autumn fold under the selected zones. These are descriptive
+source-availability findings; no coverage cutoff, event onset, or model
+outcome has been selected or validated. Duplicate F95 measurement rows are
+still blocked from ingestion. The calculation's `Z`-as-UTC interpretation of
+telemetry is provisional and does not resolve the autumn duplicate anomaly.
+
+The practical finding is that these windows vary considerably in how much
+filtered telemetry they contain, while the tested failure-clock alternatives
+change counts less. That comparison is conditional on the telemetry clock
+being represented correctly. It cannot distinguish filtering loss from
+physical downtime or prove that a seven-day forecast is feasible. The method
+and its limits are in [the exposure note](EXPOSURE_SENSITIVITY_METHOD.md);
+the detailed row-level receipt remains outside Git.
+
+The next evidence target is the v2 transformation specification: timezone
+conversion, duplicate handling, F95/F99 thresholds, and failure-log time
+semantics. After source provenance is resolved, preregister prediction horizon,
+minimum observation criteria, event clustering, purge intervals, chronological
+holdouts, an abstention policy, and paired metrics before fitting models. A
+research contribution can then compare a source-uncertainty-aware abstention
+policy with ordinary confidence-only gating on *the same event set*. No
+novelty or empirical benefit is claimed from the present diagnostic.
+
 ## Where work resumed
 
 The Windows checkout was at `2f3963e`, the commit behind release `v0.1.0`.
