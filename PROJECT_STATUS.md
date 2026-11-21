@@ -6,7 +6,7 @@ Measure pre-event F95 timestamp availability for the 21 asset-matched failure-lo
 
 ## Git and completed work
 
-Working branch: `codex/edp-source-contract` at `beb1443` before this milestone. Remote `main` is `a63b474` and is an ancestor. Earlier source and event-ledger work is pushed on the working branch. This milestone adds `edp_exposure.py`, its CLI, tests, an IANA timezone database dependency, reproduction instructions, and an exposure methodology note. Publication to `main` is pending final verification.
+Current branch: `main`. The verified research milestone is commit `1ab7ae4`, fast-forwarded from `codex/edp-source-contract` and pushed to `origin/main`; prior main was `a63b474`. This milestone adds `edp_exposure.py`, its CLI, tests, an IANA timezone database dependency, reproduction instructions, and an exposure methodology note.
 
 The versioned EDP v2 manifest pins 14 publisher files (188,823,550 bytes). Four full F95 profiles contain 211,465 rows, 42 conflicting repeated timestamp keys and two missing cells. The duplicate keys occur at 02:00–02:50 on the two autumn clock-change dates and also appear in F99. Native model ingestion remains blocked for conflicting keys. The verified failure ledger records 28 rows: seven `EXCLUDED_NO_SCADA`, 21 `UNDETERMINED`.
 
@@ -26,6 +26,6 @@ ESA whole-archive verification and adapter, calibration, event independence, and
 
 ## Exact next action
 
-Commit this coherent milestone, fast-forward `main` and push it so the public repository landing page shows the work. Then seek publisher transformation code or a data dictionary resolving source-clock conversion, duplicate handling, failure-time meaning, filtering thresholds, and rights. Only after that evidence should prediction windows, exposure rules, event clusters, purges and chronological splits be frozen before fitting.
+Seek publisher transformation code or a data dictionary resolving source-clock conversion, duplicate handling, failure-time meaning, filtering thresholds, and rights. Only after that evidence should prediction windows, exposure rules, event clusters, purges and chronological splits be frozen before fitting.
 
 Recommended client setting: GPT-6.2 Sol, Medium reasoning, Standard speed. A switch has not been confirmed. One agent is active.
