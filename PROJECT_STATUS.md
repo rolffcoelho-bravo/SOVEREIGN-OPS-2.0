@@ -6,7 +6,7 @@ Complete the F99 native source audit and a hash-verified paired F95/F99 timestam
 
 ## Git and completed work
 
-Current branch: `main`, based on published commit `889f1b5`. This increment is pending a verified commit and push. The prior source, event-ledger and F95 exposure work is published on `origin/main`.
+Current branch: `main`, published at commit `d193900` on `origin/main`. The prior source, event-ledger and F95 exposure work is also published there.
 
 All 14 EDP v2 files remain publisher-hash verified. Four F95 workbooks contain 211,465 rows; four F99 workbooks contain 213,611. Each view has 42 conflicting repeated timestamp keys and two missing cells. Native schemas conform, but all eight workbooks remain `BLOCKED` for model ingestion pending source-backed duplicate reconciliation. The full F99 receipt is `../sovereign-ops-local/evidence/edp-v2-F99-profile-2026-11-21.json`.
 
@@ -28,6 +28,6 @@ ESA whole-archive verification and adapter, calibration, incident clustering, an
 
 ## Exact next action
 
-Commit and push this milestone to `main`. Then obtain a versioned transformation manifest or author clarification answering `docs/SOURCE_PROVENANCE_QUESTIONS.md`. Once provenance is established, define incident units for overlapping faults, freeze prediction horizons, exposure cutoffs, chronological splits and purge rules before model fitting. If source clocks or fit boundaries cannot be resolved, report only scenario-specific descriptive results and abstain from prospective performance claims.
+Obtain a versioned transformation manifest or author clarification answering `docs/SOURCE_PROVENANCE_QUESTIONS.md`. Once provenance is established, define incident units for overlapping faults, freeze prediction horizons, exposure cutoffs, chronological splits and purge rules before model fitting. If source clocks or fit boundaries cannot be resolved, report only scenario-specific descriptive results and abstain from prospective performance claims.
 
 Recommended client setting: GPT-6.2 Sol, Medium reasoning, Standard speed. No switch has been confirmed. One agent is active.
