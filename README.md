@@ -52,7 +52,7 @@ graph TB
 **Key architectural decisions:**
 - **Contract-first design:** All data flows through immutable Pydantic models (`extra="forbid"`, `frozen=True`). Schema-valid ≠ trustworthy — contracts enforce shape; provenance verification establishes trust.
 - **Domain isolation:** Evidence cannot cross domain boundaries (enforced at the type level). No ESA model output ever enters an EDP decision envelope.
-- **Cryptographic provenance:** Every dataset file is tracked by SHA-256 + MD5 dual hashes, DOI-pinned to its exact version, with audit receipts recording acquisition time and byte-level verification.
+- **Cryptographic provenance:** Source files are checked against the hashes and byte counts published for their DOI-pinned versions. EDP v2 publishes SHA-256; ESA v2 publishes MD5, with local SHA-256 still pending complete archive acquisition.
 - **Historical replay only:** This is a research platform for offline analysis. No connection to live satellites, wind farms, or industrial controls.
 
 ## Core domains
@@ -60,7 +60,7 @@ graph TB
 | Domain | Dataset | Scale | License |
 |---|---|---|---|
 | **Space** | ESA Anomaly Dataset v2 ([Zenodo](https://zenodo.org/records/15237121)) | 11.6 GB, 3 missions | CC BY 3.0 IGO |
-| **Energy** | EDP Onshore Wind Farm SCADA v2 ([Mendeley](https://data.mendeley.com/datasets/zjxjnjp3xs/2)) | 188.8 MB, 4 SCADA turbines, 28 failure log rows across 5 turbines | CC BY 4.0 |
+| **Energy** | EDP Onshore Wind Farm SCADA v2 ([Mendeley](https://data.mendeley.com/datasets/zjxjnjp3xs/2)) | 188.8 MB, 4 SCADA turbines, 28 failure log rows across 5 turbines | Release page: CC BY 4.0; source rights chain under review |
 
 Additional domains (Scania fleet, HAI security testbed, TraCSS orbital) are registered but deferred until core governance works end-to-end.
 
@@ -72,13 +72,13 @@ The project follows a **10-gate staged development** model (G0–G9). Current st
 |---|---|---|
 | **G0** | ✅ PASS | Foundation — contracts, API skeleton, CI, threat model, evaluation design |
 | **G1** | EDP integrity verified locally | All 14 EDP publisher files matched SHA-256. ESA directory preflight completed. ESA archive hashes and file-level rights review remain open. |
-| **G2** | Primary EDP structural scan complete locally | Four F95 files contain 211,465 rows, 42 repeated observation keys and two missing cells. Failure semantics and duplicate reconciliation remain open. ESA requires a nested-channel adapter. |
+| **G2** | Both EDP views profiled locally; ingestion blocked | F95 has 211,465 rows and F99 has 213,611. Both have 42 repeated keys and two missing cells; all eight workbooks are blocked pending duplicate reconciliation. The 21 asset-matched failure rows remain ineligible for confirmed event claims. ESA requires a nested-channel adapter. |
 | **G3** | Synthetic validation only | Z-Score (MAD), Isolation Forest and detector protocol |
 | **G4** | Synthetic validation only | Pipeline orchestration, decision engine and evidence chains |
 | **G5** | Exploratory code only | Disjoint chronological blocks, Wilcoxon signed-rank and Holm correction; confirmatory study blocked |
 | G6–G9 | Planned | Observability → Containerization → Documentation → Publication |
 
-The automated suite uses synthetic fixtures. The public repository contains no empirical ESA or EDP benchmark results. See [Status Audit](docs/STATUS_AUDIT.md) for the evidence boundary and local next steps.
+The automated suite uses synthetic fixtures. The public repository contains no empirical ESA or EDP benchmark results. Real-source diagnostics measure F95/F99 timestamp presence, including paired seven-day pre-record windows; they do not establish event labels or performance. See [Status Audit](docs/STATUS_AUDIT.md), [Exposure Method](docs/EXPOSURE_SENSITIVITY_METHOD.md), and [Provenance Questions](docs/SOURCE_PROVENANCE_QUESTIONS.md) for the evidence boundary and next steps.
 
 **G5 code adds:** pure-Python Wilcoxon signed-rank test (exact rank-sum dynamic programming ≤25 pairs, normal approximation >25), Holm-Bonferroni step-down correction, and a comparative runner that evaluates detectors on disjoint chronological blocks. Reports are marked `EXPLORATORY_ONLY`; serial dependence and the unfrozen real-data protocol prevent confirmatory claims.
 

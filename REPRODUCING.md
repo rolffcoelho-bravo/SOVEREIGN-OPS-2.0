@@ -103,6 +103,22 @@ where a local clock hour repeats. All event eligibility remains undetermined;
 see [the exposure method](docs/EXPOSURE_SENSITIVITY_METHOD.md) before using
 the counts.
 
+For a full structural profile of the alternative filtered view, use
+`--profile-view F99` with `scripts/acquire_local_edp.py` and an external
+receipt path. Compare unique timestamp membership between the two views with:
+
+```bash
+uv run --locked python scripts/compare_edp_views.py /path/to/edp-v2 \
+  --output /path/to/private-receipts/edp-v2-view-comparison.json
+```
+
+The comparison rechecks all publisher files and reports per-asset shared and
+view-only timestamp counts and paired seven-day lookback counts for the same
+asset-matched failure rows and clock scenarios. Repeated keys count once for
+membership. All event eligibility remains undetermined. The comparison does
+not reconcile conflicting measurements, establish either filter's exact
+settings, or make F95 and F99 independent samples.
+
 Native telemetry ingestion now performs a complete profile of every selected
 workbook before yielding any points. It rejects ambiguous/invalid timestamps,
 invalid cells or headers, conflicting asset IDs, repeated observation keys,

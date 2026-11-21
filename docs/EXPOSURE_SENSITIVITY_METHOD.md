@@ -43,6 +43,18 @@ unobserved source timestamps. A later provenance-supported correction may
 change both numerator and window membership. Therefore the envelope is a
 diagnostic, not a final eligibility rule.
 
+## Paired filtering-view sensitivity
+
+The paired-view audit checks the exact F95 and F99 timestamp-key sets for each
+asset. It reports their intersection and view-only keys, then uses binary
+search on sorted keys to count both views inside the *same* seven-day windows
+and clock scenarios. The paired difference is F99 count minus F95 count per
+candidate and assumed instant. This controls the comparison for asset, recorded
+failure row, assumed clock and window. It does not control for signal quality
+or unobserved raw-source rows, and overlapping failure windows remain
+dependent. A small global view difference need not be small near failures;
+that concentration is measured directly rather than inferred from totals.
+
 ## Decision discipline
 
 All asset-matched rows retain `UNDETERMINED` eligibility. The event ledger has
@@ -72,3 +84,7 @@ enumeration, nonexistent local time rejection, source hash verification through
 the analysis path, absence of private remarks, and preservation of unresolved
 eligibility. Synthetic tests prove those software invariants only. Real-source
 aggregate counts must be stated separately and cannot validate failure labels.
+The paired-view tests additionally cover nested and non-nested timestamp sets,
+duplicate-key presence counting, publisher-hash rejection, and a window where
+F99 adds one slot. They cannot prove the released views were produced by the
+linked preprocessing notebook.

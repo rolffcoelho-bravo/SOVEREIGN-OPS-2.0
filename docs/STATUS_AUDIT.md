@@ -2,6 +2,30 @@
 
 ## Current research advance: source-clock exposure sensitivity
 
+The full F99 audit reverified the 14-file release and scanned all four
+alternative-view workbooks. It found **213,611 rows**, **42 repeated timestamp
+keys**, and **two missing cells**. All four schemas conform, with no invalid
+numeric values, yet all four structural ingestion decisions are `BLOCKED`
+because their repeated keys require reconciliation. The earlier F95 audit had
+211,465 rows, the same aggregate repeated-key and missing-cell counts. A
+hash-verified paired-key scan found that every F95 timestamp key is present
+in F99; F99 has 2,146 additional unique keys (T01 308, T06 584, T07 548,
+T11 706). This is observed nesting of timestamp *presence*, not proof that
+shared measurement values are equal or that the release used the published
+notebook unchanged. The row-level comparison receipt remains outside Git.
+
+For the same 21 failure-log lookbacks and three failure-clock interpretations,
+F99 adds **1–53 unique slots** per scenario; every candidate gains at least
+one slot under every tested interpretation. The largest gain is 53/1,008
+(5.26 percentage points), with F95 684 versus F99 737 in that window.
+Across all 63 candidate-scenario pairs, the observed range is 159–867 F95
+slots versus 161–871 F99 slots. Two candidates' added-slot counts vary by
+clock interpretation. An independent comparison of the new F95 counts with
+the earlier exposure receipt found **63/63 exact matches** for assumed
+instants, numerator counts and grid denominators. This tests arithmetic and
+source consistency, not physical event truth or filter causality. The 21
+windows can overlap and are not independent experimental units.
+
 The verified failure-log inventory has 28 rows: seven T09 rows have no SCADA
 asset and 21 rows match one of the four F95 assets. The 21 matches are
 `UNDETERMINED` for eligibility. A separate local diagnostic measured distinct
@@ -28,7 +52,8 @@ physical downtime or prove that a seven-day forecast is feasible. The method
 and its limits are in [the exposure note](EXPOSURE_SENSITIVITY_METHOD.md);
 the detailed row-level receipt remains outside Git.
 
-The next evidence target is the v2 transformation specification: timezone
+The [provenance questions](SOURCE_PROVENANCE_QUESTIONS.md) define the next
+evidence target: the v2 transformation specification, including timezone
 conversion, duplicate handling, F95/F99 thresholds, and failure-log time
 semantics. After source provenance is resolved, preregister prediction horizon,
 minimum observation criteria, event clustering, purge intervals, chronological

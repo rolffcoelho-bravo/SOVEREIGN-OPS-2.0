@@ -113,3 +113,40 @@ processing configuration. Keep F95/F99 as release view identifiers until the
 configuration is verified. Do not infer that measured temporal gaps are outages,
 that they all result from filtering, or that an outlier filter was fitted without
 future information. This is a reproducibility blocker, not proof of leakage.
+
+## Linked preprocessing code and event corroboration — 2026-11-21
+
+The paper links the authors' [preprocessing repository](https://github.com/kkijano/wtcbfdp).
+Its immutable tag `1.0` resolves to commit
+[`da3ec9561b52fc989ba1b231ca7d28c18314c41b`](https://github.com/kkijano/wtcbfdp/tree/da3ec9561b52fc989ba1b231ca7d28c18314c41b).
+The tag was reviewed read-only outside this Git checkout; no GPL-3.0 code was
+copied or executed here. `notebook.ipynb` selects `CONFIDENCE_CHOICE = "99"`
+from `{"68": 1, "95": 2, "99": 3}`, enables negative-power reinclusion by
+default, fits K-Means on the supplied turbine data, filters by within-cluster
+Mahalanobis distance, then writes a CSV named with the `_F99` suffix.
+The labels `95` and `99` map to mean distance plus two or three standard
+deviations in that notebook, not an empirical 95th or 99th percentile. Their
+realized retention cannot be inferred from the labels alone.
+`split-raw-data.ipynb` reads an original Excel workbook and writes per-turbine
+CSV files. Neither notebook's code cells perform a timezone conversion or
+write the Mendeley v2 Excel package. This code supports the paper's 99% method
+description, but does not prove the exact settings, processing period, or clock
+representation of the separately released v2 workbooks.
+
+The notebook fits its clustering and distance parameters on the full input
+file without an explicit chronological training partition. If the v2
+workbooks were made with that same full-period procedure, prospective
+evaluation on them would have a preprocessing leakage risk. This is a
+conditional risk, **not** evidence that the released files used this notebook
+unchanged. A verified transformation manifest or author clarification is
+needed before claiming causal or prospective fault-detection performance.
+
+The [paper's T07 case-study table](https://www.mdpi.com/1996-1073/18/22/5954)
+identifies generator-bearing and generator failures at 20 August 2017 06:08
+and 21 August 2017 14:47. Those two times and components match rows 23 and 24
+of the verified v2 failure workbook. This cross-source match corroborates the
+recorded wall times and the fact that the authors treated them as consecutive
+faults. It does not supply a UTC offset, prove precise physical onset, or
+establish independence of the two records. The paper reports 27 failures in
+its study, while the v2 release contains 28 failure rows. The population
+difference remains unexplained; do not silently equate their event sets.
