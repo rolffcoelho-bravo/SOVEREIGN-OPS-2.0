@@ -80,6 +80,8 @@ The project follows a **10-gate staged development** model (G0–G9). Current st
 
 The automated suite uses synthetic fixtures. The public repository contains no empirical ESA or EDP benchmark results. Real-source diagnostics measure F95/F99 timestamp presence, including paired seven-day pre-record windows; they do not establish event labels or performance. See [Status Audit](docs/STATUS_AUDIT.md), [Exposure Method](docs/EXPOSURE_SENSITIVITY_METHOD.md), and [Provenance Questions](docs/SOURCE_PROVENANCE_QUESTIONS.md) for the evidence boundary and next steps.
 
+**Follow the research:** [Evidence timeline](docs/RESEARCH_EVOLUTION.md) · [Visual research evolution](https://rolffcoelho-bravo.github.io/SOVEREIGN-OPS-2.0/research-evolution.html). The earlier dashboard is retained as a dated engineering snapshot.
+
 **G5 code adds:** pure-Python Wilcoxon signed-rank test (exact rank-sum dynamic programming ≤25 pairs, normal approximation >25), Holm-Bonferroni step-down correction, and a comparative runner that evaluates detectors on disjoint chronological blocks. Reports are marked `EXPLORATORY_ONLY`; serial dependence and the unfrozen real-data protocol prevent confirmatory claims.
 
 See [Architecture](docs/ARCHITECTURE.md) for design decisions and [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for the full gate sequence.
@@ -115,7 +117,9 @@ uv run --locked python scripts/verify.py
 
 | Document | Purpose |
 |---|---|
-| [**Status Dashboard**](https://rolffcoelho-bravo.github.io/SOVEREIGN-OPS-2.0/dashboard.html) | Interactive project overview — gates, metrics, architecture |
+| [**Research Evolution**](https://rolffcoelho-bravo.github.io/SOVEREIGN-OPS-2.0/research-evolution.html) | Current evidence timeline, measured findings, and open research gates |
+| [Historical Dashboard](https://rolffcoelho-bravo.github.io/SOVEREIGN-OPS-2.0/dashboard.html) | 19 November engineering snapshot; older gate and test counts |
+| [Research Evolution Record](docs/RESEARCH_EVOLUTION.md) | Linked commits and the exact evidence boundary for each milestone |
 | [Product Contract](PRODUCT_CONTRACT.md) | 8 binding boundaries the system must respect |
 | [Architecture](ARCHITECTURE.md) | Implemented vs. target design, trust boundaries |
 | [Evaluation Protocol](EVALUATION_PROTOCOL.md) | Holm-corrected multiple comparisons, chronological splits |

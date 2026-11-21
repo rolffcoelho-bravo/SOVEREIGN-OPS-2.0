@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Evidence-based research evolution of Sovereign Ops, updated 21 November 2026.">
+  <title>Research evolution | Sovereign Ops</title>
+  <style>
+    :root{color-scheme:dark;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+      --bg:#0b1017;--panel:#14202b;--line:#2b4151;--text:#eef4f5;--muted:#b2c3cb;
+      --aqua:#72dfc0;--blue:#91bfff;--amber:#ffd083}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text)}
+    a{color:var(--blue)}a:hover{color:#c8ddff}a:focus-visible{outline:2px solid var(--amber);outline-offset:4px}
+    .wrap{width:min(1120px,calc(100% - 40px));margin:auto}
+    header{padding:56px 0 38px;background:radial-gradient(circle at 85% 0%,#1e4b55 0%,transparent 45%),var(--bg)}
+    .eyebrow{color:var(--aqua);font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+    h1{font-size:clamp(2.5rem,6vw,4.7rem);line-height:1.05;letter-spacing:-.04em;margin:.35em 0}
+    h2{font-size:clamp(1.45rem,3vw,2rem);margin:0 0 12px}h3{font-size:1.05rem;margin:0 0 8px}
+    p{margin:0 0 14px}.lead{max-width:760px;color:var(--muted);font-size:1.12rem}
+    .stamp{display:inline-block;border:1px solid #366f66;color:var(--aqua);border-radius:999px;
+      padding:6px 13px;font-size:.8rem;font-weight:750;margin:14px 0 4px}
+    nav{display:flex;flex-wrap:wrap;gap:18px;margin:22px 0 0;font-size:.91rem}
+    section{padding:44px 0;border-top:1px solid var(--line)}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}
+    .metric,.card,.gate{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+    .metric{padding:20px}.metric strong{font-size:2rem;display:block;color:var(--aqua);line-height:1.1}
+    .metric span{display:block;color:var(--muted);font-size:.82rem;margin-top:8px}
+    .note{color:var(--muted);font-size:.9rem;max-width:850px}
+    .timeline{position:relative;margin:24px 0 0 8px;padding-left:26px;border-left:2px solid #416477}
+    .event{position:relative;margin:0 0 14px;padding:19px 20px;background:var(--panel);
+      border:1px solid var(--line);border-radius:12px}
+    .event:before{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:var(--aqua);
+      border:3px solid var(--bg);left:-34px;top:24px;box-sizing:content-box}
+    .event time{color:var(--aqua);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .event p{font-size:.9rem;color:var(--muted);margin:5px 0 0}.event strong{color:var(--text)}
+    .event .open{color:var(--amber)}
+    .gate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+    .gate{padding:20px}.gate .number{color:var(--aqua);font-size:.77rem;font-weight:800;letter-spacing:.08em}
+    .gate.pending .number{color:var(--amber)}.gate p{color:var(--muted);font-size:.88rem;margin:0}
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+    .card{padding:22px}.card .big{font-size:1.9rem;font-weight:800;color:var(--aqua)}
+    .card p{color:var(--muted);font-size:.9rem;margin-top:8px}
+    .callout{padding:19px 22px;background:#2a251a;border-left:4px solid var(--amber);
+      border-radius:0 10px 10px 0;margin-top:24px}
+    footer{padding:26px 0 45px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+    @media(max-width:700px){header{padding-top:36px}.summary,.gate-grid,.compare{grid-template-columns:1fr}
+      .wrap{width:min(100% - 28px,1120px)}}
+  </style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">Sovereign Ops · evidence timeline</div>
+  <h1>Research evolution</h1>
+  <p class="lead">From software contracts to verified source diagnostics. Each step states what the evidence supports and what remains open.</p>
+  <div class="stamp">Evidence snapshot · 21 November 2026</div>
+  <nav aria-label="Page sections"><a href="#timeline">Timeline</a><a href="#gates">Research gates</a>
+    <a href="#findings">Measured findings</a><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/blob/main/docs/RESEARCH_EVOLUTION.md">Full evidence record</a></nav>
+  <div class="summary" aria-label="Current evidence summary">
+    <div class="metric"><strong>14</strong><span>Publisher files verified by size and SHA-256</span></div>
+    <div class="metric"><strong>322</strong><span>Software tests passed; mostly synthetic fixtures</span></div>
+    <div class="metric"><strong>0</strong><span>Confirmed real-data model comparisons</span></div>
+  </div>
+</div></header>
+<main class="wrap">
+<section id="timeline">
+  <h2>How the work advanced</h2>
+  <p class="note">Dates and linked commits track the public repository. A commit documents an implementation step; it does not prove an experimental claim.</p>
+  <div class="timeline">
+    <article class="event"><time datetime="2026-11-18">18 Nov · foundation</time>
+      <h3><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/dc7d15b">Contracts and source identities</a></h3>
+      <p><strong>Established:</strong> typed contracts, health API, versioned registry. <span class="open">Open:</span> source measurement and model evidence.</p></article>
+    <article class="event"><time datetime="2026-11-19">19 Nov · engineering</time>
+      <h3><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/64f6413">Synthetic detector and decision pipeline</a></h3>
+      <p><strong>Established:</strong> software behavior under fixtures. <span class="open">Open:</span> real-data generalization.</p></article>
+    <article class="event"><time datetime="2026-11-20">20 Nov · evaluation correction</time>
+      <h3><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/a63b474">Disjoint chronological blocks</a></h3>
+      <p><strong>Established:</strong> exploratory comparison design improved. <span class="open">Open:</span> independent event units and frozen labels.</p></article>
+    <article class="event"><time datetime="2026-11-21">21 Nov · source audit</time>
+      <h3><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/066e81e">Publisher-verified files and blocking ingestion</a></h3>
+      <p><strong>Established:</strong> all 14 source files verified; conflicting timestamp rows stop native ingestion. <span class="open">Open:</span> source-backed clock repair.</p></article>
+    <article class="event"><time datetime="2026-11-21">21 Nov · event accounting</time>
+      <h3><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/772243d">Eligibility ledger</a></h3>
+      <p><strong>Established:</strong> seven rows lack SCADA; 21 asset-matched rows remain undetermined. <span class="open">Open:</span> event time and identity.</p></article>
+    <article class="event"><time datetime="2026-11-21">21 Nov · sensitivity</time>
+      <h3><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/1ab7ae4">Seven-day exposure scenarios</a></h3>
+      <p><strong>Established:</strong> 159–867 of 1,008 F95 slots across tested candidate windows. <span class="open">Open:</span> actual clock and uptime.</p></article>
+    <article class="event"><time datetime="2026-11-21">21 Nov · paired views</time>
+      <h3><a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/d193900">F95/F99 filter sensitivity</a></h3>
+      <p><strong>Established:</strong> F95 timestamp keys are nested in F99; candidate windows gain 1–53 slots. <span class="open">Open:</span> exact transformation and prospective validity.</p></article>
+  </div>
+</section>
+<section id="gates">
+  <h2>Evidence gates</h2>
+  <p class="note">These are research acceptance conditions, not a percentage-complete score.</p>
+  <div class="gate-grid">
+    <div class="gate"><div class="number">MEASURED · 01</div><h3>Source identity</h3><p>Fourteen versioned files match publisher sizes and hashes.</p></div>
+    <div class="gate"><div class="number">MEASURED · 02</div><h3>Source structure</h3><p>Both filtered views profiled; repeated keys block model ingestion.</p></div>
+    <div class="gate"><div class="number">MEASURED · 03</div><h3>Scenario availability</h3><p>Paired seven-day counts across 21 candidate rows and three clock assumptions.</p></div>
+    <div class="gate pending"><div class="number">OPEN · 04</div><h3>Source provenance</h3><p>Resolve clock conversion, filtering fit boundaries, row lineage and rights.</p></div>
+    <div class="gate pending"><div class="number">OPEN · 05</div><h3>Frozen event protocol</h3><p>Define incident units, labels, horizon, purge and independent holdout.</p></div>
+    <div class="gate pending"><div class="number">OPEN · 06</div><h3>Empirical evaluation</h3><p>Fit baselines and compare outcomes only after the protocol is frozen.</p></div>
+  </div>
+</section>
+<section id="findings">
+  <h2>What the paired audit revealed</h2>
+  <div class="compare">
+    <div class="card"><h3>Whole source</h3><div class="big">2,146</div><p>F99-only unique timestamp keys; every F95 key is also in F99. Both views still have 42 repeated keys.</p></div>
+    <div class="card"><h3>Near candidate records</h3><div class="big">1–53</div><p>Additional F99 slots per seven-day scenario. The largest gain is 53/1,008, or 5.26 percentage points.</p></div>
+  </div>
+  <div class="callout"><strong>Current conclusion:</strong> The filtering views can change local observation availability. None of the 21 asset-matched records is yet a confirmed eligible prediction event. Source clocks, transformations and failure semantics remain unresolved.</div>
+  <p class="note" style="margin-top:20px">Next evidence request: <a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/blob/main/docs/SOURCE_PROVENANCE_QUESTIONS.md">versioned transformation and failure-time provenance</a>. Detailed source workbooks and row-level receipts stay outside the public repository.</p>
+</section>
+</main>
+<footer><div class="wrap">Current research view · <a href="dashboard.html">Historical engineering dashboard (19 Nov snapshot)</a> · <a href="https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0">Repository</a></div></footer>
+</body>
+</html>
