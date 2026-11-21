@@ -56,3 +56,9 @@ audit found zero workbook ZIP members named like a licence or notice. This scan
 covered ZIP member names. File-level conditions and redistribution approval
 remain pending. The acquisition receipt records integrity verification and
 keeps this rights review open.
+
+Original EDP pages for 2016 and 2017 SCADA and failure history display CC
+BY-SA 4.0 and identify GMT time. The filtered Mendeley v2 page displays CC BY
+4.0. Their source-to-derivative licensing chain and file-level scope have not
+been established. Record this discrepancy before any redistribution or
+derived-data publication. See [Source Review](docs/SOURCE_REVIEW.md).

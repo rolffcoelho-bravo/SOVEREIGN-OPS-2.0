@@ -87,6 +87,22 @@ places it at 02:00. This is a hypothesis about a processing timezone, not
 proof of the source conversion. The workbook strings carry `Z`; those duplicate
 rows therefore cannot both be distinct UTC instants as currently represented.
 
+The original EDP pages for [2016 SCADA](https://edp.com/en/innovation/data/wind-farm-1-wind-turbine-scada-signals-2016),
+[2017 SCADA](https://edp.com/en/innovation/wind-farm-1-wind-turbine-scada-signals-2017),
+[2016 failure history](https://edp.com/en/innovation/data/wind-farm-1-record-failure-history-2016),
+and [2017 failure history](https://edp.com/en/innovation/data/wind-farm-1-record-failure-history-2017)
+all label their timezone GMT. They do not document how the separately
+published, filtered Mendeley v2 workbooks were generated or why those files
+repeat 02:00 UTC-stamped rows at autumn transitions. The source timezone label
+does not identify which member of a conflicting pair is correct. Do not convert
+source rows based on this observation alone.
+
+Those original EDP pages display CC BY-SA 4.0, whereas the
+[Mendeley v2 release](https://data.mendeley.com/datasets/zjxjnjp3xs/2)
+displays CC BY 4.0. This is an unresolved provenance and rights question for
+derivatives and redistribution. The two pages concern related, distinct
+published materials. Resolve the upstream chain and file scope before release.
+
 The [Mendeley v2 description](https://data.mendeley.com/datasets/zjxjnjp3xs/2)
 states 95% and 99.9%. Its linked
 [filtering paper](https://www.mdpi.com/1996-1073/18/22/5954), especially Sections

@@ -105,6 +105,16 @@ T06, 52,923 T07 and 56,469 T11 rows in F99. It did not perform the complete
 F99 source quality profile or inspect conflict values. The offset and source
 conversion remain unresolved.
 
+The verified failure ledger now records all 28 source rows separately. Seven
+T09 rows are excluded because the release has no T09 SCADA file. The other 21
+remain `UNDETERMINED`, with explicit pending gates for event identity, failure
+time meaning, timezone, prior exposure and filtering provenance. This is a
+source inventory, not an event-recall denominator. Original EDP SCADA and
+failure-history pages label GMT and CC BY-SA 4.0, while the Mendeley v2 page
+labels UTC and CC BY 4.0. The transformation and rights chain need source
+confirmation. See [Source Review](SOURCE_REVIEW.md) and
+[Data Rights](../DATA_RIGHTS.md).
+
 ## ESA v2 measured evidence
 
 The [Zenodo v2 record](https://zenodo.org/records/15237121) lists three archives

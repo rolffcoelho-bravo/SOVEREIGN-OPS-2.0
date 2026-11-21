@@ -106,6 +106,25 @@ gearbox 4. This is a preliminary inventory only. Event identity, onset,
 timezone, usable lookback exposure and train/validation/test eligibility remain
 unresolved. Do not treat 21 asset-matched records as 21 eligible events.
 
+A verified row-level event ledger is now saved outside Git at
+`sovereign-ops-local/evidence/edp-v2-event-ledger-2026-11-21.json`. It records
+28 source rows, seven `EXCLUDED_NO_SCADA` and 21 `UNDETERMINED`. Each row has
+explicit gates for timestamp offset, failure-time meaning, event identity,
+prior telemetry exposure and filtering provenance. No remarks or telemetry
+values are exported. Generate it with `python scripts/inventory_edp_events.py
+<external-data-dir> --output <external-receipt.json>`.
+
+Publisher pages for original 2016/2017 SCADA and failure history label GMT and
+CC BY-SA 4.0. The filtered Mendeley v2 release labels UTC/CC BY 4.0. The
+transformation and rights chain are unresolved. Original-page GMT does not
+justify changing conflicting v2 timestamps or assigning a timezone to naive
+failure cells. See `docs/SOURCE_REVIEW.md` and `DATA_RIGHTS.md`.
+
+Next action: use the verified event rows to measure prior SCADA exposure under
+explicitly labeled time assumptions, while leaving actual event eligibility
+undetermined. Seek publisher transformation code or a data dictionary for
+the GMT-to-v2 timestamp and licence chain before freezing labels or splits.
+
 Research-review finding: the Mendeley v2 page says the alternative filtering
 threshold is 99.9%, but its cited filtering paper uses 99%. Keep the filename
 identifier F99 and resolve the processing configuration before interpreting it.
