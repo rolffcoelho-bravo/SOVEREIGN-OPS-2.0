@@ -21,10 +21,10 @@ Acceptance criteria:
 
 Branch: `codex/edp-source-contract`.
 Upstream base: `a63b47483fb8cd3eaef9035c95863b050b32682d`.
-Verified prior work is preserved in commit `24fdffc`. The native ingestion
-implementation is in the subsequent milestone commit containing this checkpoint.
-Use `git log -3 --oneline` for its exact revision. Changes are committed locally
-at this checkpoint; no push or private-repository mutation was performed.
+Verified prior work is preserved in commit `24fdffc`. Latest implementation
+commit: `066e81e` (native EDP ingestion acceptance). A subsequent documentation
+checkpoint records the research review. No push or private-repository mutation
+was performed.
 
 Completed source work includes 14 EDP files verified by publisher hashes,
 native source schemas, four full F95 scans, and a single API/source registry.
@@ -46,8 +46,8 @@ reconciled, exported or used for model training.
 Current suite: **313 passed, 1 skipped**, in 87 seconds. The skip is the Windows
 symlink-permission test; there is one Starlette/httpx deprecation warning.
 Ruff lint and formatting (71 files), strict mypy (48 files), and the real local
-HTTP smoke check passed. Secret scanning and staged whitespace checks are part
-of the final commit check. Dependencies are unchanged from the preceding clean
+HTTP smoke check passed. Secret scan: 87 files, zero findings. The implementation
+commit passed its staged whitespace check. Dependencies are unchanged from the preceding clean
 locked dependency audit. Receipts remain outside Git in
 `sovereign-ops-local/evidence`, including `tests-ingestion-2026-11-21.xml` and
 `edp-v2-T01-ingestion-2026-11-21.json`.
@@ -80,6 +80,15 @@ proposing a declared reconciliation policy. Keep all conflicting rows blocked;
 do not silently keep the first/last row or label cadence gaps as physical outages.
 Resolve source filtering and failure-time meaning before creating labels or
 freezing a split. Do not rerun completed source scans unless new evidence is needed.
+
+Research-review finding: the Mendeley v2 page says the alternative filtering
+threshold is 99.9%, but its cited filtering paper uses 99%. Keep the filename
+identifier F99 and resolve the processing configuration before interpreting it.
+Priorities and source links are recorded in `docs/STATUS_AUDIT.md` and
+`docs/SOURCE_REVIEW.md`. The proposed research contribution is an auditable
+abstention/decision policy with domain-specific models, assessed through paired
+ablations, event outcomes and explicit exposure accounting. Novelty and empirical
+benefit are unestablished.
 
 Recommended client setting: GPT-6.2 Sol, Medium reasoning, Standard speed.
 No model/speed switch has been confirmed. One agent is active; no expert review

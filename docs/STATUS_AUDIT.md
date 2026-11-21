@@ -206,6 +206,57 @@ comparison.
 Baseline and confirmatory scores remain unmeasured. Detailed local audit and
 receipt instructions are in [Reproducing Sovereign Ops](../REPRODUCING.md).
 
+## Research-value priorities — 2026-11-21
+
+These are proposed directions, not established novelty or measured benefits.
+
+1. **Resolve the source contract before selecting a model.** Audit duplicate
+   groups and event eligibility. The Mendeley page's 99.9% description conflicts
+   with the cited paper's 99% setting. Check the released preprocessing code,
+   negative-power treatment, fitting period and filtering configuration.
+   Preserve the distinction between causal replay and analysis of an already
+   filtered historical release. See [Source Review](SOURCE_REVIEW.md).
+2. **Test the decision protocol as the research contribution.** Keep the detector
+   fixed while comparing a score-only policy, a quality-gated policy, and a
+   quality-plus-abstention policy. Predeclare thresholds, alert consolidation,
+   paired evaluation units and outcomes before held-out scoring. Attribute
+   improvements to the policy using ablations. Evaluate domains independently.
+3. **Measure operational outcomes and abstention together.** Report event recall,
+   lead time, false alerts per eligible exposure, withheld decisions, unevaluable
+   events and calendar coverage. Conditional F1 alone cannot measure the cost of
+   withholding hard cases. Risk/coverage is an established research framing in
+   [selective classification](https://arxiv.org/abs/1705.08500); its guarantees
+   cannot simply be transferred to dependent SCADA observations.
+4. **Create an observation-specific evidence contract.** Replace F1 times coverage
+   as decision confidence. Bind decisions to a current asset/window, feature
+   values or residuals, availability, provenance integrity, fitted artifact,
+   calibration and explicit operational state. Include a benign/no-alert
+   disposition so normal observations need not become investigations. Persist
+   the complete replay chain and distinguish missing evidence from service loss.
+5. **Use a small, predeclared robustness study.** Challenge the accepted pipeline
+   with missing/stale channels, regime shifts, timestamp disorder, duplicate keys
+   and corrupted provenance. Separate synthetic perturbations from observed
+   faults, and use only information available at replay time. Test event-level
+   and per-asset outcomes with sufficiently supported uncertainty estimates.
+   Adaptive/conformal methods are a later option, with explicit temporal
+   assumptions and coverage limitations. See
+   [Conformal prediction beyond exchangeability](https://arxiv.org/abs/2202.13415).
+6. **Deliver an evidence-backed operational walkthrough.** A user selects a
+   historical asset/window, reviews source and model lineage, sees a supported
+   finding or an abstention, and exports a reproducible case. Demonstrate offline
+   operation, no unintended network egress, deterministic replay and recoverable
+   local audit. Keep core schemas, evaluation and synthetic demonstrations public;
+   isolate proprietary integrations and confidential data. Add language-model
+   summarization only after findings and citations exist as verified artifacts.
+
+The next empirical milestone should be one narrow EDP baseline and decision-policy
+study with honest event denominators. Use the
+[ESA benchmark](https://arxiv.org/abs/2406.17826) for a subsequent domain-specific
+replication after archive and metric compatibility are verified. Four turbines
+and at most 21 asset-matched failure rows may support descriptive evidence only.
+Cross-domain generality, calibrated uncertainty and prospective utility remain
+claims to test.
+
 [Reviewed upstream commit](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/a63b47483fb8cd3eaef9035c95863b050b32682d) ·
 [Hosted CI](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/actions/runs/44739901136) ·
 [v0.1.0 release](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/releases/tag/v0.1.0)

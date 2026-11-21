@@ -58,8 +58,11 @@ failures. Audit coverage/counts first; if infeasible, document the limitation
 before modelling rather than searching for a favourable split.
 
 Keep turbine and failure IDs; group duplicate records and paired filtered views.
-Use the 95% view as the proposed primary processing view; 99.9% is a separately
-labelled sensitivity analysis with the same partitions. Preserve originals.
+Use F95 as the proposed primary processing view; F99 is a separately
+labelled sensitivity analysis with the same partitions. The Mendeley description
+calls the second threshold 99.9%, while its cited paper uses 99%. Resolve that
+configuration discrepancy before interpreting the sensitivity contrast.
+Preserve originals.
 Never put one view of an observation in training and its other view in testing.
 Investigate whether publisher filtering used full-period statistics: if leakage
 cannot be excluded, disclose it and block prospective prediction claims.

@@ -76,3 +76,16 @@ limit prospective evaluation claims until independently audited.
 
 Documentation response hashes are preserved in `evidence/g0/source_metadata.json`.
 They do not certify downloaded telemetry, licence applicability, or benchmark performance.
+
+## Filtering discrepancy checked on 2026-11-21
+
+The [Mendeley v2 description](https://data.mendeley.com/datasets/zjxjnjp3xs/2)
+states 95% and 99.9%. Its linked
+[filtering paper](https://www.mdpi.com/1996-1073/18/22/5954), especially Sections
+3 and 4, uses 95% and 99%. The paper also evaluates including versus excluding
+negative power, which changes its reported fault-detection behavior. Neither
+the filename F99 nor that paper alone establishes the exact released workbook
+processing configuration. Keep F95/F99 as release view identifiers until the
+configuration is verified. Do not infer that measured temporal gaps are outages,
+that they all result from filtering, or that an outlier filter was fitted without
+future information. This is a reproducibility blocker, not proof of leakage.
