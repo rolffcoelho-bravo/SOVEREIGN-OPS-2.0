@@ -98,6 +98,14 @@ respectively. This targeted check did not profile all F99 quality dimensions
 or compare the repeated rows' signal values. Both views show the anomaly;
 its origin still needs source processing evidence.
 
+The verified combined failure workbook was reopened read-only on 2026-11-21.
+It has 28 populated rows, all with offset-naive datetimes: 16 in 2016 and 12
+in 2017. Asset counts remain T01 2, T06 8, T07 7, T09 7 and T11 4. Components
+are generator 7, hydraulic group 8, generator bearing 6, transformer 3 and
+gearbox 4. This is a preliminary inventory only. Event identity, onset,
+timezone, usable lookback exposure and train/validation/test eligibility remain
+unresolved. Do not treat 21 asset-matched records as 21 eligible events.
+
 Research-review finding: the Mendeley v2 page says the alternative filtering
 threshold is 99.9%, but its cited filtering paper uses 99%. Keep the filename
 identifier F99 and resolve the processing configuration before interpreting it.
