@@ -90,6 +90,14 @@ The diagnostic command is `python scripts/diagnose_edp_duplicates.py
 `sovereign-ops-local/evidence/edp-v2-F95-duplicates-2026-11-21.json`.
 Focused synthetic test, Ruff and strict mypy passed. No fitted model was run.
 
+Follow-up read-only check of all four F99 workbooks verified publisher size
+and SHA-256, then counted timestamps around the two autumn transitions.
+It found the same 42 repeated 02:00–02:50 keys as F95: 12 T01, 6 T06,
+12 T07 and 12 T11. F99 row counts were 52,393, 51,826, 52,923 and 56,469
+respectively. This targeted check did not profile all F99 quality dimensions
+or compare the repeated rows' signal values. Both views show the anomaly;
+its origin still needs source processing evidence.
+
 Research-review finding: the Mendeley v2 page says the alternative filtering
 threshold is 99.9%, but its cited filtering paper uses 99%. Keep the filename
 identifier F99 and resolve the processing configuration before interpreting it.

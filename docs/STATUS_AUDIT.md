@@ -98,6 +98,13 @@ The local receipt contains source hashes, row numbers and differing column names
 not measurements. Check publisher timestamp generation and F99 before proposing
 a transformation. The current F95 ingestion block is correct.
 
+A targeted, publisher-hash-verified F99 timestamp check on 2026-11-21 found
+the same 42 repeated transition keys across the same assets. This makes a
+filter-specific explanation less likely. The check counted 52,393 T01, 51,826
+T06, 52,923 T07 and 56,469 T11 rows in F99. It did not perform the complete
+F99 source quality profile or inspect conflict values. The offset and source
+conversion remain unresolved.
+
 ## ESA v2 measured evidence
 
 The [Zenodo v2 record](https://zenodo.org/records/15237121) lists three archives
