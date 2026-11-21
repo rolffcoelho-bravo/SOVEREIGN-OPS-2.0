@@ -1,7 +1,6 @@
 """Bounded structural inspection of publisher-verified EDP v2 workbooks."""
 
 import hashlib
-import math
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
@@ -9,13 +8,41 @@ from zipfile import ZipFile
 
 from pydantic import Field
 
-from sovereign_ops.contracts import SHA256, Contract
+from sovereign_ops.contracts import SHA256, AcquiredFile, AcquisitionManifest, Contract
 from sovereign_ops.edp_acquisition import EDPFileReceipt, _verify_file
 from sovereign_ops.edp_source_schemas import (
     EDP_SOURCE_FAILURES_SCHEMA,
     EDP_SOURCE_SCADA_SCHEMA,
 )
+from sovereign_ops.edp_source_values import scada_timestamp, scada_value
 from sovereign_ops.schemas import ColumnViolation, SchemaConformanceReport, ViolationSeverity
+
+
+def select_scada_entries(manifest: AcquisitionManifest, filter_view: str) -> list[AcquiredFile]:
+    """Select exact publisher SCADA names; supporting sources are not telemetry."""
+    if manifest.dataset_id != "EDP-SCADA-v2":
+        raise ValueError("Expected an EDP-SCADA-v2 manifest")
+    if filter_view not in ("F95", "F99"):
+        raise ValueError("SCADA filter_view must be F95 or F99")
+    names = [entry.relative_path.casefold() for entry in manifest.files]
+    if len(names) != len(set(names)):
+        raise ValueError("Manifest filenames must be unique without case ambiguity")
+    selected = []
+    for entry in manifest.files:
+        name = entry.relative_path
+        path = Path(name.replace("\\", "/"))
+        if path.stem.startswith(("T01", "T06", "T07", "T11")):
+            if name not in {
+                f"{asset}_{view}.xlsx"
+                for asset in ("T01", "T06", "T07", "T11")
+                for view in ("F95", "F99")
+            }:
+                raise ValueError(f"Unsupported native SCADA filename: {name}")
+            if path.stem.endswith(f"_{filter_view}"):
+                selected.append(entry)
+    if not selected:
+        raise ValueError(f"No native SCADA workbooks for selected view {filter_view}")
+    return selected
 
 
 class EDPScadaProfile(Contract):
@@ -43,6 +70,18 @@ class EDPScadaProfile(Contract):
     missing_grid_slots: int | None = Field(default=None, ge=0)
     largest_gap_seconds: float | None = Field(default=None, ge=0)
     nominal_cadence_seconds: int = 600
+
+    def require_ingestible(self) -> None:
+        """Keep schema conformance distinct from acceptance for telemetry replay."""
+        if not self.schema_conforms:
+            raise ValueError(f"SCADA source schema rejection: {self.file}")
+        if self.duplicate_observation_keys:
+            raise ValueError(
+                f"Duplicate observation keys require reconciliation: {self.file} "
+                f"({self.duplicate_observation_keys} repeated keys)"
+            )
+        if self.out_of_order_rows or self.off_grid_rows:
+            raise ValueError(f"SCADA timestamp order or cadence rejection: {self.file}")
 
     def conformance_report(self) -> SchemaConformanceReport:
         violations: list[ColumnViolation] = []
@@ -126,22 +165,14 @@ def profile_scada_workbook(root: Path, entry: EDPFileReceipt) -> EDPScadaProfile
                 if value is None or (isinstance(value, str) and not value.strip()):
                     missing[column] += 1
             for column, value in zip(header[2:], row[2:], strict=True):
-                if value is None or (isinstance(value, str) and not value.strip()):
-                    continue
-                if (
-                    isinstance(value, bool)
-                    or not isinstance(value, int | float)
-                    or not math.isfinite(value)
-                ):
+                try:
+                    scada_value(value)
+                except ValueError:
                     invalid_numeric[column] += 1
 
-            timestamp = row[1]
-            if isinstance(timestamp, str):
-                try:
-                    timestamp = datetime.fromisoformat(timestamp)
-                except ValueError:
-                    timestamp = None
-            if not isinstance(timestamp, datetime):
+            try:
+                timestamp = scada_timestamp(row[1], require_offset=False)
+            except ValueError:
                 invalid_timestamp += 1
                 continue
             if timestamp.utcoffset() is None:

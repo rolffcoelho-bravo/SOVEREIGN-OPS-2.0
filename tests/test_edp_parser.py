@@ -15,6 +15,7 @@ from pydantic import HttpUrl
 
 from sovereign_ops.contracts import AcquiredFile, AcquisitionManifest
 from sovereign_ops.edp_parser import EDPScadaParser
+from sovereign_ops.edp_source_schemas import EDP_SOURCE_SCADA_SCHEMA
 from sovereign_ops.schemas import (
     EDP_FAILURES_SCHEMA,
     EDP_SCADA_SCHEMA,
@@ -87,8 +88,8 @@ class TestEDPParserIdentity:
             name = f"T01_{view}.xlsx"
             path = tmp_path / name
             book = openpyxl.Workbook()
-            book.active.append(["Turbine_ID", "Timestamp", "Gen_RPM_Avg"])
-            book.active.append(["T01", timestamp.isoformat(), 12])
+            book.active.append([column.name for column in EDP_SOURCE_SCADA_SCHEMA.columns])
+            book.active.append(["T01", timestamp.isoformat(), *([12] * 81)])
             book.save(path)
             book.close()
             acquired.append(
@@ -110,9 +111,9 @@ class TestEDPParserIdentity:
         )
         primary = list(EDPScadaParser().iter_points(tmp_path, manifest))
         sensitivity = list(EDPScadaParser(filter_view="F99").iter_points(tmp_path, manifest))
-        assert len(primary) == len(sensitivity) == 1
+        assert len(primary) == len(sensitivity) == 81
         assert primary[0].asset_id == sensitivity[0].asset_id == "T01"
-        assert primary[0].signal_id == sensitivity[0].signal_id == "Gen_RPM_Avg"
+        assert primary[0].signal_id == sensitivity[0].signal_id == "Gen_RPM_Max"
         assert primary[0].observed_at == timestamp
         assert primary[0].source_sha256 == acquired[0].sha256
         assert sensitivity[0].source_sha256 == acquired[1].sha256

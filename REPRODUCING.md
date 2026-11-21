@@ -82,6 +82,26 @@ values, duplicate observation keys, time coverage, cadence gaps and source
 hashes. Gap counts describe the interval between each file's first and last
 valid observations. Keep the output local.
 
+For a bounded single-workbook check, use `--profile-file T01_F95.xlsx` instead
+of `--profile-view`. Both modes include `scada_structural_ingestion` decisions.
+The command succeeds when the audit completes, including when it records a
+`BLOCKED` ingestion decision. Read that field before using any source. Structural
+acceptance does not approve rights or establish failure-label semantics.
+
+Native telemetry ingestion now performs a complete profile of every selected
+workbook before yielding any points. It rejects ambiguous/invalid timestamps,
+invalid cells or headers, conflicting asset IDs, repeated observation keys,
+reversed rows and off-grid times. Gaps and explicitly missing measurements are
+preserved. F95 and F99 stay separate. `inspect()` records defects without
+authorizing ingestion. Legacy normalized fixture schemas remain available for
+in-memory validation; disk ingestion accepts only the native publisher format.
+
+The accepted source is read again for telemetry emission, with a fresh byte
+check. Keep input files immutable while the iterator is running and discard
+partial results on an exception or interruption. This API is not a durable,
+transactional ingest store. The real T01 F95 check on 2026-11-21 completed with
+52,085 rows and a `BLOCKED` decision for 12 repeated observation keys.
+
 On the reviewed Windows machine, use `OPENBLAS_NUM_THREADS=1` and
 `OMP_NUM_THREADS=1` for tests and analysis to bound numerical-library thread
 allocation. A local account without symlink privileges skips the dedicated

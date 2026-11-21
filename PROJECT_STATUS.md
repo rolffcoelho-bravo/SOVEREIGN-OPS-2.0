@@ -3,7 +3,8 @@
 ## Current milestone
 
 G1 native EDP ingestion acceptance, following the source-contract work in
-`docs/STATUS_AUDIT.md`. Require complete verification before emitting telemetry.
+`docs/STATUS_AUDIT.md`. **Implementation complete and verified locally.**
+Empirical G1/G2 acceptance remains open.
 
 Acceptance criteria:
 
@@ -18,11 +19,12 @@ Acceptance criteria:
 
 ## Git and completed work
 
-Branch: `codex/edp-source-contract` (created for this continuation).
+Branch: `codex/edp-source-contract`.
 Upstream base: `a63b47483fb8cd3eaef9035c95863b050b32682d`.
-The preceding audit changes match all recorded verification file hashes and are
-being preserved as a checkpoint commit before implementation. Use `git log -3
---oneline` to locate the checkpoint and subsequent milestone commit.
+Verified prior work is preserved in commit `24fdffc`. The native ingestion
+implementation is in the subsequent milestone commit containing this checkpoint.
+Use `git log -3 --oneline` for its exact revision. Changes are committed locally
+at this checkpoint; no push or private-repository mutation was performed.
 
 Completed source work includes 14 EDP files verified by publisher hashes,
 native source schemas, four full F95 scans, and a single API/source registry.
@@ -31,17 +33,33 @@ Completed code fixes include timestamp-group splits, duplicate rejection,
 training-only Isolation Forest scaling, count-based F1, evaluation context and
 source-hash guards, and bounded exact Wilcoxon computation.
 
+The latest milestone requires complete native profiles before telemetry emission,
+shares source value rules, removes permissive disk-parser fallbacks, and separates
+quality inspection from structural ingestion acceptance. The CLI supports a
+bounded `--profile-file` audit and records `ACCEPTED` or `BLOCKED` explicitly.
+All 14 EDP files were reverified. Real T01 F95 again has 52,085 rows, two missing
+cells and 12 repeated keys. Its structural decision is `BLOCKED`; no rows were
+reconciled, exported or used for model training.
+
 ## Verification
 
-Previous checkpoint: 292 tests passed, one Windows symlink-permission skip.
-Ruff lint/format, strict mypy, local HTTP smoke and secret checks passed.
-The locked dependency audit reported no known vulnerabilities.
-Receipts are in the external `sovereign-ops-local/evidence` directory.
+Current suite: **313 passed, 1 skipped**, in 87 seconds. The skip is the Windows
+symlink-permission test; there is one Starlette/httpx deprecation warning.
+Ruff lint and formatting (71 files), strict mypy (48 files), and the real local
+HTTP smoke check passed. Secret scanning and staged whitespace checks are part
+of the final commit check. Dependencies are unchanged from the preceding clean
+locked dependency audit. Receipts remain outside Git in
+`sovereign-ops-local/evidence`, including `tests-ingestion-2026-11-21.xml` and
+`edp-v2-T01-ingestion-2026-11-21.json`.
 
 Use the locked environment or `uv run --locked` for `pytest`, `ruff check .`,
 `ruff format --check .`, `mypy`, `python scripts/smoke_http.py` and
 `python scripts/check_secrets.py`. Set `OPENBLAS_NUM_THREADS=1`,
 `OMP_NUM_THREADS=1`, and `MKL_NUM_THREADS=1` on the reviewed Windows host.
+The source check used `python scripts/acquire_local_edp.py <external-data-dir>
+--verify-only --profile-file T01_F95.xlsx --output <external-receipt.json>`.
+Audit completion exits successfully even when the recorded ingestion decision
+is `BLOCKED`; this is documented and must not be treated as ingestion approval.
 
 ## Decisions and blockers
 
@@ -55,9 +73,13 @@ increment. The supplied workflow is saved at workspace level, outside this repo.
 
 ## Exact next action
 
-Implement strict native EDP ingestion through the existing source profiler, then
-run focused tests and a real T01 F95 rejection check. Update this checkpoint with
-results before the milestone commit.
+Build a bounded duplicate-group diagnostic for the four F95 workbooks. Preserve
+source hashes, row locations, timestamps and differing-column names in a local
+receipt. Determine whether repeated times share an event/timezone pattern before
+proposing a declared reconciliation policy. Keep all conflicting rows blocked;
+do not silently keep the first/last row or label cadence gaps as physical outages.
+Resolve source filtering and failure-time meaning before creating labels or
+freezing a split. Do not rerun completed source scans unless new evidence is needed.
 
 Recommended client setting: GPT-6.2 Sol, Medium reasoning, Standard speed.
 No model/speed switch has been confirmed. One agent is active; no expert review

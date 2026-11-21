@@ -97,15 +97,10 @@ def profile_dataset(
         profiled_at = datetime.now(UTC)
 
     if dataset_id == "EDP-SCADA-v2":
-        source_entries = [
-            entry
-            for entry in manifest.files
-            if Path(entry.relative_path).name
-            in {f"{asset}_{filter_view}.xlsx" for asset in ("T01", "T06", "T07", "T11")}
-        ]
-        if source_entries:
-            from sovereign_ops.edp_source_audit import profile_scada_workbook
+        from sovereign_ops.edp_source_audit import profile_scada_workbook, select_scada_entries
 
+        source_entries = select_scada_entries(manifest, filter_view)
+        if source_entries:
             source_profiles = [
                 profile_scada_workbook(
                     root,
@@ -187,56 +182,6 @@ def profile_dataset(
                     csv_text = raw_bytes.decode("utf-8", errors="replace")
                     report = parser.validate_csv(csv_text, file_id=csv_name)
                     conformance_reports.append(report)
-
-    elif dataset_id == "EDP-SCADA-v2":
-        from sovereign_ops.edp_parser import EDPScadaParser
-
-        parser_edp = EDPScadaParser()
-        quality_report = parser_edp.inspect(root, manifest)
-
-        # Schema conformance for EDP requires openpyxl for real files,
-        # so we validate the files that exist
-        try:
-            import openpyxl  # type: ignore[import-untyped]
-
-            for entry in manifest.files:
-                if not entry.relative_path.endswith(".xlsx"):
-                    continue
-                xlsx_path = root / entry.relative_path
-                if not xlsx_path.exists():
-                    continue
-
-                wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
-                ws = wb.active
-                if ws is None:
-                    wb.close()
-                    continue
-
-                rows_iter = ws.iter_rows(values_only=False)
-                header_row = next(rows_iter, None)
-                if header_row is None:
-                    wb.close()
-                    continue
-
-                columns = [str(c.value or "") for c in header_row]
-                rows_data: list[dict[str, object]] = []
-                for row_cells in ws.iter_rows(min_row=2, values_only=True):
-                    row_dict: dict[str, object] = {}
-                    for i, val in enumerate(row_cells):
-                        if i < len(columns):
-                            row_dict[columns[i]] = val
-                    rows_data.append(row_dict)
-
-                report = parser_edp.validate_workbook(
-                    columns=columns,
-                    rows=rows_data,
-                    file_id=xlsx_path.stem,
-                )
-                conformance_reports.append(report)
-                wb.close()
-
-        except ImportError:
-            pass  # openpyxl not installed — skip file-level conformance
 
     else:
         raise ValueError(f"Unknown dataset_id: {dataset_id}")

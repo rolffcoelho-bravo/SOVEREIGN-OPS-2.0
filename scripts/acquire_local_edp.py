@@ -20,10 +20,20 @@ def main() -> None:
         action="store_true",
         help="Include workbook headers, declared dimensions and failure counts",
     )
-    parser.add_argument(
+    profile_selection = parser.add_mutually_exclusive_group()
+    profile_selection.add_argument(
         "--profile-view",
         choices=("F95", "F99"),
         help="Stream all four SCADA workbooks in this view and record measured quality",
+    )
+    profile_selection.add_argument(
+        "--profile-file",
+        choices=[
+            f"{asset}_{view}.xlsx"
+            for asset in ("T01", "T06", "T07", "T11")
+            for view in ("F95", "F99")
+        ],
+        help="Profile one native workbook and record its structural ingestion decision",
     )
     args = parser.parse_args()
     repository = Path(__file__).resolve().parents[1]
@@ -41,14 +51,25 @@ def main() -> None:
         report["workbook_structure"] = inspect_edp_workbooks(
             destination, [entry["name"] for entry in receipt["files"]]
         )
-    if args.profile_view:
+    if args.profile_view or args.profile_file:
         profiles = []
+        ingestion_checks = []
         for entry in receipt["files"]:
-            if entry["name"].endswith(f"_{args.profile_view}.xlsx"):
+            if entry["name"] == args.profile_file or (
+                args.profile_view and entry["name"].endswith(f"_{args.profile_view}.xlsx")
+            ):
                 profile = profile_scada_workbook(destination, entry)
                 profiles.append(profile.model_dump(mode="json"))
+                try:
+                    profile.require_ingestible()
+                    decision = {"file": profile.file, "status": "ACCEPTED", "reason": None}
+                except ValueError as exc:
+                    decision = {"file": profile.file, "status": "BLOCKED", "reason": str(exc)}
+                ingestion_checks.append(decision)
                 print(f"Profiled {profile.file}: {profile.rows} rows", file=sys.stderr, flush=True)
         report["scada_profiles"] = profiles
+        report["scada_structural_ingestion"] = ingestion_checks
+        report["ingestion_scope"] = "STRUCTURAL_ONLY_RIGHTS_AND_LABEL_SEMANTICS_SEPARATE"
     output.parent.mkdir(parents=True, exist_ok=True)
     partial: Path | None = None
     try:

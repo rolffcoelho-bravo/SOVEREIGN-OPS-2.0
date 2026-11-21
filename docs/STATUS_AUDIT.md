@@ -1,4 +1,4 @@
-# Status audit — 2026-11-20
+# Status audit — updated 2026-11-21
 
 ## Where work resumed
 
@@ -116,7 +116,7 @@ decoding nested members and pin comparison to the exact
 | Addressed locally | F1 was undefined for failed positive detection, and empty evaluations reported full coverage. | F1 now uses 2TP/(2TP+FP+FN). A positive denominator with zero TP yields zero. An empty evaluation raises, while all-abstaining inputs retain zero coverage and undefined F1. |
 | Addressed locally | Exact Wilcoxon enumeration visited up to 33,554,432 sign assignments. | A doubled-rank dynamic program preserves tied-rank multiplicities. Exhaustive small-sample oracles and a 25-pair exact-tail test pass. Nonfinite inputs fail, and a balanced large sample returns p=1 after continuity correction. |
 | Addressed locally | Points could cite hashes absent from the acquisition manifest, and evaluation accepted foreign model/domain identities or observations outside the test window. | Membership and context guards now reject these inputs, duplicate predictions and inconsistent abstention decisions. This validates references, not the authenticity of caller-constructed telemetry values. |
-| High | Legacy EDP timestamp coercion assigns UTC to offset-naive values and iteration skips unparseable timestamps. Generic parser conformance checks do not provide the same strictness as the pinned source profiler. | Require the source profile before replay, unify parsing and validation, and fail on ambiguous or discarded observations. The measured native F95 files contain explicit UTC offsets. |
+| Addressed locally | EDP iteration assigned UTC to naive timestamps and skipped invalid times. Disk inspection and emission used different validation paths. | Native ingestion now profiles all selected files before emitting a point, shares timestamp/value rules with profiling, and rejects schema, duplicate, ordering and cadence defects. The real T01 F95 source is blocked for 12 repeated keys. Rights approval and duplicate reconciliation remain separate. |
 | Medium | The metadata API resolves its registry relative to the source checkout. | Verify an installed wheel with the registered resource packaged or explicitly configured. |
 | Medium | Static dashboard snapshots and older gate reports overstate empirical completion. | Display snapshot dates and distinguish code delivery from measured source, replay and evaluation acceptance. |
 
@@ -128,12 +128,28 @@ decision mapping, evidence construction and API metadata. This was a source
 review and regression exercise, not a production penetration test or a
 confirmatory evaluation on held-out telemetry.
 
-The latest local suite reports **292 passed, 1 skipped**. The skip is the
+The preceding audit suite reported **292 passed, 1 skipped**. The skip is the
 Windows account's inability to create a symlink. Ruff lint and format checks
 pass, and strict mypy reports no issues in 46 source files. The suite emits
 one upstream Starlette/httpx deprecation warning. Tests use synthetic inputs.
 The F95 structural scan is separate evidence from real publisher files.
 The new model behavior has not been evaluated on real failure labels.
+
+The 2026-11-21 continuation preserves that audited tree in commit `24fdffc`
+on `codex/edp-source-contract`. The native EDP ingestion milestone removes
+permissive disk parsing and uses complete source profiles for acceptance.
+`inspect()` and `profile_dataset()` now share the native source route. The
+legacy normalized schemas are retained only for in-memory validation. Failure
+logs retain naive recorded times without becoming interpreted telemetry labels.
+
+All 14 source files were reverified offline during the bounded real-data check.
+T01 F95 again contained 52,085 rows, two missing cells and 12 repeated keys.
+The structural gate returned `BLOCKED`, as intended. The CLI records this
+decision separately from audit completion and rights status. No rows were
+reconciled or exported. Sources must remain immutable during iteration and
+callers must discard interrupted/failed partial results. Durable transactional
+ingestion remains open. See `PROJECT_STATUS.md` for the current verification
+result and exact next action.
 
 Isolation Forest keeps sklearn's zero decision-function boundary at score
 0.5. Its scale is now learned only during fit, consistent with the

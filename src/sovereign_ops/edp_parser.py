@@ -17,9 +17,8 @@ already acquired by the G1 pipeline and verified via ``AcquisitionManifest``.
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Iterator
-from datetime import UTC, datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -27,12 +26,14 @@ from sovereign_ops.contracts import (
     AcquisitionManifest,
     DataQualityReport,
     TelemetryPoint,
-    TimeWindow,
 )
+from sovereign_ops.edp_acquisition import _verify_file
+from sovereign_ops.edp_source_audit import profile_scada_workbook, select_scada_entries
 from sovereign_ops.edp_source_schemas import (
     EDP_SOURCE_FAILURES_SCHEMA,
     EDP_SOURCE_SCADA_SCHEMA,
 )
+from sovereign_ops.edp_source_values import scada_timestamp, scada_value
 from sovereign_ops.schemas import (
     EDP_FAILURES_SCHEMA,
     EDP_SCADA_SCHEMA,
@@ -52,15 +53,6 @@ __all__ = [
 TURBINE_IDS: tuple[str, ...] = ("T01", "T06", "T07", "T11")
 
 
-def _sha256_file(path: Path) -> str:
-    """Return lowercase hex SHA-256 of a file on disk."""
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
 def _coerce_float(value: Any) -> float | None:
     """Parse a value to float, returning None for missing or invalid."""
     if value is None:
@@ -77,22 +69,10 @@ def _coerce_float(value: Any) -> float | None:
 
 
 def _coerce_datetime(value: Any) -> datetime | None:
-    """Parse a value to timezone-aware datetime."""
-    if value is None:
-        return None
-    if isinstance(value, datetime):
-        if value.tzinfo is None:
-            return value.replace(tzinfo=UTC)
-        return value
-    s = str(value).strip()
-    if not s:
-        return None
+    """Parse an explicitly offset timestamp; never infer a timezone."""
     try:
-        dt = datetime.fromisoformat(s)
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=UTC)
-        return dt
-    except (ValueError, TypeError):
+        return scada_timestamp(value)
+    except ValueError:
         return None
 
 
@@ -108,6 +88,9 @@ def _validate_column_values(
     spec: ColumnSpec,
     values: list[Any],
     total_rows: int,
+    *,
+    native_scada: bool = False,
+    allow_naive_timestamp: bool = False,
 ) -> list[ColumnViolation]:
     """Validate a column's values against its specification."""
     violations: list[ColumnViolation] = []
@@ -161,7 +144,14 @@ def _validate_column_values(
 
     # Dtype conformance
     if spec.dtype == ColumnDtype.DATETIME:
-        bad_dt = sum(1 for v in values if not _is_null(v) and _coerce_datetime(v) is None)
+        bad_dt = 0
+        for value in values:
+            if _is_null(value):
+                continue
+            try:
+                scada_timestamp(value, require_offset=not allow_naive_timestamp)
+            except ValueError:
+                bad_dt += 1
         if bad_dt > 0:
             violations.append(
                 ColumnViolation(
@@ -175,6 +165,13 @@ def _validate_column_values(
             )
     elif spec.dtype == ColumnDtype.FLOAT64:
         bad_float = sum(1 for v in values if not _is_null(v) and _coerce_float(v) is None)
+        if native_scada:
+            bad_float = 0
+            for value in values:
+                try:
+                    scada_value(value)
+                except ValueError:
+                    bad_float += 1
         if bad_float > 0:
             violations.append(
                 ColumnViolation(
@@ -210,25 +207,6 @@ class EDPScadaParser:
     @property
     def dataset_id(self) -> Literal["EDP-SCADA-v2"]:
         return "EDP-SCADA-v2"
-
-    def _resolve_xlsx(self, root: Path, manifest: AcquisitionManifest) -> list[tuple[Path, str]]:
-        """Resolve XLSX files from manifest, returning (path, sha256) pairs."""
-        result: list[tuple[Path, str]] = []
-        for entry in manifest.files:
-            if entry.relative_path.endswith(".xlsx"):
-                xlsx_path = root / entry.relative_path
-                if not xlsx_path.is_file() or xlsx_path.is_symlink():
-                    raise FileNotFoundError(f"Missing or linked XLSX: {entry.relative_path}")
-                asset, _, view = xlsx_path.stem.rpartition("_")
-                if asset in TURBINE_IDS and view in ("F95", "F99") and view != self.filter_view:
-                    continue
-                result.append((xlsx_path, entry.sha256))
-        return result
-
-    @staticmethod
-    def _verify_file_hash(path: Path, expected_sha256: str) -> bool:
-        """Verify SHA-256 of a file on disk matches the manifest."""
-        return _sha256_file(path) == expected_sha256
 
     def validate_workbook(
         self,
@@ -301,7 +279,15 @@ class EDPScadaParser:
         for spec in schema.columns:
             if spec.name in columns:
                 col_values = [row.get(spec.name) for row in rows]
-                violations.extend(_validate_column_values(spec, col_values, total_rows))
+                violations.extend(
+                    _validate_column_values(
+                        spec,
+                        col_values,
+                        total_rows,
+                        native_scada=schema == EDP_SOURCE_SCADA_SCHEMA,
+                        allow_naive_timestamp=schema == EDP_SOURCE_FAILURES_SCHEMA,
+                    )
+                )
 
         has_errors = any(v.severity == ViolationSeverity.ERROR for v in violations)
 
@@ -317,199 +303,84 @@ class EDPScadaParser:
         )
 
     def inspect(self, root: Path, manifest: AcquisitionManifest) -> DataQualityReport:
-        """Inspect all XLSX workbooks and produce a quality report.
+        """Profile native SCADA using the same source checks as ingestion.
 
-        Requires ``openpyxl`` for reading real Excel files.
-
-        Raises
-        ------
-        ValueError
-            If the manifest's dataset_id doesn't match.
-        FileNotFoundError
-            If a manifest-referenced XLSX is missing from disk.
-        RuntimeError
-            If a file's SHA-256 does not match the manifest.
-        ImportError
-            If ``openpyxl`` is not installed.
+        A quality report records defects; it does not authorize ingestion.
+        Supporting files and the other filtered view are excluded.
         """
-        if manifest.dataset_id != self.dataset_id:
-            raise ValueError(f"Manifest dataset_id '{manifest.dataset_id}' != '{self.dataset_id}'")
+        from sovereign_ops.quality_profiler import profile_dataset
 
-        try:
-            import openpyxl  # type: ignore[import-untyped]
-        except ImportError as exc:
-            raise ImportError(
-                "openpyxl is required to read EDP SCADA workbooks: pip install openpyxl"
-            ) from exc
-
-        xlsx_files = self._resolve_xlsx(root, manifest)
-        if not xlsx_files:
-            raise FileNotFoundError("No XLSX files found in manifest files")
-
-        total_rows = 0
-        total_missing = 0
-        total_values = 0
-        seen_rows: set[str] = set()
-        duplicate_count = 0
-        issues: list[str] = []
-        timestamps: list[datetime] = []
-
-        for xlsx_path, expected_sha in xlsx_files:
-            if not xlsx_path.exists():
-                raise FileNotFoundError(f"XLSX file not found: {xlsx_path}")
-
-            if not self._verify_file_hash(xlsx_path, expected_sha):
-                raise RuntimeError(
-                    f"SHA-256 mismatch for {xlsx_path.name}: source integrity compromised"
-                )
-
-            # Only parse turbine SCADA files for quality metrics
-            stem = xlsx_path.stem
-            is_turbine = any(stem.startswith(t) for t in TURBINE_IDS)
-            if not is_turbine:
-                continue
-
-            wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
-            ws = wb.active
-            if ws is None:
-                issues.append(f"No active sheet in {xlsx_path.name}")
-                wb.close()
-                continue
-
-            header = [str(c.value or "") for c in next(ws.iter_rows(max_row=1))]
-            ts_col_idx = header.index("Timestamp") if "Timestamp" in header else None
-
-            for row_cells in ws.iter_rows(min_row=2, values_only=True):
-                total_rows += 1
-                row_values = list(row_cells)
-                row_key = "|".join(str(v) for v in row_values)
-
-                if row_key in seen_rows:
-                    duplicate_count += 1
-                else:
-                    seen_rows.add(row_key)
-
-                for val in row_values:
-                    total_values += 1
-                    if _is_null(val):
-                        total_missing += 1
-
-                if ts_col_idx is not None and ts_col_idx < len(row_values):
-                    dt = _coerce_datetime(row_values[ts_col_idx])
-                    if dt is not None:
-                        timestamps.append(dt)
-
-            wb.close()
-
-        if total_rows == 0:
-            raise ValueError("No data rows found across turbine SCADA workbooks")
-
-        missing_fraction = total_missing / total_values if total_values > 0 else 0.0
-
-        if timestamps:
-            min_ts = min(timestamps)
-            max_ts = max(timestamps)
-            if max_ts <= min_ts:
-                max_ts = min_ts + timedelta(seconds=1)
-            window = TimeWindow(start=min_ts, end=max_ts)
-        else:
-            anchor = manifest.files[0]
-            window = TimeWindow(
-                start=anchor.downloaded_at,
-                end=anchor.downloaded_at + timedelta(seconds=1),
-            )
-            issues.append("No parseable timestamps found — window derived from manifest")
-
-        return DataQualityReport(
-            dataset_id=self.dataset_id,
-            source_manifest_sha256=manifest.sha256_digest(),
-            window=window,
-            rows=total_rows,
-            missing_fraction=round(missing_fraction, 6),
-            duplicate_rows=duplicate_count,
-            issues=tuple(issues),
-        )
+        select_scada_entries(manifest, self.filter_view)
+        return profile_dataset(
+            self.dataset_id, root, manifest, filter_view=self.filter_view
+        ).quality_report
 
     def iter_points(
         self,
         root: Path,
         manifest: AcquisitionManifest,
     ) -> Iterator[TelemetryPoint]:
-        """Yield ``TelemetryPoint`` contracts from turbine SCADA workbooks.
+        """Preflight every selected native workbook before emitting the first point.
 
-        Each point is pinned to its source file by SHA-256.  Only
-        turbine workbooks (T01, T06, T07, T11) are iterated —
-        Failures, Signals, MetMast, etc. are excluded.
-
-        Each signal column produces one ``TelemetryPoint`` per row.
-        The default publisher view is F95. Set ``filter_view="F99"`` for a
-        separate pass over the alternative view.
-
-        Raises
-        ------
-        ValueError
-            If the manifest's dataset_id doesn't match.
-        RuntimeError
-            If a file's SHA-256 does not match the manifest.
-        ImportError
-            If ``openpyxl`` is not installed.
+        Reject invalid schema, ambiguous timestamps, duplicates, reversed rows
+        and off-grid observations. Gaps and missing measurements remain visible.
+        F95 and F99 are separate views. Failure and mast logs are never labels.
+        Inputs must remain immutable for the lifetime of this iterator. Consumers
+        must discard a partial result if iteration raises or is interrupted.
+        Rights approval is separate from this structural acceptance check.
         """
-        if manifest.dataset_id != self.dataset_id:
-            raise ValueError(f"Manifest dataset_id '{manifest.dataset_id}' != '{self.dataset_id}'")
+        import openpyxl  # type: ignore[import-untyped]
 
-        try:
-            import openpyxl
-        except ImportError as exc:
-            raise ImportError(
-                "openpyxl is required to read EDP SCADA workbooks: pip install openpyxl"
-            ) from exc
+        entries = select_scada_entries(manifest, self.filter_view)
+        for entry in entries:
+            profile = profile_scada_workbook(
+                root,
+                {
+                    "name": entry.relative_path,
+                    "source_url": str(entry.source_url),
+                    "size_bytes": entry.size_bytes,
+                    "sha256": entry.sha256,
+                },
+            )
+            profile.require_ingestible()
 
-        for xlsx_path, expected_sha in self._resolve_xlsx(root, manifest):
-            stem = xlsx_path.stem
-            is_turbine = any(stem.startswith(t) for t in TURBINE_IDS)
-            if not is_turbine:
-                continue
-
-            if not self._verify_file_hash(xlsx_path, expected_sha):
-                raise RuntimeError(
-                    f"SHA-256 mismatch for {xlsx_path.name}: source integrity compromised"
-                )
-
-            wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True, keep_links=False)
+        expected_header = [column.name for column in EDP_SOURCE_SCADA_SCHEMA.columns]
+        for entry in entries:
+            xlsx_path = root / entry.relative_path
+            # Recheck bytes after preflight, before opening for emission.
+            _verify_file(xlsx_path, entry.relative_path, entry.size_bytes, f"sha256:{entry.sha256}")
+            workbook = openpyxl.load_workbook(
+                xlsx_path, read_only=True, data_only=True, keep_links=False
+            )
             try:
-                ws = wb.active
-                if ws is None:
-                    raise ValueError(f"No active sheet in {xlsx_path.name}")
-                rows = ws.iter_rows(values_only=True)
-                header = [str(value or "") for value in next(rows, ())]
-                if "Timestamp" not in header or len(set(header)) != len(header):
-                    raise ValueError(f"Missing Timestamp or duplicate headers in {xlsx_path.name}")
-                ts_idx = header.index("Timestamp")
-                id_idx = header.index("Turbine_ID") if "Turbine_ID" in header else None
-                expected_asset, _, view = stem.rpartition("_")
-                if expected_asset in TURBINE_IDS and view in ("F95", "F99") and id_idx is None:
-                    raise ValueError(f"Missing Turbine_ID in {xlsx_path.name}")
-                signal_cols = [
-                    (i, col) for i, col in enumerate(header) if col and i not in (ts_idx, id_idx)
-                ]
+                if len(workbook.worksheets) != 1:
+                    raise ValueError(f"SCADA worksheet changed after preflight: {xlsx_path.name}")
+                rows = workbook.worksheets[0].iter_rows(values_only=True)
+                if list(next(rows, ())) != expected_header:
+                    raise ValueError(f"SCADA header changed after preflight: {xlsx_path.name}")
+                asset_id = xlsx_path.stem.split("_")[0]
+                previous = None
                 for row in rows:
-                    observed_at = _coerce_datetime(row[ts_idx])
-                    if observed_at is None:
-                        continue
-                    asset_id = str(row[id_idx]) if id_idx is not None else stem
-                    if id_idx is not None and (
-                        asset_id not in TURBINE_IDS or not stem.startswith(asset_id)
-                    ):
+                    if row[0] != asset_id:
                         raise ValueError(f"Turbine_ID conflicts with filename: {xlsx_path.name}")
-                    for col_idx, signal_name in signal_cols:
+                    observed_at = scada_timestamp(row[1])
+                    if (
+                        (previous is not None and observed_at <= previous)
+                        or observed_at.minute % 10
+                        or observed_at.second
+                        or observed_at.microsecond
+                    ):
+                        raise ValueError(f"SCADA order or cadence changed: {xlsx_path.name}")
+                    previous = observed_at
+                    for signal_name, value in zip(expected_header[2:], row[2:], strict=True):
                         yield TelemetryPoint(
                             dataset_id=self.dataset_id,
                             asset_id=asset_id,
                             signal_id=signal_name,
                             observed_at=observed_at,
-                            value=_coerce_float(row[col_idx]),
+                            value=scada_value(value),
                             unit=None,
-                            source_sha256=expected_sha,
+                            source_sha256=entry.sha256,
                         )
             finally:
-                wb.close()
+                workbook.close()
