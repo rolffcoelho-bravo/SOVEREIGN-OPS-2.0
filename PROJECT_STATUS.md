@@ -6,7 +6,7 @@ Publish a visible, dated research-evolution account on the public default branch
 
 ## Git and completed work
 
-Current branch: `main`, published through checkpoint `b349381` on `origin/main` before this documentation milestone. The prior source, event-ledger, F95 exposure and paired-view audit work is published there.
+Current branch: `main`. Research-evolution milestone `0e56de1` is pushed to `origin/main`; the prior source, event-ledger, F95 exposure and paired-view audit work is published there.
 
 All 14 EDP v2 files remain publisher-hash verified. Four F95 workbooks contain 211,465 rows; four F99 workbooks contain 213,611. Each view has 42 conflicting repeated timestamp keys and two missing cells. Native schemas conform, but all eight workbooks remain `BLOCKED` for model ingestion pending source-backed duplicate reconciliation. The full F99 receipt is `../sovereign-ops-local/evidence/edp-v2-F99-profile-2026-11-21.json`.
 
@@ -18,7 +18,7 @@ The research progression is now recorded in `docs/RESEARCH_EVOLUTION.md` and dis
 
 ## Verification
 
-Focused paired-view tests: 3 passed. Full suite after the paired-lookback code change: **322 passed, one skipped** (Windows symlink permission), with one Starlette/httpx deprecation warning. Ruff lint/format passed (85 files), strict mypy passed (60 files), HTTP smoke passed. The final secret scan passed over 101 files with zero findings. Dependencies are unchanged from the preceding clean locked audit. The public comparison contains counts and source digests, no source measurements or failure remarks. The new HTML parses and was visually checked at desktop and narrow browser widths; final link and publication checks are pending.
+Focused paired-view tests: 3 passed. Full suite after the paired-lookback code change: **322 passed, one skipped** (Windows symlink permission), with one Starlette/httpx deprecation warning. Ruff lint/format passed (85 files), strict mypy passed (60 files), HTTP smoke passed. The final secret scan passed over 101 files with zero findings. Dependencies are unchanged from the preceding clean locked audit. The public comparison contains counts and source digests, no source measurements or failure remarks. The new HTML parses and was visually checked at desktop and narrow browser widths. Nine linked commits and three in-page anchors resolved; the documentation scan covered 103 files with zero findings. The Markdown timeline is visible on GitHub. GitHub Pages build for `0e56de1` is in progress; the new HTML URL returned 404 before deployment.
 
 Commands: `pytest -q`; `ruff check .`; `ruff format --check .`; `mypy`; `python scripts/smoke_http.py`; `python scripts/check_secrets.py`. Real-source commands: `python scripts/acquire_local_edp.py <external-source-dir> --verify-only --profile-view F99 --output <external-receipt.json>` and `python scripts/compare_edp_views.py <external-source-dir> --output <external-receipt.json>`. Set `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1` on this Windows host.
 
@@ -30,6 +30,6 @@ ESA whole-archive verification and adapter, calibration, incident clustering, an
 
 ## Exact next action
 
-Verify the timeline links, commit and push the current research view to `main`, and confirm its published location. Then obtain a versioned transformation manifest or author clarification answering `docs/SOURCE_PROVENANCE_QUESTIONS.md`. Once provenance is established, define incident units for overlapping faults, freeze prediction horizons, exposure cutoffs, chronological splits and purge rules before model fitting. If source clocks or fit boundaries cannot be resolved, report only scenario-specific descriptive results and abstain from prospective performance claims.
+Confirm the GitHub Pages deployment and live HTML URL. Then obtain a versioned transformation manifest or author clarification answering `docs/SOURCE_PROVENANCE_QUESTIONS.md`. Once provenance is established, define incident units for overlapping faults, freeze prediction horizons, exposure cutoffs, chronological splits and purge rules before model fitting. If source clocks or fit boundaries cannot be resolved, report only scenario-specific descriptive results and abstain from prospective performance claims.
 
 Recommended client setting: GPT-6.2 Sol, Medium reasoning, Standard speed. No switch has been confirmed. One agent is active.
