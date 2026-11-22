@@ -119,6 +119,21 @@ membership. All event eligibility remains undetermined. The comparison does
 not reconcile conflicting measurements, establish either filter's exact
 settings, or make F95 and F99 independent samples.
 
+To reproduce the public version-listing access check without downloading
+source workbooks:
+
+```bash
+uv run --locked python scripts/audit_edp_versions.py \
+  --output /path/to/private-receipts/edp-version-listings.json
+```
+
+This checks the version 1 and 2 publisher metadata and root-level file
+listings, then
+requires version 2's names, sizes and SHA-256 values to match the pinned
+registry. The script does not enumerate other folders. A missing file at the
+root is an access observation, not proof that the source file was deleted.
+See [Version Access Audit](docs/EDP_VERSION_ACCESS_AUDIT.md).
+
 Native telemetry ingestion now performs a complete profile of every selected
 workbook before yielding any points. It rejects ambiguous/invalid timestamps,
 invalid cells or headers, conflicting asset IDs, repeated observation keys,

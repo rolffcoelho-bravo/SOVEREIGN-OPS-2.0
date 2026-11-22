@@ -150,3 +150,15 @@ faults. It does not supply a UTC offset, prove precise physical onset, or
 establish independence of the two records. The paper reports 27 failures in
 its study, while the v2 release contains 28 failure rows. The population
 difference remains unexplained; do not silently equate their event sets.
+
+## Version 1 file availability — 2026-11-22
+
+The [Mendeley version 1 page](https://data.mendeley.com/datasets/zjxjnjp3xs/1)
+describes eight files and approximately 417,000 SCADA rows. Its versioned
+public API root-level file listing currently returns only two PNGs, with no
+SCADA workbook at the root. Other folders were not enumerated.
+The [version 2 page](https://data.mendeley.com/datasets/zjxjnjp3xs/2)
+describes ten files, while its root listing returns 14; all 14 match the pinned
+manifest. This is an access and description discrepancy, not proof that the
+old source files were deleted. See [the versioned access audit](EDP_VERSION_ACCESS_AUDIT.md)
+for endpoints, byte counts and the research consequence.

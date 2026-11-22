@@ -31,6 +31,11 @@ package unchanged.
    417,093 samples in its study; the verified v2 F95 view has 211,465 rows
    over 2016–2017. Those are not an established common population, so a
    retention percentage cannot be inferred by dividing them.
+   The [versioned access audit](EDP_VERSION_ACCESS_AUDIT.md) found that the
+   version 1 public API root-level listing currently exposes only two PNGs
+   despite its eight-file description; other folders were not enumerated.
+   Please provide source-authoritative raw workbook identities and hashes or a
+   working versioned download route.
 6. **Failure meaning:** Does each logged timestamp denote detection, physical
    onset, repair entry, or another operator action? What is its clock? How are
    repeat faults and a recovery interval identified? The paper treats the two

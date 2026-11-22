@@ -1,4 +1,17 @@
-# Status audit — updated 2026-11-21
+# Status audit — updated 2026-11-22
+
+## Versioned source availability — 2026-11-22
+
+The publisher's version 1 description claims eight files and approximately
+417,000 SCADA rows, but its versioned public API root-level listing currently
+returns only two PNGs (114,448 bytes) and zero workbooks at the root. Other
+folders were not enumerated. The version 2 description says ten files;
+its root listing has 14 files (188,823,550 bytes), all matching the pinned
+registry. The original publisher's linked workbook downloads returned HTTP
+403 to this client's HEAD requests. This is an access and metadata discrepancy,
+not evidence that old files were deleted. Raw-to-filtered row retention and
+clock-change lineage remain unverified. The reproducible API receipt and
+bounded conclusions are in [Version Access Audit](EDP_VERSION_ACCESS_AUDIT.md).
 
 ## Current research advance: source-clock exposure sensitivity
 
