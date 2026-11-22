@@ -1,6 +1,6 @@
 # Research evolution
 
-**Evidence snapshot: 21 November 2026.** This timeline distinguishes
+**Evidence snapshot: 22 November 2026.** This timeline distinguishes
 implemented software from measured source properties and validated research
 outcomes. A Git commit establishes what changed in the repository; it does
 not establish a scientific result by itself. The current stage is **source
@@ -34,6 +34,7 @@ flowchart LR
 | 21 Nov | [Clock diagnostic](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/3db7122) and [event ledger](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/772243d) | 42 conflicting repeated keys at two autumn clock changes; 28 failure rows classified into seven without SCADA and 21 unresolved | Neither time offsets nor event onsets inferred |
 | 21 Nov | [Exposure sensitivity](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/1ab7ae4) | Seven-day F95 timestamp presence under UTC, Lisbon and Berlin failure-clock assumptions | Presence is not uptime or an eligible prediction event |
 | 21 Nov | [Paired F95/F99 audit](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/d193900) | F95 keys are nested in F99; 2,146 F99-only keys; paired candidate windows gain 1–53 slots | Exact filter recipe, shared values and prospective validity remain unresolved |
+| 22 Nov | [Versioned source access audit](https://github.com/rolffcoelho-bravo/SOVEREIGN-OPS-2.0/commit/1ca0ff1) | Version 1 root listing returns two PNGs and no workbook; version 2 root listing's 14 files match pinned names, sizes and hashes | Version 1 folders were not enumerated; raw lineage, clocks and retention remain unverified |
 
 ## Evidence gained and research gates
 
@@ -44,6 +45,7 @@ flowchart LR
 | Are logged records eligible events? | 28 failure-log rows; seven lack an asset-matched SCADA source; 21 remain `UNDETERMINED` | Open |
 | Is a seven-day observation window populated? | F95 has 159–867 of 1,008 slots across 21 candidate windows and three failure-clock interpretations; F99 adds 1–53 slots | Scenario diagnostic |
 | Are source clocks and filter fit boundaries known? | Original source pages, released Excel and linked notebook do not jointly explain conversion or generation | Open provenance gate |
+| Can the original raw release be paired to the filtered view? | [Versioned root-listing audit](EDP_VERSION_ACCESS_AUDIT.md) found no v1 workbook at the root; other folders were not enumerated | Open source-access gate |
 | Is a prospective model benefit demonstrated? | No frozen labels, incident units, independent holdout or real-data fitted comparison | Not established |
 
 The paired F95/F99 result is particularly useful: the views differ by about
@@ -54,7 +56,9 @@ the windows can overlap and are not independent experimental units.
 
 ## Next decision gate
 
-Resolve the versioned [source provenance questions](SOURCE_PROVENANCE_QUESTIONS.md):
+Obtain a source-authoritative raw archive or enumerate and verify the historical
+release's full folder tree. Then resolve the versioned
+[source provenance questions](SOURCE_PROVENANCE_QUESTIONS.md):
 the original-to-release clock conversion, repeated-hour mapping, filter
 settings, fit periods, row lineage, failure-time meaning, and rights chain.
 Then define incident units, prediction horizon, exposure cutoff, purge and
