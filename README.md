@@ -6,7 +6,7 @@
 [![CI](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions/workflows/ci.yml/badge.svg)](https://github.com/rolffcoelho-bravo/sovereign-ops-2.0/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-365%20passing-brightgreen.svg)](#development-status)
+[![Tests](https://img.shields.io/badge/tests-499%20passing-brightgreen.svg)](#development-status)
 [![mypy](https://img.shields.io/badge/mypy-strict-blue.svg)](#technology-stack)
 
 ## Research question
@@ -31,9 +31,11 @@ Sovereign Ops implements a **five-outcome decision envelope** with explicit abst
 
 Each decision carries typed evidence citations, model provenance hashes, and an explicit abstention reason when applicable — a structured vocabulary for "I don't know" in production systems.
 
-## Novel methodology: 5-layer confirmatory evaluation (G5)
+## Novel methodology
 
-The core research contribution is a **Domain-Aware Reliability Protocol (DARP)** with a 5-layer non-parametric confirmatory evaluation pipeline — a combination not found in standard ML evaluation:
+### I. 5-layer confirmatory evaluation (G5)
+
+The first methodological pillar is a **5-layer non-parametric confirmatory evaluation pipeline** — a combination not found in standard ML evaluation:
 
 | Layer | Method | Purpose |
 |---|---|---|
@@ -58,6 +60,58 @@ The core research contribution is a **Domain-Aware Reliability Protocol (DARP)**
 
 All 5 layers produce immutable Pydantic contracts with SHA-256 provenance chains, making the entire evaluation pipeline fully auditable and reproducible.
 
+### II. Spectral-Entropic Evidence Synthesis — SEES (G7)
+
+The second methodological pillar is **SEES**, a novel four-component framework for multi-domain anomaly characterisation that fuses signal-theoretic, information-theoretic, and uncertainty-aware evidence into a single auditable score. All four components are implemented from first principles with **zero external signal-processing dependencies**.
+
+```
+                              ┌──────────────────────┐
+        time-series           │   Wavelet Packet      │  energy-normalised
+       observation ──────────▶│   Spectral Decomp.    │──── spectral profile
+                              │   (Haar, depth d)     │       ↓
+                              └──────────────────────┘    KL + JS divergence
+                                                              ↓
+                              ┌──────────────────────┐    spectral score
+        residual              │   Rényi Entropy       │       ↓
+       distribution ─────────▶│   α-Profiling         │──── max |Δα|
+                              │   (α ∈ {0,…,∞})      │    entropy score
+                              └──────────────────────┘       ↓
+                                                              ↓
+                              ┌──────────────────────┐    conformal score
+        nonconformity         │   Conformal           │       ↓
+       scores ───────────────▶│   Prediction          │──── anomalous frac.
+                              │   (coverage ≥ 1−ε)   │       ↓
+                              └──────────────────────┘       ↓
+                                                        ┌──────────┐
+                              3 pillar scores ─────────▶│ Dempster- │── SEES score
+                                 ↓   ↓   ↓             │ Shafer   │   = Pl(anomaly)
+                              mass assignments          │ Fusion   │
+                                                        └──────────┘
+```
+
+| Pillar | Method | Key property |
+|---|---|---|
+| **P1 — Spectral** | Haar wavelet packet transform → energy-normalised spectrum → KL + Jensen-Shannon divergence | Parseval energy conservation; frequency-localised anomaly fingerprinting |
+| **P2 — Entropic** | Rényi entropy over α ∈ {0, 0.5, 1, 1.5, 2, 3, ∞} → per-α divergence profiling | Captures tail-sensitive (α → ∞) through support-sensitive (α → 0) distributional shifts |
+| **P3 — Conformal** | Distribution-free conformal prediction (Vovk et al., 2005) | Finite-sample coverage guarantee: P(Y ∈ Ĉ_ε) ≥ 1 − ε for any distribution |
+| **P4 — Fusion** | Dempster-Shafer theory of evidence → belief/plausibility intervals | Principled uncertainty quantification; explicit conflict mass between sources |
+
+**SEES score** = plausibility of anomaly from the fused Dempster-Shafer result, providing both a continuous severity measure and an explicit uncertainty interval [Bel(anomaly), Pl(anomaly)].
+
+**Characterisation taxonomy:** Each asset receives a structural label — `spectral_dominant`, `entropic_dominant`, `joint_dominant`, or `ambiguous` — that reveals *why* an anomaly was flagged, not just *whether* it was flagged.
+
+**What makes SEES different:**
+
+| Capability | Score-based AD | Ensemble AD | SEES (This Work) |
+|---|---|---|---|
+| Frequency-domain profiling | — | — | ✓ (wavelet packet) |
+| Information-theoretic profiling | — | — | ✓ (Rényi α-spectrum) |
+| Distribution-free coverage | — | partial | ✓ (conformal) |
+| Principled uncertainty fusion | — | — | ✓ (Dempster-Shafer) |
+| Anomaly characterisation | — | — | ✓ (4-class taxonomy) |
+| Cryptographic provenance | — | — | ✓ (SHA-256 chains) |
+| Zero external dependencies | — | varies | ✓ (first-principles) |
+
 ## Architecture
 
 ```mermaid
@@ -68,10 +122,14 @@ graph TB
     EDP["<b>EDP Domain</b><br/>Wind turbine SCADA<br/>4 turbines · 188.8 MB"]
     SDL["<b>Sovereign Data Layer</b><br/>SHA-256 + MD5 · DOI-pinned · Resumable"]
     G5["<b>G5 Confirmatory</b><br/>Wilcoxon · Holm · Cliff's δ<br/>BCa Bootstrap · Kendall's W"]
+    SEES["<b>G7 SEES Framework</b><br/>Wavelet Spectral · Rényi Entropy<br/>Conformal Prediction · Dempster-Shafer"]
+    OBS["<b>G6 Observability</b><br/>Pipeline Logger · Metrics<br/>Stage Timing · Audit Trail"]
 
     DE --> ESA & GOV & EDP
     ESA & GOV & EDP --> SDL
     GOV --> G5
+    G5 --> SEES
+    GOV --> OBS
 
     style DE fill:#1a3a5c,stroke:#3987e5,color:#f0efec
     style ESA fill:#3a2010,stroke:#d95926,color:#f0efec
@@ -79,6 +137,8 @@ graph TB
     style EDP fill:#3a2010,stroke:#d95926,color:#f0efec
     style SDL fill:#302a08,stroke:#c98500,color:#f0efec
     style G5 fill:#2a1040,stroke:#9070e0,color:#f0efec
+    style SEES fill:#401040,stroke:#c060e0,color:#f0efec
+    style OBS fill:#103040,stroke:#60a0c0,color:#f0efec
 ```
 
 **Key architectural decisions:**
@@ -99,7 +159,7 @@ Additional domains (Scania fleet, HAI security testbed, TraCSS orbital) are regi
 
 ## Development status
 
-**60% complete — 6 of 10 gates passed.** 365 tests · 27 source modules · 6,490 lines · mypy --strict
+**80% complete — 8 of 10 gates passed.** 499 tests · 35 source modules · 9,344 lines · mypy --strict
 
 | Gate | Status | Description | Tests |
 |---|---|---|---|
@@ -109,10 +169,10 @@ Additional domains (Scania fleet, HAI security testbed, TraCSS orbital) are regi
 | **G3** | ✅ COMPLETE | Baseline models — Z-Score (MAD), Isolation Forest, abstention-aware eval | 169 |
 | **G4** | ✅ COMPLETE | DARP core — pipeline orchestrator, decision engine, evidence chains | 199 |
 | **G5** | ✅ COMPLETE | Confirmatory eval — 5-layer statistical pipeline (Wilcoxon, Holm, Cliff's δ, BCa, Kendall's W) | 365 |
-| **G6** | 🔵 IN PROGRESS | Observability — structured logging, metrics export | — |
-| G7 | ⬜ PLANNED | Containerization — Docker, reproducible environments | — |
+| **G6** | ✅ COMPLETE | Observability — pipeline logger, metrics, stage timing, audit trail | 408 |
+| **G7** | ✅ COMPLETE | SEES framework — wavelet spectral, Rényi entropy, conformal prediction, Dempster-Shafer fusion | 499 |
 | G8 | ⬜ PLANNED | Documentation — technical report, scientific paper | — |
-| G9 | ⬜ PLANNED | Publication — Zenodo archive, R/Python packages | — |
+| G9 | ⬜ PLANNED | Publication — Zenodo archive, R/Python packages, dashboard | — |
 
 **Dashboard:** [Interactive Research Dashboard](https://rolffcoelho-bravo.github.io/SOVEREIGN-OPS-2.0/dashboard.html) — live metrics, architecture diagrams, methodology visualization
 
@@ -127,7 +187,7 @@ cd sovereign-ops-2.0
 uv sync --locked
 
 # Run the full verification suite
-uv run --locked pytest                # 365 tests
+uv run --locked pytest                # 499 tests
 uv run --locked mypy --strict src/    # strict type checking
 uv run --locked ruff check .          # lint
 uv run --locked ruff format --check . # format verification
@@ -135,7 +195,7 @@ uv run --locked ruff format --check . # format verification
 # Start the API (development)
 uv run --locked uvicorn sovereign_ops.api:app --host 127.0.0.1 --port 8000
 curl http://127.0.0.1:8000/health/live
-# → {"status":"alive","stage":"G5","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
+# → {"status":"alive","stage":"G7","mode":"RESEARCH_ONLY","inference":"NOT_IMPLEMENTED"}
 ```
 
 For the complete 7-step verification pipeline:
@@ -148,7 +208,7 @@ uv run --locked python scripts/verify.py
 
 ```
 sovereign-ops-2.0/
-├── src/sovereign_ops/         # Python package (27 modules, 6,490 lines)
+├── src/sovereign_ops/         # Python package (35 modules, 9,344 lines)
 │   ├── contracts.py           # Immutable Pydantic contracts (22 frozen types)
 │   ├── schemas.py             # Domain-specific schema definitions
 │   ├── adapters.py            # Domain adapter protocols
@@ -166,6 +226,13 @@ sovereign-ops-2.0/
 │   ├── decision_engine.py     # Five-outcome decision envelope (286 lines)
 │   ├── statistics.py          # 5-layer confirmatory pipeline (1,138 lines)
 │   ├── comparative.py         # Multi-detector comparison runner
+│   ├── observability.py       # G6: Pipeline logger, metric records
+│   ├── instrumented_pipeline.py # G6: Instrumented pipeline with stage timing
+│   ├── g7_contracts.py        # G7: 13 SEES immutable contracts
+│   ├── spectral.py            # G7: Wavelet packet spectral decomposition
+│   ├── entropy.py             # G7: Rényi entropy α-spectrum profiling
+│   ├── conformal.py           # G7: Distribution-free conformal prediction
+│   ├── synthesis.py           # G7: Dempster-Shafer fusion + SEES orchestrator
 │   ├── edp_source_audit.py    # EDP source integrity audit (319 lines)
 │   ├── edp_view_comparison.py # EDP view comparison analysis
 │   ├── edp_exposure.py        # EDP exposure sensitivity analysis
@@ -175,7 +242,7 @@ sovereign-ops-2.0/
 │   ├── edp_version_audit.py   # EDP version audit
 │   ├── edp_source_values.py   # EDP source value analysis
 │   └── audit.py               # Cross-module audit utilities
-├── tests/                     # 24 test modules (365 tests, synthetic fixtures)
+├── tests/                     # 30 test modules (499 tests, synthetic fixtures)
 ├── scripts/                   # Verification, acquisition, figure generation
 │   ├── verify.py              # 7-step CI verification runner
 │   └── generate_figures.py    # Publication-quality matplotlib figures
@@ -200,6 +267,25 @@ The confirmatory evaluation pipeline produces 8 immutable contract types:
 | `EffectSizeReport` | pairwise deltas · bootstrap CIs · dataset_id | Aggregated effect analysis |
 | `RankStabilityReport` | kendall_w · interpretation · n_splits · n_models | Rank concordance assessment |
 | `ComparisonReport` | SHA-256 provenance · full pipeline output | Sealed, audit-ready comparison |
+
+## G7 SEES contracts
+
+The SEES framework introduces 13 additional immutable contract types:
+
+| Contract | Key fields | Purpose |
+|---|---|---|
+| `WaveletNode` | level · index · energy · coefficient_sha256 | Single wavelet packet tree node |
+| `WaveletPacketSpectrum` | dataset_id · depth · total_energy · nodes | Full spectral decomposition |
+| `SpectralDivergenceScore` | kl_divergence · js_divergence · n_nodes | Reference-vs-test spectral comparison |
+| `RenyiEntropyPoint` | alpha · entropy_bits | Single α-entropy measurement |
+| `EntropyAlphaSpectrum` | dataset_id · alpha_values · n_bins | Full entropy α-profile |
+| `EntropyDivergenceProfile` | dataset_id · per_alpha_divergence · max_divergence_alpha | Distributional shift quantification |
+| `NonconformityScore` | sample_index · score · is_anomaly | Individual nonconformity measurement |
+| `ConformalCalibration` | dataset_id · significance_level · quantile_threshold | Calibrated prediction threshold |
+| `ConformalPredictionSet` | n_anomalous · n_ambiguous · empirical_coverage | Distribution-free prediction output |
+| `MassAssignment` | source_id · mass_anomalous · mass_normal · mass_uncertain | Basic probability assignment |
+| `DempsterShaferResult` | belief_anomaly · plausibility_anomaly · conflict_mass | Fused evidence with uncertainty |
+| `SEESReport` | sees_score · characterisation · spectral · entropy · conformal · fusion | Complete synthesis output |
 
 ## Project documentation
 
@@ -231,6 +317,7 @@ This repository (`SOVEREIGN-OPS-2.0`) contains the open research platform. Propr
 | Data | Polars, PyArrow, Parquet |
 | ML | scikit-learn, NumPy, SciPy |
 | Statistics | Custom 5-layer non-parametric pipeline (1,138 lines) |
+| SEES | First-principles wavelet, entropy, conformal, and Dempster-Shafer fusion |
 | Visualization | matplotlib (publication-quality figures) |
 | CI | GitHub Actions (ruff → format → mypy → pytest → smoke → secrets → audit) |
 | Package management | uv (locked, reproducible) |
@@ -250,7 +337,7 @@ If you use this work, please cite:
   url          = {https://github.com/rolffcoelho-bravo/sovereign-ops-2.0},
   doi          = {10.5281/zenodo.24364518},
   version      = {0.1.0},
-  note         = {Research software, gated development, 5-layer confirmatory evaluation}
+  note         = {Research software, gated development, SEES framework, 5-layer confirmatory evaluation}
 }
 ```
 
