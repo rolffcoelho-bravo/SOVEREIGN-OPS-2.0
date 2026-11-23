@@ -27,7 +27,7 @@ def main() -> None:
         "dataset_id": receipt["dataset_id"],
         "doi": receipt["doi"],
         "checked_at": receipt["checked_at"],
-        "analysis": result,
+        "analysis": json.loads(result.canonical_json()),
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     partial = None
@@ -46,8 +46,8 @@ def main() -> None:
         json.dumps(
             {
                 "receipt": str(output),
-                "candidates": result["candidate_count"],
-                "excluded_no_scada": result["excluded_no_scada"],
+                "candidates": result.candidate_count,
+                "excluded_no_scada": result.excluded_no_scada,
             }
         )
     )

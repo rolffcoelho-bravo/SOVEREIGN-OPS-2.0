@@ -5,11 +5,12 @@ from datetime import datetime
 from pathlib import Path
 
 from sovereign_ops.edp_acquisition import EDPFileReceipt, _verify_file
+from sovereign_ops.edp_contracts import DuplicateDiagnosticReport, DuplicateGroup
 from sovereign_ops.edp_source_schemas import EDP_SOURCE_SCADA_SCHEMA
 from sovereign_ops.edp_source_values import scada_timestamp
 
 
-def diagnose_duplicates(root: Path, entry: EDPFileReceipt) -> dict[str, object]:
+def diagnose_duplicates(root: Path, entry: EDPFileReceipt) -> DuplicateDiagnosticReport:
     """Read twice, retaining only repeated groups and their differing field names."""
     import openpyxl  # type: ignore[import-untyped]
 
@@ -42,7 +43,7 @@ def diagnose_duplicates(root: Path, entry: EDPFileReceipt) -> dict[str, object]:
                         groups[timestamp].append((row_number, tuple(row)))
         finally:
             workbook.close()
-    result = []
+    result: list[DuplicateGroup] = []
     for timestamp, members in sorted(groups.items()):
         first = members[0][1]
         differing = [
@@ -51,20 +52,20 @@ def diagnose_duplicates(root: Path, entry: EDPFileReceipt) -> dict[str, object]:
             if any(member[index] != first[index] for _, member in members[1:])
         ]
         result.append(
-            {
-                "timestamp_utc": timestamp.isoformat(),
-                "row_numbers": [number for number, _ in members],
-                "row_count": len(members),
-                "differing_columns": differing,
-                "identical_rows": len(set(repr(member) for _, member in members)) == 1,
-            }
+            DuplicateGroup(
+                timestamp_utc=timestamp.isoformat(),
+                row_numbers=tuple(number for number, _ in members),
+                row_count=len(members),
+                differing_columns=tuple(differing),
+                identical_rows=len(set(repr(member) for _, member in members)) == 1,
+            )
         )
-    return {
-        "file": name,
-        "source_sha256": entry["sha256"],
-        "row_count": sum(counts.values()),
-        "repeated_key_count": sum(count - 1 for count in counts.values() if count > 1),
-        "group_count": len(result),
-        "groups": result,
-        "disposition": "BLOCKED_PENDING_RECONCILIATION" if result else "NO_REPEATED_KEYS",
-    }
+    return DuplicateDiagnosticReport(
+        file=name,
+        source_sha256=entry["sha256"],
+        row_count=sum(counts.values()),
+        repeated_key_count=sum(count - 1 for count in counts.values() if count > 1),
+        group_count=len(result),
+        groups=tuple(result),
+        disposition="BLOCKED_PENDING_RECONCILIATION" if result else "NO_REPEATED_KEYS",
+    )

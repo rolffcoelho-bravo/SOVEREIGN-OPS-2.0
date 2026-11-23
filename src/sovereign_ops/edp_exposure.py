@@ -2,10 +2,10 @@
 
 from datetime import UTC, datetime, timedelta, tzinfo
 from pathlib import Path
-from typing import cast
 from zoneinfo import ZoneInfo
 
 from sovereign_ops.edp_acquisition import EDPFileReceipt, _verify_file
+from sovereign_ops.edp_contracts import ExposureCandidate, ExposureFold, ExposureReport
 from sovereign_ops.edp_events import inventory_failure_eligibility
 from sovereign_ops.edp_source_schemas import EDP_SOURCE_SCADA_SCHEMA
 from sovereign_ops.edp_source_values import scada_timestamp
@@ -65,71 +65,69 @@ def _source_times(root: Path, entry: EDPFileReceipt) -> set[datetime]:
         book.close()
 
 
-def analyze_exposure(root: Path, files: list[EDPFileReceipt]) -> dict[str, object]:
+def analyze_exposure(root: Path, files: list[EDPFileReceipt]) -> ExposureReport:
     """Measure observation availability; never promote a candidate to an event."""
     by_name = {entry["name"]: entry for entry in files}
     failure = inventory_failure_eligibility(
         root, by_name["Combined-Failure-Logbook-2016-2017.xlsx"]
     )
-    records = failure["records"]
-    if not isinstance(records, list):
-        raise ValueError("Invalid failure inventory")
-    results = []
-    source_hashes = {}
+    results: list[ExposureCandidate] = []
+    source_hashes: dict[str, str] = {}
     for asset in ("T01", "T06", "T07", "T11"):
         entry = by_name[f"{asset}_F95.xlsx"]
         times = _source_times(root, entry)
         source_hashes[asset] = entry["sha256"]
-        for record in records:
-            if record["asset_id"] != asset:
+        for record in failure.records:
+            if record.asset_id != asset:
                 continue
-            stamp = datetime.fromisoformat(record["recorded_time_naive"])
-            scenarios = {}
+            naive = record.recorded_time_naive
+            if naive is None:
+                continue
+            stamp = datetime.fromisoformat(naive)
+            scenarios: dict[str, tuple[ExposureFold, ...]] = {}
             for name, zone in ASSUMPTIONS.items():
-                folds = []
+                fold_list: list[ExposureFold] = []
                 for end in _candidate_instants(stamp, zone):
                     start = end - HORIZON
                     count = sum(start <= observed < end for observed in times)
                     expected = _grid_slots(start, end)
-                    folds.append(
-                        {
-                            "assumed_event_utc": end.isoformat(),
-                            "observed_unique_slots": count,
-                            "expected_grid_slots": expected,
-                            "coverage_fraction": count / expected,
-                        }
+                    fold_list.append(
+                        ExposureFold(
+                            assumed_event_utc=end.isoformat(),
+                            observed_unique_slots=count,
+                            expected_grid_slots=expected,
+                            coverage_fraction=count / expected,
+                        )
                     )
-                scenarios[name] = folds
+                scenarios[name] = tuple(fold_list)
             fractions = [
-                cast(float, fold["coverage_fraction"])
+                fold.coverage_fraction
                 for folds in scenarios.values()
                 for fold in folds
             ]
             results.append(
-                {
-                    "record_ref": record["record_ref"],
-                    "source_row": record["source_row"],
-                    "asset_id": asset,
-                    "component": record["component"],
-                    "scenario_coverage_min": min(fractions),
-                    "scenario_coverage_max": max(fractions),
-                    "scenarios": scenarios,
-                    "eligibility": "UNDETERMINED",
-                }
+                ExposureCandidate(
+                    record_ref=record.record_ref,
+                    source_row=record.source_row,
+                    asset_id=asset,
+                    component=record.component,
+                    scenario_coverage_min=min(fractions),
+                    scenario_coverage_max=max(fractions),
+                    scenarios=scenarios,
+                    eligibility="UNDETERMINED",
+                )
             )
-    return {
-        "horizon_days": 7,
-        "view": "F95",
-        "time_interpretations": list(ASSUMPTIONS),
-        "source_sha256_by_asset": source_hashes,
-        "failure_source_sha256": failure["source_sha256"],
-        "candidate_count": len(results),
-        "excluded_no_scada": cast(dict[str, int], failure["status_counts"]).get(
-            "EXCLUDED_NO_SCADA", 0
-        ),
-        "candidates": results,
-        "interpretation": (
+    return ExposureReport(
+        horizon_days=7,
+        view="F95",
+        time_interpretations=tuple(ASSUMPTIONS),
+        source_sha256_by_asset=source_hashes,
+        failure_source_sha256=failure.source_sha256,
+        candidate_count=len(results),
+        excluded_no_scada=failure.status_counts.get("EXCLUDED_NO_SCADA", 0),
+        candidates=tuple(results),
+        interpretation=(
             "Observation availability only. No event time, onset, label, "
             "or eligible event is established."
         ),
-    }
+    )

@@ -4,6 +4,7 @@ import re
 from collections.abc import Mapping, Sequence
 
 from sovereign_ops.edp_acquisition import DOI
+from sovereign_ops.edp_contracts import VersionSummary
 
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _FILE_CLAIM = re.compile(r"\b(\d+)\s+files\b", re.IGNORECASE)
@@ -13,7 +14,7 @@ def summarize_public_version(
     version: int,
     metadata: Mapping[str, object],
     files: Sequence[Mapping[str, object]],
-) -> dict[str, object]:
+) -> VersionSummary:
     """Keep publisher description and root-level API listing separate."""
     if version not in (1, 2) or metadata.get("version") != version:
         raise ValueError("Unexpected versioned dataset metadata")
@@ -48,23 +49,23 @@ def summarize_public_version(
     if len(names) != len(set(names)):
         raise ValueError("Repeated filename in versioned listing")
     licence = metadata.get("data_licence")
-    return {
-        "version": version,
-        "doi": DOI if version == 2 else "10.17632/zjxjnjp3xs.1",
-        "metadata_licence": licence.get("short_name") if isinstance(licence, dict) else None,
-        "description_claimed_file_count": claimed_count,
-        "root_file_count": len(names),
-        "root_size_bytes": total_bytes,
-        "root_workbook_count": sum(name.lower().endswith(".xlsx") for name in names),
-        "root_names": sorted(names),
-        "description_count_matches_root_listing": claimed_count == len(names)
+    return VersionSummary(
+        version=version,
+        doi=DOI if version == 2 else "10.17632/zjxjnjp3xs.1",
+        metadata_licence=licence.get("short_name") if isinstance(licence, dict) else None,
+        description_claimed_file_count=claimed_count,
+        root_file_count=len(names),
+        root_size_bytes=total_bytes,
+        root_workbook_count=sum(name.lower().endswith(".xlsx") for name in names),
+        root_names=tuple(sorted(names)),
+        description_count_matches_root_listing=claimed_count == len(names)
         if claimed_count is not None
         else None,
-        "interpretation": (
+        interpretation=(
             "Versioned public API root-level listing at check time; folders were not "
             "enumerated. Absence here does not prove file deletion or explain API routing."
         ),
-    }
+    )
 
 
 def verify_v2_against_registry(

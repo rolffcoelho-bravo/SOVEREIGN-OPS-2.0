@@ -23,10 +23,10 @@ def test_version_one_description_does_not_promote_missing_files() -> None:
         "data_licence": {"short_name": "CC BY 4.0"},
     }
     report = summarize_public_version(1, metadata, [_file("2016 fault log.png")])
-    assert report["description_claimed_file_count"] == 8
-    assert report["root_file_count"] == 1
-    assert report["root_workbook_count"] == 0
-    assert report["description_count_matches_root_listing"] is False
+    assert report.description_claimed_file_count == 8
+    assert report.root_file_count == 1
+    assert report.root_workbook_count == 0
+    assert report.description_count_matches_root_listing is False
 
 
 def test_v2_listing_requires_exact_pinned_name_size_and_hash() -> None:

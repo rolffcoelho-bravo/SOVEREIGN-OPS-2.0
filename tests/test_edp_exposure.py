@@ -54,14 +54,14 @@ def test_source_exposure_preserves_undetermined_event_status(tmp_path: Path) -> 
     entries.append(_entry(failure_path))
 
     report = analyze_exposure(tmp_path, entries)
-    assert report["candidate_count"] == 1
-    assert report["excluded_no_scada"] == 1
-    candidates = report["candidates"]
-    assert isinstance(candidates, list)
+    assert report.candidate_count == 1
+    assert report.excluded_no_scada == 1
+    candidates = report.candidates
+    assert isinstance(candidates, tuple)
     candidate = candidates[0]
-    assert candidate["eligibility"] == "UNDETERMINED"
-    assert candidate["scenarios"]["NAIVE_AS_UTC"][0]["observed_unique_slots"] == 2
-    assert candidate["scenarios"]["NAIVE_AS_UTC"][0]["expected_grid_slots"] == 1008
+    assert candidate.eligibility == "UNDETERMINED"
+    assert candidate.scenarios["NAIVE_AS_UTC"][0].observed_unique_slots == 2
+    assert candidate.scenarios["NAIVE_AS_UTC"][0].expected_grid_slots == 1008
     assert "private details" not in str(report)
 
 

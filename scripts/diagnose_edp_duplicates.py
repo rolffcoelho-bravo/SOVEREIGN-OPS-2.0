@@ -35,7 +35,7 @@ def main() -> None:
         "checked_at": receipt["checked_at"],
         "source_status": receipt["status"],
         "scope": "F95_DUPLICATE_KEYS_ONLY_NO_SOURCE_VALUES_EXPORTED",
-        "reports": reports,
+        "reports": [json.loads(r.canonical_json()) for r in reports],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     partial = None
@@ -54,7 +54,7 @@ def main() -> None:
         json.dumps(
             {
                 "receipt": str(output),
-                "repeated_keys": sum(report["repeated_key_count"] for report in reports),
+                "repeated_keys": sum(report.repeated_key_count for report in reports),
             }
         )
     )

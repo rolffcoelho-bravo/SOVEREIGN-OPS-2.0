@@ -53,21 +53,21 @@ def test_paired_membership_counts_unique_keys_and_non_nested_views(tmp_path: Pat
         entries.append(_workbook(tmp_path, asset, "F99", [one, three]))
     entries.append(_failure_workbook(tmp_path))
     report = compare_views(tmp_path, entries)
-    assets = report["assets"]
-    assert isinstance(assets, list)
-    for asset in assets:
-        assert asset["f95_rows"] == 3
-        assert asset["f95_repeated_keys"] == 1
-        assert asset["shared_keys"] == 1
-        assert asset["f95_only_keys"] == 1
-        assert asset["f99_only_keys"] == 1
-        assert asset["f95_subset_of_f99"] is False
-        assert asset["key_jaccard"] == pytest.approx(1 / 3)
-    assert report["candidate_count"] == 1
-    lookbacks = report["candidate_lookbacks"]
-    assert isinstance(lookbacks, list)
-    assert lookbacks[0]["eligibility"] == "UNDETERMINED"
-    assert lookbacks[0]["scenarios"]["NAIVE_AS_UTC"][0]["f99_minus_f95_slots"] == 0
+    assets = report.assets
+    assert isinstance(assets, tuple)
+    for asset_cmp in assets:
+        assert asset_cmp.f95_rows == 3
+        assert asset_cmp.f95_repeated_keys == 1
+        assert asset_cmp.shared_keys == 1
+        assert asset_cmp.f95_only_keys == 1
+        assert asset_cmp.f99_only_keys == 1
+        assert asset_cmp.f95_subset_of_f99 is False
+        assert asset_cmp.key_jaccard == pytest.approx(1 / 3)
+    assert report.candidate_count == 1
+    lookbacks = report.candidate_lookbacks
+    assert isinstance(lookbacks, tuple)
+    assert lookbacks[0].eligibility == "UNDETERMINED"
+    assert lookbacks[0].scenarios["NAIVE_AS_UTC"][0].f99_minus_f95_slots == 0
     assert "private details" not in str(report)
 
 
@@ -96,10 +96,10 @@ def test_paired_event_window_detects_extra_f99_slot(tmp_path: Path) -> None:
         )
     entries.append(_failure_workbook(tmp_path))
     report = compare_views(tmp_path, entries)
-    lookbacks = report["candidate_lookbacks"]
-    assert isinstance(lookbacks, list)
-    fold = lookbacks[0]["scenarios"]["NAIVE_AS_UTC"][0]
-    assert fold["f95_unique_slots"] == 1
-    assert fold["f99_unique_slots"] == 2
-    assert fold["f99_minus_f95_slots"] == 1
-    assert fold["expected_grid_slots"] == 1008
+    lookbacks = report.candidate_lookbacks
+    assert isinstance(lookbacks, tuple)
+    fold = lookbacks[0].scenarios["NAIVE_AS_UTC"][0]
+    assert fold.f95_unique_slots == 1
+    assert fold.f99_unique_slots == 2
+    assert fold.f99_minus_f95_slots == 1
+    assert fold.expected_grid_slots == 1008

@@ -4,9 +4,14 @@ from bisect import bisect_left
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
-from typing import cast
 
 from sovereign_ops.edp_acquisition import EDPFileReceipt, _verify_file
+from sovereign_ops.edp_contracts import (
+    LookbackCandidate,
+    LookbackFold,
+    ViewAssetComparison,
+    ViewComparisonReport,
+)
 from sovereign_ops.edp_events import inventory_failure_eligibility
 from sovereign_ops.edp_exposure import ASSUMPTIONS, HORIZON, _candidate_instants, _grid_slots
 from sovereign_ops.edp_source_schemas import EDP_SOURCE_SCADA_SCHEMA
@@ -43,7 +48,7 @@ def _timestamp_counts(root: Path, entry: EDPFileReceipt, asset: str) -> Counter[
         book.close()
 
 
-def compare_views(root: Path, files: list[EDPFileReceipt]) -> dict[str, object]:
+def compare_views(root: Path, files: list[EDPFileReceipt]) -> ViewComparisonReport:
     """Compare keys, not values; no events or independent samples are implied."""
     by_name = {entry["name"]: entry for entry in files}
     if len(by_name) != len(files):
@@ -51,11 +56,8 @@ def compare_views(root: Path, files: list[EDPFileReceipt]) -> dict[str, object]:
     failure = inventory_failure_eligibility(
         root, by_name["Combined-Failure-Logbook-2016-2017.xlsx"]
     )
-    records = failure["records"]
-    if not isinstance(records, list):
-        raise ValueError("Invalid failure inventory")
-    assets = []
-    lookbacks = []
+    asset_results: list[ViewAssetComparison] = []
+    lookback_results: list[LookbackCandidate] = []
     for asset in ASSETS:
         f95 = by_name[f"{asset}_F95.xlsx"]
         f99 = by_name[f"{asset}_F99.xlsx"]
@@ -67,76 +69,74 @@ def compare_views(root: Path, files: list[EDPFileReceipt]) -> dict[str, object]:
         only99 = keys99 - keys95
         union = len(shared) + len(only95) + len(only99)
         sorted95, sorted99 = sorted(keys95), sorted(keys99)
-        for record in records:
-            if record["asset_id"] != asset:
+        for record in failure.records:
+            if record.asset_id != asset:
                 continue
-            recorded = record["recorded_time_naive"]
-            if not isinstance(recorded, str):
+            recorded = record.recorded_time_naive
+            if recorded is None:
                 raise ValueError("Expected offset-naive failure time")
             stamp = datetime.fromisoformat(recorded)
-            scenarios = {}
+            scenarios: dict[str, tuple[LookbackFold, ...]] = {}
             for name, zone in ASSUMPTIONS.items():
-                folds = []
+                fold_list: list[LookbackFold] = []
                 for end in _candidate_instants(stamp, zone):
                     start = end - HORIZON
                     count95 = bisect_left(sorted95, end) - bisect_left(sorted95, start)
                     count99 = bisect_left(sorted99, end) - bisect_left(sorted99, start)
-                    folds.append(
-                        {
-                            "assumed_event_utc": end.isoformat(),
-                            "expected_grid_slots": _grid_slots(start, end),
-                            "f95_unique_slots": count95,
-                            "f99_unique_slots": count99,
-                            "f99_minus_f95_slots": count99 - count95,
-                        }
+                    fold_list.append(
+                        LookbackFold(
+                            assumed_event_utc=end.isoformat(),
+                            expected_grid_slots=_grid_slots(start, end),
+                            f95_unique_slots=count95,
+                            f99_unique_slots=count99,
+                            f99_minus_f95_slots=count99 - count95,
+                        )
                     )
-                scenarios[name] = folds
+                scenarios[name] = tuple(fold_list)
             deltas = [
-                cast(int, fold["f99_minus_f95_slots"])
+                fold.f99_minus_f95_slots
                 for folds in scenarios.values()
                 for fold in folds
             ]
-            lookbacks.append(
-                {
-                    "record_ref": record["record_ref"],
-                    "asset_id": asset,
-                    "source_row": record["source_row"],
-                    "eligibility": "UNDETERMINED",
-                    "delta_min_slots": min(deltas),
-                    "delta_max_slots": max(deltas),
-                    "scenarios": scenarios,
-                }
+            lookback_results.append(
+                LookbackCandidate(
+                    record_ref=record.record_ref,
+                    asset_id=asset,
+                    source_row=record.source_row,
+                    eligibility="UNDETERMINED",
+                    delta_min_slots=min(deltas),
+                    delta_max_slots=max(deltas),
+                    scenarios=scenarios,
+                )
             )
-        assets.append(
-            {
-                "asset_id": asset,
-                "f95_sha256": f95["sha256"],
-                "f99_sha256": f99["sha256"],
-                "f95_rows": counts95.total(),
-                "f99_rows": counts99.total(),
-                "f95_unique_keys": len(keys95),
-                "f99_unique_keys": len(keys99),
-                "f95_repeated_keys": counts95.total() - len(keys95),
-                "f99_repeated_keys": counts99.total() - len(keys99),
-                "shared_keys": len(shared),
-                "f95_only_keys": len(only95),
-                "f99_only_keys": len(only99),
-                "f95_subset_of_f99": not only95,
-                "key_jaccard": len(shared) / union if union else None,
-            }
+        asset_results.append(
+            ViewAssetComparison(
+                asset_id=asset,
+                f95_sha256=f95["sha256"],
+                f99_sha256=f99["sha256"],
+                f95_rows=counts95.total(),
+                f99_rows=counts99.total(),
+                f95_unique_keys=len(keys95),
+                f99_unique_keys=len(keys99),
+                f95_repeated_keys=counts95.total() - len(keys95),
+                f99_repeated_keys=counts99.total() - len(keys99),
+                shared_keys=len(shared),
+                f95_only_keys=len(only95),
+                f99_only_keys=len(only99),
+                f95_subset_of_f99=not bool(only95),
+                key_jaccard=len(shared) / union if union else None,
+            )
         )
-    return {
-        "views": ["F95", "F99"],
-        "assets": assets,
-        "failure_source_sha256": failure["source_sha256"],
-        "candidate_lookbacks": lookbacks,
-        "candidate_count": len(lookbacks),
-        "excluded_no_scada": cast(dict[str, int], failure["status_counts"]).get(
-            "EXCLUDED_NO_SCADA", 0
-        ),
-        "interpretation": (
+    return ViewComparisonReport(
+        views=("F95", "F99"),
+        assets=tuple(asset_results),
+        failure_source_sha256=failure.source_sha256,
+        candidate_lookbacks=tuple(lookback_results),
+        candidate_count=len(lookback_results),
+        excluded_no_scada=failure.status_counts.get("EXCLUDED_NO_SCADA", 0),
+        interpretation=(
             "Timestamp membership in paired filtered workbooks; repeated keys count once. "
             "Failure lookbacks are scenario diagnostics with undetermined eligibility. "
             "Neither view is an independent sample or a verified raw-source reference."
         ),
-    }
+    )

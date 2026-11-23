@@ -23,14 +23,12 @@ def main() -> None:
         parser.error("Report must stay outside the source directory")
     receipt = acquire_edp_release(source, repository / "DATASET_REGISTRY.json", verify_only=True)
     result = compare_views(source, receipt["files"])
-    assets = result["assets"]
-    if not isinstance(assets, list):
-        raise ValueError("Invalid paired-view report")
+    assets = result.assets
     report = {
         "dataset_id": receipt["dataset_id"],
         "doi": receipt["doi"],
         "checked_at": receipt["checked_at"],
-        "comparison": result,
+        "comparison": json.loads(result.canonical_json()),
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     partial = None

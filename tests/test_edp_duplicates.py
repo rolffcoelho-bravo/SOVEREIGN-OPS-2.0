@@ -26,10 +26,10 @@ def test_diagnostic_keeps_row_locations_and_differing_names(tmp_path: Path) -> N
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
     }
     report = diagnose_duplicates(tmp_path, entry)
-    assert report["repeated_key_count"] == report["group_count"] == 1
-    groups = report["groups"]
-    assert isinstance(groups, list)
-    assert groups[0]["row_numbers"] == [2, 4]
-    assert groups[0]["differing_columns"] == ["Gen_RPM_Max"]
-    assert groups[0]["identical_rows"] is False
+    assert report.repeated_key_count == report.group_count == 1
+    groups = report.groups
+    assert isinstance(groups, tuple)
+    assert groups[0].row_numbers == (2, 4)
+    assert groups[0].differing_columns == ("Gen_RPM_Max",)
+    assert groups[0].identical_rows is False
     assert "3.0" not in str(report)

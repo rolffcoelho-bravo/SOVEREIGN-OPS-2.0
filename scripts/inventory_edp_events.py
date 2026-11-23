@@ -32,7 +32,7 @@ def main() -> None:
         "dataset_id": verified["dataset_id"],
         "doi": verified["doi"],
         "checked_at": verified["checked_at"],
-        "ledger": ledger,
+        "ledger": json.loads(ledger.canonical_json()),
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     partial = None
@@ -51,8 +51,8 @@ def main() -> None:
         json.dumps(
             {
                 "receipt": str(output),
-                "records": ledger["total_records"],
-                "status_counts": ledger["status_counts"],
+                "records": ledger.total_records,
+                "status_counts": ledger.status_counts,
             }
         )
     )
