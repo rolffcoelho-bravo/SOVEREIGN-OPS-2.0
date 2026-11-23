@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-11-23T11:29:43.732519</dc:date>
+    <dc:date>2026-11-23T11:43:59.983428</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 29.52 140.256 29.52 145.8
 L 29.52 223.416 
 Q 29.52 228.96 35.1 228.96 
 z
-" clip-path="url(#p6e47f88be7)" style="fill: #9ca3af; opacity: 0.9"/>
+" clip-path="url(#pc4d75cd1d3)" style="fill: #9ca3af; opacity: 0.9"/>
    </g>
    <g id="patch_3">
     <path d="M 163.44 228.96 
@@ -53,7 +53,7 @@ Q 157.86 140.256 157.86 145.8
 L 157.86 223.416 
 Q 157.86 228.96 163.44 228.96 
 z
-" clip-path="url(#p6e47f88be7)" style="fill: #2563eb; opacity: 0.9"/>
+" clip-path="url(#pc4d75cd1d3)" style="fill: #2563eb; opacity: 0.9"/>
    </g>
    <g id="patch_4">
     <path d="M 291.78 228.96 
@@ -66,7 +66,7 @@ Q 286.2 140.256 286.2 145.8
 L 286.2 223.416 
 Q 286.2 228.96 291.78 228.96 
 z
-" clip-path="url(#p6e47f88be7)" style="fill: #60a5fa; opacity: 0.9"/>
+" clip-path="url(#pc4d75cd1d3)" style="fill: #60a5fa; opacity: 0.9"/>
    </g>
    <g id="patch_5">
     <path d="M 420.12 228.96 
@@ -79,7 +79,7 @@ Q 414.54 140.256 414.54 145.8
 L 414.54 223.416 
 Q 414.54 228.96 420.12 228.96 
 z
-" clip-path="url(#p6e47f88be7)" style="fill: #10b981; opacity: 0.9"/>
+" clip-path="url(#pc4d75cd1d3)" style="fill: #10b981; opacity: 0.9"/>
    </g>
    <g id="patch_6">
     <path d="M 548.46 228.96 
@@ -92,7 +92,7 @@ Q 542.88 140.256 542.88 145.8
 L 542.88 223.416 
 Q 542.88 228.96 548.46 228.96 
 z
-" clip-path="url(#p6e47f88be7)" style="fill: #f59e0b; opacity: 0.9"/>
+" clip-path="url(#pc4d75cd1d3)" style="fill: #f59e0b; opacity: 0.9"/>
    </g>
    <g id="patch_7">
     <path d="M 676.8 228.96 
@@ -105,7 +105,7 @@ Q 671.22 140.256 671.22 145.8
 L 671.22 223.416 
 Q 671.22 228.96 676.8 228.96 
 z
-" clip-path="url(#p6e47f88be7)" style="fill: #8b5cf6; opacity: 0.9"/>
+" clip-path="url(#pc4d75cd1d3)" style="fill: #8b5cf6; opacity: 0.9"/>
    </g>
    <g id="patch_8">
     <path d="M 258.3 104.22 
@@ -118,7 +118,7 @@ Q 249.93 54.324 249.93 62.64
 L 249.93 95.904 
 Q 249.93 104.22 258.3 104.22 
 z
-" clip-path="url(#p6e47f88be7)" style="fill: #f43f5e; opacity: 0.85"/>
+" clip-path="url(#pc4d75cd1d3)" style="fill: #f43f5e; opacity: 0.85"/>
    </g>
    <g id="text_1">
     <!-- DARP Confirmatory Evaluation Pipeline -->
@@ -2221,7 +2221,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p6e47f88be7">
+  <clipPath id="pc4d75cd1d3">
    <rect x="7.2" y="7.2" width="781.2" height="332.64"/>
   </clipPath>
  </defs>

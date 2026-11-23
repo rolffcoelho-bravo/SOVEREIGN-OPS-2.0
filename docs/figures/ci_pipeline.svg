@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-11-23T11:29:44.034772</dc:date>
+    <dc:date>2026-11-23T11:44:00.310118</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 49.05 73.728 49.05 79.272
 L 49.05 145.8 
 Q 49.05 151.344 54.63 151.344 
 z
-" clip-path="url(#p67ce893d82)" style="fill: #2563eb; opacity: 0.9"/>
+" clip-path="url(#p053879f5d8)" style="fill: #2563eb; opacity: 0.9"/>
    </g>
    <g id="patch_3">
     <path d="M 155.07 151.344 
@@ -53,7 +53,7 @@ Q 149.49 73.728 149.49 79.272
 L 149.49 145.8 
 Q 149.49 151.344 155.07 151.344 
 z
-" clip-path="url(#p67ce893d82)" style="fill: #60a5fa; opacity: 0.9"/>
+" clip-path="url(#p053879f5d8)" style="fill: #60a5fa; opacity: 0.9"/>
    </g>
    <g id="patch_4">
     <path d="M 255.51 151.344 
@@ -66,7 +66,7 @@ Q 249.93 73.728 249.93 79.272
 L 249.93 145.8 
 Q 249.93 151.344 255.51 151.344 
 z
-" clip-path="url(#p67ce893d82)" style="fill: #8b5cf6; opacity: 0.9"/>
+" clip-path="url(#p053879f5d8)" style="fill: #8b5cf6; opacity: 0.9"/>
    </g>
    <g id="patch_5">
     <path d="M 355.95 151.344 
@@ -79,7 +79,7 @@ Q 350.37 73.728 350.37 79.272
 L 350.37 145.8 
 Q 350.37 151.344 355.95 151.344 
 z
-" clip-path="url(#p67ce893d82)" style="fill: #10b981; opacity: 0.9"/>
+" clip-path="url(#p053879f5d8)" style="fill: #10b981; opacity: 0.9"/>
    </g>
    <g id="patch_6">
     <path d="M 456.39 151.344 
@@ -92,7 +92,7 @@ Q 450.81 73.728 450.81 79.272
 L 450.81 145.8 
 Q 450.81 151.344 456.39 151.344 
 z
-" clip-path="url(#p67ce893d82)" style="fill: #06b6d4; opacity: 0.9"/>
+" clip-path="url(#p053879f5d8)" style="fill: #06b6d4; opacity: 0.9"/>
    </g>
    <g id="patch_7">
     <path d="M 556.83 151.344 
@@ -105,7 +105,7 @@ Q 551.25 73.728 551.25 79.272
 L 551.25 145.8 
 Q 551.25 151.344 556.83 151.344 
 z
-" clip-path="url(#p67ce893d82)" style="fill: #f59e0b; opacity: 0.9"/>
+" clip-path="url(#p053879f5d8)" style="fill: #f59e0b; opacity: 0.9"/>
    </g>
    <g id="patch_8">
     <path d="M 657.27 151.344 
@@ -118,7 +118,7 @@ Q 651.69 73.728 651.69 79.272
 L 651.69 145.8 
 Q 651.69 151.344 657.27 151.344 
 z
-" clip-path="url(#p67ce893d82)" style="fill: #f43f5e; opacity: 0.9"/>
+" clip-path="url(#p053879f5d8)" style="fill: #f43f5e; opacity: 0.9"/>
    </g>
    <g id="text_1">
     <!-- Continuous Integration Pipeline -->
@@ -844,7 +844,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p67ce893d82">
+  <clipPath id="p053879f5d8">
    <rect x="7.2" y="7.2" width="781.2" height="166.32"/>
   </clipPath>
  </defs>
