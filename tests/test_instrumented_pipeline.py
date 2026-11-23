@@ -215,7 +215,7 @@ class TestInstrumentedPipeline:
             config=_make_config(),
         )
         with pytest.raises(AttributeError, match="immutable"):
-            result.dataset_id = "changed"  # type: ignore[misc]
+            result.dataset_id = "changed"
 
     def test_evidence_provenance(self) -> None:
         """Evidence carries correct model and dataset hashes."""

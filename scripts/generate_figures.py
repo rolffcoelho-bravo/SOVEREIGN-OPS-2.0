@@ -18,7 +18,7 @@ from __future__ import annotations
 import argparse
 import math
 from pathlib import Path
-from typing import Final
+from typing import Final, TypedDict
 
 import matplotlib
 import matplotlib.patches as mpatches
@@ -222,9 +222,15 @@ def fig_test_growth(output_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 
+class _CategoryInfo(TypedDict):
+    modules: list[str]
+    lines: int
+    color: str
+
+
 def fig_source_architecture(output_dir: Path) -> None:
     """Treemap-style horizontal bars showing codebase composition."""
-    categories = {
+    categories: dict[str, _CategoryInfo] = {
         "API & Parsers": {
             "modules": ["api", "edp_parser", "esa_parser"],
             "lines": 1584,
@@ -278,8 +284,8 @@ def fig_source_architecture(output_dir: Path) -> None:
 
     fig, ax = plt.subplots(figsize=(12, 5))
     names = list(categories.keys())
-    lines = [categories[n]["lines"] for n in names]
-    colors = [categories[n]["color"] for n in names]
+    lines: list[int] = [categories[n]["lines"] for n in names]
+    colors: list[str] = [categories[n]["color"] for n in names]
     pcts = [loc / total_lines * 100 for loc in lines]
 
     bars = ax.barh(
@@ -310,7 +316,7 @@ def fig_source_architecture(output_dir: Path) -> None:
         fontweight="bold",
         pad=15,
     )
-    ax.set_xlim(0, max(lines) * 1.4)
+    ax.set_xlim(0, int(max(lines) * 1.4))
 
     _apply_style(fig)
     _save(fig, "source_architecture", output_dir)

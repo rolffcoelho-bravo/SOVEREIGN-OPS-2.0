@@ -70,15 +70,22 @@ class TestLogEvent:
     def test_fingerprint_changes_with_content(self) -> None:
         """Different messages produce different fingerprints."""
         ts = datetime(2024, 1, 1, tzinfo=UTC)
-        base = dict(
+        e1 = LogEvent(
             timestamp=ts,
             severity=Severity.INFO,
             domain="ESA-AD-v2",
             run_id="run-001",
             stage="detection",
+            message="Message A",
         )
-        e1 = LogEvent(**base, message="Message A")
-        e2 = LogEvent(**base, message="Message B")
+        e2 = LogEvent(
+            timestamp=ts,
+            severity=Severity.INFO,
+            domain="ESA-AD-v2",
+            run_id="run-001",
+            stage="detection",
+            message="Message B",
+        )
         assert e1.compute_fingerprint() != e2.compute_fingerprint()
 
     def test_json_line_output(self) -> None:
@@ -481,7 +488,7 @@ class TestEnums:
         assert len(Severity) == 6
 
     def test_metric_kind_values(self) -> None:
-        assert MetricKind.COUNTER == "counter"
-        assert MetricKind.GAUGE == "gauge"
-        assert MetricKind.HISTOGRAM == "histogram"
+        assert MetricKind.COUNTER.value == "counter"
+        assert MetricKind.GAUGE.value == "gauge"
+        assert MetricKind.HISTOGRAM.value == "histogram"
         assert len(MetricKind) == 3

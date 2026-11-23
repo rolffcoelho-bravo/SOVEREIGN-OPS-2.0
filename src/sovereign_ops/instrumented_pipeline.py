@@ -62,10 +62,13 @@ __all__ = [
 class InstrumentedResult:
     """Pipeline result paired with its observability report.
 
+    Immutable container — all attributes are set once during ``__init__``
+    and any subsequent assignment raises ``AttributeError``.
+
     Attributes
     ----------
-    dataset_id : DatasetId
-        Which domain this pipeline ran on.
+    dataset_id : str
+        Which domain this pipeline ran on (a ``DatasetId`` literal).
     split_spec : SplitSpec
         The chronological split that was applied.
     config : DetectorConfig
@@ -79,6 +82,24 @@ class InstrumentedResult:
     report : ObservabilityReport
         G6 observability report with logging, metrics, and audit trail.
     """
+
+    __slots__ = (
+        "dataset_id",
+        "split_spec",
+        "config",
+        "predictions",
+        "evaluation",
+        "evidence",
+        "report",
+    )
+
+    dataset_id: str
+    split_spec: SplitSpec
+    config: DetectorConfig
+    predictions: tuple[DetectorPrediction, ...]
+    evaluation: EvaluationResult
+    evidence: ModelEvidence
+    report: ObservabilityReport
 
     def __init__(
         self,
