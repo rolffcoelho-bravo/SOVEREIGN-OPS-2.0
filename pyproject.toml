@@ -72,7 +72,8 @@ line-length = 100
 select = ["E", "F", "I", "B", "UP", "S"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101"]
+"tests/*" = ["S101", "S311"]  # S311: random in tests is for statistical fixtures, not crypto
+"src/sovereign_ops/statistics.py" = ["S311"]  # random used for statistical bootstrap, not crypto
 
 [tool.mypy]
 python_version = "3.12"

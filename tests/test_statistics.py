@@ -20,12 +20,19 @@ from pydantic import ValidationError
 
 from sovereign_ops.contracts import DatasetId
 from sovereign_ops.statistics import (
+    BootstrapCI,
+    CliffsDeltaResult,
     ComparisonReport,
     CorrectedTest,
     DetectorScore,
+    EffectSizeReport,
     PairwiseTest,
+    RankStabilityReport,
+    bootstrap_confidence_interval,
+    cliffs_delta,
     compare_detectors,
     holm_bonferroni,
+    kendall_w,
     wilcoxon_signed_rank,
 )
 
@@ -644,3 +651,355 @@ class TestNumericalCorrectness:
         assert result[0].reject is True
         assert result[1].reject is False
         assert result[2].reject is False
+
+
+# ---------------------------------------------------------------------------
+# Cliff's delta tests
+# ---------------------------------------------------------------------------
+
+
+class TestCliffsDelta:
+    """Tests for Cliff's delta non-parametric effect size."""
+
+    def test_identical_scores_zero_delta(self) -> None:
+        """When both groups are identical, delta should be 0."""
+        a = [0.5, 0.6, 0.7, 0.8, 0.9]
+        b = [0.5, 0.6, 0.7, 0.8, 0.9]
+        result = cliffs_delta(a, b, model_a="X", model_b="Y", n_bootstrap=500, seed=42)
+        assert result.delta == pytest.approx(0.0)
+        assert result.magnitude == "negligible"
+
+    def test_perfectly_separated(self) -> None:
+        """When A always > B, delta should be 1.0."""
+        a = [0.9, 0.8, 0.7, 0.6]
+        b = [0.1, 0.2, 0.3, 0.4]
+        result = cliffs_delta(a, b, model_a="A", model_b="B", n_bootstrap=500, seed=42)
+        assert result.delta == pytest.approx(1.0)
+        assert result.magnitude == "large"
+        assert result.dominance_a == pytest.approx(1.0)
+        assert result.dominance_b == pytest.approx(0.0)
+
+    def test_perfectly_separated_reversed(self) -> None:
+        """When B always > A, delta should be -1.0."""
+        a = [0.1, 0.2, 0.3, 0.4]
+        b = [0.9, 0.8, 0.7, 0.6]
+        result = cliffs_delta(a, b, model_a="A", model_b="B", n_bootstrap=500, seed=42)
+        assert result.delta == pytest.approx(-1.0)
+        assert result.magnitude == "large"
+
+    def test_delta_range(self) -> None:
+        """Delta must be in [-1, 1]."""
+        rng = random.Random(123)
+        a = [rng.random() for _ in range(20)]
+        b = [rng.random() for _ in range(20)]
+        result = cliffs_delta(a, b, model_a="X", model_b="Y", n_bootstrap=500, seed=42)
+        assert -1.0 <= result.delta <= 1.0
+
+    def test_ci_contains_delta(self) -> None:
+        """CI should contain the point estimate."""
+        a = [0.7, 0.8, 0.75, 0.85, 0.9]
+        b = [0.3, 0.4, 0.35, 0.45, 0.5]
+        result = cliffs_delta(a, b, model_a="A", model_b="B", n_bootstrap=5000, seed=42)
+        assert result.ci_lower <= result.delta <= result.ci_upper
+
+    def test_mismatched_length_raises(self) -> None:
+        with pytest.raises(ValueError, match="equal length"):
+            cliffs_delta([0.1], [0.1, 0.2], model_a="A", model_b="B")
+
+    def test_too_few_observations_raises(self) -> None:
+        with pytest.raises(ValueError, match="at least 2"):
+            cliffs_delta([0.5], [0.3], model_a="A", model_b="B")
+
+    def test_contract_immutable(self) -> None:
+        a = [0.5, 0.6, 0.7]
+        b = [0.3, 0.4, 0.5]
+        result = cliffs_delta(a, b, model_a="A", model_b="B", n_bootstrap=500, seed=42)
+        with pytest.raises(ValidationError):
+            result.delta = 0.0
+
+    def test_magnitude_thresholds(self) -> None:
+        """Verify Romano et al. (2006) threshold classification."""
+        # Nearly identical distributions → negligible (|d| < 0.147)
+        a1 = [0.50, 0.51, 0.50, 0.51, 0.50, 0.51, 0.50, 0.51, 0.50, 0.51]
+        b1 = [0.50, 0.51, 0.50, 0.51, 0.50, 0.51, 0.50, 0.50, 0.51, 0.51]
+        r1 = cliffs_delta(a1, b1, model_a="A", model_b="B", n_bootstrap=500, seed=42)
+        assert r1.magnitude == "negligible"
+
+    def test_dominance_sums_to_one_or_less(self) -> None:
+        """dominance_a + dominance_b ≤ 1 (ties account for the remainder)."""
+        a = [0.5, 0.6, 0.7, 0.5]
+        b = [0.5, 0.4, 0.6, 0.7]
+        result = cliffs_delta(a, b, model_a="A", model_b="B", n_bootstrap=500, seed=42)
+        assert result.dominance_a + result.dominance_b <= 1.0 + 1e-10
+
+    def test_deterministic_with_seed(self) -> None:
+        """Same seed produces identical results."""
+        a = [0.6, 0.7, 0.8]
+        b = [0.4, 0.5, 0.6]
+        r1 = cliffs_delta(a, b, model_a="A", model_b="B", n_bootstrap=500, seed=42)
+        r2 = cliffs_delta(a, b, model_a="A", model_b="B", n_bootstrap=500, seed=42)
+        assert r1.delta == r2.delta
+        assert r1.ci_lower == r2.ci_lower
+        assert r1.ci_upper == r2.ci_upper
+
+
+# ---------------------------------------------------------------------------
+# Bootstrap confidence interval tests
+# ---------------------------------------------------------------------------
+
+
+class TestBootstrapCI:
+    """Tests for BCa bootstrap confidence intervals."""
+
+    def test_basic_ci(self) -> None:
+        values = [0.7, 0.8, 0.75, 0.85, 0.9, 0.72, 0.88]
+        result = bootstrap_confidence_interval(values, n_bootstrap=5000, seed=42)
+        assert result.ci_lower <= result.point_estimate <= result.ci_upper
+        assert result.method == "bca"
+        assert result.confidence_level == 0.95
+
+    def test_point_estimate_is_mean(self) -> None:
+        values = [1.0, 2.0, 3.0, 4.0, 5.0]
+        result = bootstrap_confidence_interval(values, n_bootstrap=500, seed=42)
+        assert result.point_estimate == pytest.approx(3.0)
+
+    def test_narrow_ci_for_constant(self) -> None:
+        """Constant values should produce a very narrow CI."""
+        values = [0.5, 0.5, 0.5, 0.5, 0.5]
+        result = bootstrap_confidence_interval(values, n_bootstrap=500, seed=42)
+        ci_width = result.ci_upper - result.ci_lower
+        assert ci_width == pytest.approx(0.0, abs=1e-6)
+
+    def test_too_few_values_raises(self) -> None:
+        with pytest.raises(ValueError, match="at least 2"):
+            bootstrap_confidence_interval([0.5])
+
+    def test_contract_immutable(self) -> None:
+        values = [0.6, 0.7, 0.8]
+        result = bootstrap_confidence_interval(values, n_bootstrap=500, seed=42)
+        with pytest.raises(ValidationError):
+            result.point_estimate = 0.0
+
+    def test_deterministic_with_seed(self) -> None:
+        values = [0.5, 0.6, 0.7, 0.8, 0.9]
+        r1 = bootstrap_confidence_interval(values, n_bootstrap=500, seed=42)
+        r2 = bootstrap_confidence_interval(values, n_bootstrap=500, seed=42)
+        assert r1.ci_lower == r2.ci_lower
+        assert r1.ci_upper == r2.ci_upper
+
+    def test_wider_ci_for_more_variance(self) -> None:
+        """High-variance data should produce a wider CI than low-variance."""
+        low_var = [0.50, 0.51, 0.49, 0.50, 0.50, 0.51, 0.49]
+        high_var = [0.1, 0.9, 0.2, 0.8, 0.3, 0.7, 0.4]
+        ci_low = bootstrap_confidence_interval(low_var, n_bootstrap=5000, seed=42)
+        ci_high = bootstrap_confidence_interval(high_var, n_bootstrap=5000, seed=42)
+        width_low = ci_low.ci_upper - ci_low.ci_lower
+        width_high = ci_high.ci_upper - ci_high.ci_lower
+        assert width_high > width_low
+
+    def test_confidence_level_propagated(self) -> None:
+        values = [0.5, 0.6, 0.7, 0.8, 0.9]
+        result = bootstrap_confidence_interval(
+            values, confidence_level=0.90, n_bootstrap=500, seed=42
+        )
+        assert result.confidence_level == 0.90
+
+
+# ---------------------------------------------------------------------------
+# Kendall's W tests
+# ---------------------------------------------------------------------------
+
+
+class TestKendallW:
+    """Tests for Kendall's W rank stability analysis."""
+
+    def test_perfect_concordance(self) -> None:
+        """When rankings are identical across all splits, W should be 1.0."""
+        scores = _make_scores("A", [0.9, 0.8, 0.7, 0.6, 0.5]) + _make_scores(
+            "B", [0.1, 0.2, 0.3, 0.4, 0.3]
+        )
+        result = kendall_w(scores)
+        assert result.kendall_w == pytest.approx(1.0, abs=1e-6)
+        assert result.interpretation == "very_strong"
+
+    def test_w_range(self) -> None:
+        """W must be in [0, 1]."""
+        rng = random.Random(999)
+        scores = (
+            _make_scores("A", [rng.random() for _ in range(10)])
+            + _make_scores("B", [rng.random() for _ in range(10)])
+            + _make_scores("C", [rng.random() for _ in range(10)])
+        )
+        result = kendall_w(scores)
+        assert 0.0 <= result.kendall_w <= 1.0
+
+    def test_domain_isolation(self) -> None:
+        """Cross-domain stability analysis should be prohibited."""
+        scores = _make_scores("A", [0.5, 0.6], dataset_id="ESA-AD-v2") + _make_scores(
+            "B", [0.7, 0.8], dataset_id="EDP-SCADA-v2"
+        )
+        with pytest.raises(ValueError, match="Cross-domain"):
+            kendall_w(scores)
+
+    def test_too_few_detectors(self) -> None:
+        with pytest.raises(ValueError, match="≥ 2 detectors"):
+            kendall_w(_make_scores("A", [0.5, 0.6]))
+
+    def test_too_few_splits(self) -> None:
+        scores = _make_scores("A", [0.5]) + _make_scores("B", [0.6])
+        with pytest.raises(ValueError, match="≥ 2 splits"):
+            kendall_w(scores)
+
+    def test_empty_raises(self) -> None:
+        with pytest.raises(ValueError, match="No scores"):
+            kendall_w([])
+
+    def test_contract_immutable(self) -> None:
+        scores = _make_scores("A", [0.9, 0.8, 0.7]) + _make_scores("B", [0.1, 0.2, 0.3])
+        result = kendall_w(scores)
+        with pytest.raises(ValidationError):
+            result.kendall_w = 0.0
+
+    def test_p_value_bounded(self) -> None:
+        scores = _make_scores("A", [0.9, 0.8, 0.7, 0.6]) + _make_scores("B", [0.1, 0.2, 0.3, 0.4])
+        result = kendall_w(scores)
+        assert 0.0 <= result.p_value <= 1.0
+
+    def test_chi_squared_positive(self) -> None:
+        scores = _make_scores("A", [0.9, 0.8, 0.7]) + _make_scores("B", [0.1, 0.2, 0.3])
+        result = kendall_w(scores)
+        assert result.chi_squared >= 0.0
+
+    def test_detector_mean_ranks(self) -> None:
+        """Check that mean ranks are populated and sum correctly."""
+        scores = _make_scores("A", [0.9, 0.8, 0.7]) + _make_scores("B", [0.1, 0.2, 0.3])
+        result = kendall_w(scores)
+        assert len(result.detector_mean_ranks) == 2
+        # With 2 detectors, mean ranks should average to (1 + 2) / 2 = 1.5
+        total = sum(r for _, r in result.detector_mean_ranks)
+        assert total == pytest.approx(3.0)
+
+
+# ---------------------------------------------------------------------------
+# Enhanced compare_detectors integration tests
+# ---------------------------------------------------------------------------
+
+
+class TestCompareDetectorsEnhanced:
+    """Tests that compare_detectors populates the new methodology fields."""
+
+    def test_effect_sizes_populated(self) -> None:
+        """With ≥ 2 splits, effect_sizes should be populated."""
+        scores = _make_scores("A", [0.9, 0.8, 0.7, 0.6]) + _make_scores("B", [0.1, 0.2, 0.3, 0.4])
+        report = compare_detectors(scores, n_bootstrap=500, seed=42)
+        assert report.effect_sizes is not None
+        assert len(report.effect_sizes.pairwise_effects) == 1
+        assert report.effect_sizes.any_large_effect is True
+
+    def test_rank_stability_populated(self) -> None:
+        """With ≥ 2 splits, rank_stability should be populated."""
+        scores = _make_scores("A", [0.9, 0.8, 0.7]) + _make_scores("B", [0.1, 0.2, 0.3])
+        report = compare_detectors(scores, n_bootstrap=500, seed=42)
+        assert report.rank_stability is not None
+        assert 0.0 <= report.rank_stability.kendall_w <= 1.0
+
+    def test_detector_summary_populated(self) -> None:
+        """detector_summary should contain (model, mean, ci_width) tuples."""
+        scores = _make_scores("A", [0.9, 0.8, 0.7]) + _make_scores("B", [0.1, 0.2, 0.3])
+        report = compare_detectors(scores, n_bootstrap=500, seed=42)
+        assert len(report.detector_summary) == 2
+        for model, mean, ci_width in report.detector_summary:
+            assert isinstance(model, str)
+            assert 0.0 <= mean <= 1.0
+            assert ci_width >= 0.0
+
+    def test_single_split_no_effect_sizes(self) -> None:
+        """With only 1 split, effect sizes and rank stability should be None."""
+        scores = _make_scores("A", [0.9]) + _make_scores("B", [0.1])
+        report = compare_detectors(scores)
+        assert report.effect_sizes is None
+        assert report.rank_stability is None
+
+    def test_three_detectors_pairwise_effects(self) -> None:
+        """Three detectors should produce 3 pairwise effect comparisons."""
+        scores = (
+            _make_scores("A", [0.9, 0.8, 0.7, 0.6])
+            + _make_scores("B", [0.5, 0.5, 0.5, 0.5])
+            + _make_scores("C", [0.1, 0.2, 0.3, 0.4])
+        )
+        report = compare_detectors(scores, n_bootstrap=500, seed=42)
+        assert report.effect_sizes is not None
+        assert len(report.effect_sizes.pairwise_effects) == 3
+
+    def test_full_pipeline_deterministic(self) -> None:
+        """Full pipeline should be deterministic with same seed."""
+        scores = _make_scores("A", [0.9, 0.8, 0.7]) + _make_scores("B", [0.5, 0.4, 0.6])
+        r1 = compare_detectors(scores, n_bootstrap=500, seed=42)
+        r2 = compare_detectors(scores, n_bootstrap=500, seed=42)
+        assert r1.scores_sha256 == r2.scores_sha256
+        assert r1.effect_sizes is not None
+        assert r2.effect_sizes is not None
+        e1 = r1.effect_sizes.pairwise_effects[0]
+        e2 = r2.effect_sizes.pairwise_effects[0]
+        assert e1.delta == e2.delta
+        assert e1.ci_lower == e2.ci_lower
+
+
+# ---------------------------------------------------------------------------
+# New contract type tests
+# ---------------------------------------------------------------------------
+
+
+class TestNewContractTypes:
+    """Tests for BootstrapCI, CliffsDeltaResult, EffectSizeReport, RankStabilityReport."""
+
+    def test_bootstrap_ci_immutable(self) -> None:
+        ci = BootstrapCI(point_estimate=0.5, ci_lower=0.4, ci_upper=0.6)
+        with pytest.raises(ValidationError):
+            ci.ci_lower = 0.0
+
+    def test_bootstrap_ci_forbids_extra(self) -> None:
+        with pytest.raises(ValidationError):
+            BootstrapCI(point_estimate=0.5, ci_lower=0.4, ci_upper=0.6, extra=1)  # type: ignore[call-arg]
+
+    def test_cliffs_delta_result_canonical_json(self) -> None:
+        r = CliffsDeltaResult(
+            model_a="A",
+            model_b="B",
+            delta=0.5,
+            magnitude="medium",
+            ci_lower=0.3,
+            ci_upper=0.7,
+            dominance_a=0.75,
+            dominance_b=0.25,
+        )
+        j = r.canonical_json()
+        parsed = json.loads(j)
+        assert parsed["delta"] == 0.5
+        keys = list(parsed.keys())
+        assert keys == sorted(keys)
+
+    def test_effect_size_report_immutable(self) -> None:
+        r = EffectSizeReport(
+            dataset_id="ESA-AD-v2",
+            pairwise_effects=(),
+            any_large_effect=False,
+            any_medium_effect=False,
+        )
+        with pytest.raises(ValidationError):
+            r.any_large_effect = True
+
+    def test_rank_stability_report_sha256(self) -> None:
+        r = RankStabilityReport(
+            dataset_id="ESA-AD-v2",
+            kendall_w=0.8,
+            chi_squared=12.0,
+            p_value=0.001,
+            n_detectors=3,
+            n_splits=5,
+            interpretation="very_strong",
+            detector_mean_ranks=(("A", 1.0), ("B", 2.0), ("C", 3.0)),
+        )
+        digest = r.sha256_digest()
+        assert len(digest) == 64
+        assert r.sha256_digest() == digest
