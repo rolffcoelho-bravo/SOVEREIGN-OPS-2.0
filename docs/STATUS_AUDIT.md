@@ -274,7 +274,7 @@ observation evidence and integrity state have explicit contracts.
 The threat model's G0 evidence column also needs a later-stage review before
 network exposure. Authentication, durable audit, role-scoped cases, recovery
 and bounded retrieval remain implementation work. The code licence and hosted
-CI recommendations in the older CEiiA assessment have already been addressed.
+CI recommendations in the older assessment have already been addressed.
 Claims of scientific novelty still require a literature review and empirical
 comparison.
 
@@ -302,7 +302,7 @@ comparison.
    report descriptive counts if the matched events are too sparse.
 4. **Produce one portfolio-ready walkthrough.** Show a verified EDP workbook
    flowing through a queryable historical replay to a cited finding and a
-   reproducible abstention. That gives CEiiA a concrete example of sovereign
+   reproducible abstention. That gives reviewers a concrete example of sovereign
    data handling, domain-aware modeling and failure behavior. Connect bounded
    retrieval and agent orchestration once there is real evidence to retrieve.
    Display the historical replay scope and the exact software revision in the walkthrough.
