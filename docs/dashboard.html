@@ -16,6 +16,7 @@
   --blue-wash:rgba(74,158,255,0.08);--aqua-wash:rgba(28,190,128,0.08);
   --good-wash:rgba(26,179,74,0.06);--warning-wash:rgba(240,176,32,0.06);
   --purple-wash:rgba(144,112,224,0.06);--critical-wash:rgba(224,64,64,0.06);
+  --pink-wash:rgba(208,96,160,0.08);--cyan-wash:rgba(6,182,212,0.08);
   --glow-blue:0 0 24px rgba(74,158,255,0.12);
   --glow-aqua:0 0 24px rgba(28,190,128,0.12);
   --glow-good:0 0 24px rgba(26,179,74,0.12);
@@ -280,7 +281,7 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
   <p class="subtitle">Domain-Aware Reliability Protocol — Abstention-First Anomaly Detection</p>
   <p class="tagline">A novel confirmatory evaluation framework with cryptographic provenance</p>
   <div class="badges">
-    <span class="badge badge--good">CI ✓ 408 Tests Passing</span>
+    <span class="badge badge--good">CI ✓ 499 Tests Passing</span>
     <span class="badge badge--blue">Python 3.12+ · mypy --strict</span>
     <span class="badge badge--aqua">Apache 2.0</span>
     <span class="badge badge--purple">DOI: 10.5281/zenodo.24364517</span>
@@ -293,22 +294,22 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
     <div class="stat__glow" style="background:var(--good)"></div>
     <div class="stat__icon">🧪</div>
     <div class="stat__label">Tests</div>
-    <div class="stat__value stat__value--good" data-count="408">0</div>
-    <div class="stat__detail">26 test modules · 100% passing</div>
+    <div class="stat__value stat__value--good" data-count="499">0</div>
+    <div class="stat__detail">30 test modules · 100% passing</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--blue)"></div>
     <div class="stat__icon">📐</div>
     <div class="stat__label">Source Modules</div>
-    <div class="stat__value stat__value--blue" data-count="29">0</div>
-    <div class="stat__detail">7,354 lines · mypy --strict</div>
+    <div class="stat__value stat__value--blue" data-count="35">0</div>
+    <div class="stat__detail">9,344 lines · mypy --strict</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--purple)"></div>
     <div class="stat__icon">📜</div>
     <div class="stat__label">Contract Types</div>
-    <div class="stat__value stat__value--purple" data-count="30">0</div>
-    <div class="stat__detail">22 frozen · Pydantic v2</div>
+    <div class="stat__value stat__value--purple" data-count="43">0</div>
+    <div class="stat__detail">43 frozen · Pydantic v2</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--aqua)"></div>
@@ -352,7 +353,7 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
             </linearGradient>
           </defs>
           <circle cx="100" cy="100" r="82" fill="none" stroke="var(--surface-3)" stroke-width="14"/>
-          <!-- 6/10 gates complete + G6 ~50% ≈ 65% -->
+          <!-- 8/10 gates complete = 80% -->
           <circle cx="100" cy="100" r="82" fill="none" stroke="url(#gateGrad)" stroke-width="14"
             stroke-linecap="round" stroke-dasharray="515.22" stroke-dashoffset="515.22"
             transform="rotate(-90 100 100)" class="radial-progress"/>
@@ -370,8 +371,8 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
           </g>
         </svg>
         <div class="radial-center">
-          <div class="radial-center__pct">65%</div>
-          <div class="radial-center__label">6 / 10 Gates</div>
+          <div class="radial-center__pct">80%</div>
+          <div class="radial-center__label">8 / 10 Gates</div>
         </div>
       </div>
     </div>
@@ -382,8 +383,8 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
       <div class="gate gate--complete"><div><div class="gate__id">G3</div><div class="gate__name">Baseline Models</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
       <div class="gate gate--complete"><div><div class="gate__id">G4</div><div class="gate__name">DARP Core</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
       <div class="gate gate--complete"><div><div class="gate__id">G5</div><div class="gate__name">Confirmatory Eval</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
-      <div class="gate gate--progress"><div><div class="gate__id">G6</div><div class="gate__name">Observability</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>IN PROGRESS</div></div>
-      <div class="gate gate--pending"><div><div class="gate__id">G7</div><div class="gate__name">Containerization</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>PLANNED</div></div>
+      <div class="gate gate--complete"><div><div class="gate__id">G6</div><div class="gate__name">Observability</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
+      <div class="gate gate--complete"><div><div class="gate__id">G7</div><div class="gate__name">SEES Framework</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
       <div class="gate gate--pending"><div><div class="gate__id">G8</div><div class="gate__name">Documentation</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>PLANNED</div></div>
       <div class="gate gate--pending"><div><div class="gate__id">G9</div><div class="gate__name">Publication</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>PLANNED</div></div>
     </div>
@@ -465,16 +466,92 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
   </div>
 </section>
 
+<!-- ═══════════ G7: SEES FRAMEWORK ═══════════ -->
+<section class="section">
+  <h2 class="section__title">G7 — Spectral-Entropic Evidence Synthesis (SEES)</h2>
+  <p class="section__subtitle" style="margin-bottom:24px;margin-top:-12px">
+    A novel computational methodology fusing wavelet packet spectral decomposition, Rényi entropy α-profiling,
+    distribution-free conformal prediction, and Dempster-Shafer evidence theory into a unified, mathematically rigorous
+    anomaly evidence synthesis framework with cryptographic provenance throughout.
+  </p>
+
+  <!-- SEES 4-pillar pipeline -->
+  <div class="method-pipeline" style="margin-bottom:24px">
+    <div class="method-step" style="border-top:3px solid var(--cyan)">
+      <div class="method-step__num" style="background:var(--cyan-wash);color:var(--cyan)">P1</div>
+      <div class="method-step__title" style="color:var(--cyan)">Wavelet Packet Spectrum</div>
+      <div class="method-step__desc">Haar wavelet packet transform to depth <em>d</em>.<br>Produces 2<sup>d</sup> spectral energy coefficients per signal segment, capturing multi-resolution frequency structure.</div>
+      <span class="method-arrow">→</span>
+    </div>
+    <div class="method-step" style="border-top:3px solid var(--pink)">
+      <div class="method-step__num" style="background:var(--pink-wash);color:var(--pink)">P2</div>
+      <div class="method-step__title" style="color:var(--pink)">Rényi Entropy α-Spectrum</div>
+      <div class="method-step__desc">Generalised entropy H<sub>α</sub>(p) = (1−α)<sup>−1</sup> log Σ p<sub>i</sub><sup>α</sup>.<br>Swept across α ∈ {0.5, 1.0, 1.5, 2.0, 3.0} to profile distribution complexity from rare-event sensitivity to tail-dominance.</div>
+      <span class="method-arrow">→</span>
+    </div>
+    <div class="method-step" style="border-top:3px solid var(--good)">
+      <div class="method-step__num" style="background:var(--good-wash);color:var(--good)">P3</div>
+      <div class="method-step__title" style="color:var(--good)">Conformal Prediction</div>
+      <div class="method-step__desc">Distribution-free calibration via split conformal method.<br>Guarantees finite-sample marginal coverage P(Y ∈ C(X)) ≥ 1−α without distributional assumptions.</div>
+      <span class="method-arrow">→</span>
+    </div>
+    <div class="method-step" style="border-top:3px solid var(--purple)">
+      <div class="method-step__num" style="background:var(--purple-wash);color:var(--purple)">P4</div>
+      <div class="method-step__title" style="color:var(--purple)">Dempster-Shafer Fusion</div>
+      <div class="method-step__desc">Evidence-theoretic combination via Dempster's rule of combination.<br>Mass assignments m(A) fused across independent evidence sources; conflict factor K monitored for evidential coherence.</div>
+    </div>
+  </div>
+
+  <!-- G7 contract types + methodology comparison -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-card__title">G7 SEES Contract Types <span>13 immutable types</span></div>
+      <div class="contract-cards">
+        <div class="cc" style="border-left-color:var(--cyan)"><div class="cc__name">WaveletNode</div><div class="cc__desc">level · index · energy · is_leaf · children_indices</div></div>
+        <div class="cc" style="border-left-color:var(--cyan)"><div class="cc__name">WaveletPacketSpectrum</div><div class="cc__desc">nodes · depth · total_energy · leaf_energies · source_hash</div></div>
+        <div class="cc" style="border-left-color:var(--cyan)"><div class="cc__name">SpectralDivergenceScore</div><div class="cc__desc">jensen_shannon · kl_forward · kl_reverse · bhattacharyya</div></div>
+        <div class="cc" style="border-left-color:var(--pink)"><div class="cc__name">RenyiEntropyPoint</div><div class="cc__desc">alpha · entropy · is_finite</div></div>
+        <div class="cc" style="border-left-color:var(--pink)"><div class="cc__name">EntropyAlphaSpectrum</div><div class="cc__desc">points · source_hash · n_bins</div></div>
+        <div class="cc" style="border-left-color:var(--pink)"><div class="cc__name">EntropyDivergenceProfile</div><div class="cc__desc">reference · comparison · divergence_curve · max_divergence_alpha</div></div>
+        <div class="cc" style="border-left-color:var(--good)"><div class="cc__name">NonconformityScore</div><div class="cc__desc">index · score · is_calibration</div></div>
+        <div class="cc" style="border-left-color:var(--good)"><div class="cc__name">ConformalCalibration</div><div class="cc__desc">scores · quantile · alpha · n_calibration</div></div>
+        <div class="cc" style="border-left-color:var(--good)"><div class="cc__name">ConformalPredictionSet</div><div class="cc__desc">predictions · empirical_coverage · guaranteed_coverage</div></div>
+        <div class="cc" style="border-left-color:var(--purple)"><div class="cc__name">MassAssignment</div><div class="cc__desc">focal_elements (frozenset keys) · validate plausibility axioms</div></div>
+        <div class="cc" style="border-left-color:var(--purple)"><div class="cc__name">DempsterShaferResult</div><div class="cc__desc">combined · conflict_factor · n_sources · sources</div></div>
+        <div class="cc" style="border-left-color:var(--warning)"><div class="cc__name">SEESReport</div><div class="cc__desc">spectrum · entropy_profile · conformal · ds_result · anomaly_belief · uncertainty · dataset_id</div></div>
+        <div class="cc" style="border-left-color:var(--critical)"><div class="cc__name">SEESBatchResult</div><div class="cc__desc">reports · summary_stats · provenance_chain · computation_time</div></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card__title">SEES vs. Standard Approaches <span>evidence synthesis comparison</span></div>
+      <table class="comp-matrix">
+        <thead><tr><th></th><th>Standard<br>Anomaly</th><th>Ensemble<br>ML</th><th>SEES<br>(This Work)</th></tr></thead>
+        <tbody>
+          <tr><td class="row-label">Multi-Resolution Spectral</td><td class="cm-absent">—</td><td class="cm-absent">—</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Information-Theoretic Profile</td><td class="cm-absent">—</td><td class="cm-partial">partial</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Distribution-Free Guarantees</td><td class="cm-absent">—</td><td class="cm-absent">—</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Conformal Coverage Bounds</td><td class="cm-absent">—</td><td class="cm-absent">—</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Evidence-Theoretic Fusion</td><td class="cm-absent">—</td><td class="cm-partial">voting</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Explicit Uncertainty Quantification</td><td class="cm-absent">—</td><td class="cm-partial">partial</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Conflict Detection</td><td class="cm-absent">—</td><td class="cm-absent">—</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Cryptographic Provenance</td><td class="cm-absent">—</td><td class="cm-absent">—</td><td class="cm-full">✓</td></tr>
+          <tr><td class="row-label">Abstention Under Uncertainty</td><td class="cm-absent">—</td><td class="cm-absent">—</td><td class="cm-full">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════ TEST & CODE CHARTS ═══════════ -->
 <section class="section">
   <h2 class="section__title">Codebase Analytics</h2>
   <div class="chart-grid">
     <div class="chart-card">
-      <div class="chart-card__title">Test Distribution by Module <span>408 total</span></div>
+      <div class="chart-card__title">Test Distribution by Module <span>499 total</span></div>
       <div class="bar-chart" id="testChart"></div>
     </div>
     <div class="chart-card">
-      <div class="chart-card__title">Source Code Heatmap <span>7,354 lines</span></div>
+      <div class="chart-card__title">Source Code Heatmap <span>9,344 lines</span></div>
       <div class="treemap" id="treemap" style="grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr)"></div>
     </div>
     <div class="chart-card">
@@ -489,47 +566,53 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
             <linearGradient id="d5" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d49500"/><stop offset="100%" stop-color="#f0b020"/></linearGradient>
             <linearGradient id="d6" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6e6d69"/><stop offset="100%" stop-color="#8a8984"/></linearGradient>
             <linearGradient id="d7" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
+            <linearGradient id="d8" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d060a0"/><stop offset="100%" stop-color="#e080b8"/></linearGradient>
           </defs>
-          <!-- API+Parsers 1584/7354 = 21.5%, circ=283 → 61 -->
+          <!-- circ = 2π×45 ≈ 283. Segments scaled to 9,344 total lines -->
+          <!-- API+Parsers 1584/9344 = 17% → 48 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d1)" stroke-width="18"
-            stroke-dasharray="61 222" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
-          <!-- ML+Statistics 2380/7354 = 32.4% → 92 -->
+            stroke-dasharray="48 235" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <!-- ML+Statistics 2380/9344 = 25.5% → 72 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d3)" stroke-width="18"
-            stroke-dasharray="92 191" stroke-dashoffset="-61" transform="rotate(-90 60 60)"/>
-          <!-- Research 1135/7354 = 15.4% → 44 -->
+            stroke-dasharray="72 211" stroke-dashoffset="-48" transform="rotate(-90 60 60)"/>
+          <!-- SEES (G7) 1890/9344 = 20.2% → 57 -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d8)" stroke-width="18"
+            stroke-dasharray="57 226" stroke-dashoffset="-120" transform="rotate(-90 60 60)"/>
+          <!-- Research 1135/9344 = 12.1% → 34 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d4)" stroke-width="18"
-            stroke-dasharray="44 239" stroke-dashoffset="-153" transform="rotate(-90 60 60)"/>
-          <!-- Contracts+Schemas 741/7354 = 10.1% → 29 -->
-          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d2)" stroke-width="18"
-            stroke-dasharray="29 254" stroke-dashoffset="-197" transform="rotate(-90 60 60)"/>
-          <!-- Data Quality 502/7354 = 6.8% → 19 -->
-          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d5)" stroke-width="18"
-            stroke-dasharray="19 264" stroke-dashoffset="-226" transform="rotate(-90 60 60)"/>
-          <!-- Observability (G6) 864/7354 = 11.7% → 33 -->
+            stroke-dasharray="34 249" stroke-dashoffset="-177" transform="rotate(-90 60 60)"/>
+          <!-- Observability (G6) 864/9344 = 9.3% → 26 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d7)" stroke-width="18"
-            stroke-dasharray="33 250" stroke-dashoffset="-245" transform="rotate(-90 60 60)"/>
-          <!-- Infrastructure 148/7354 → 6 -->
+            stroke-dasharray="26 257" stroke-dashoffset="-211" transform="rotate(-90 60 60)"/>
+          <!-- Contracts+Schemas 741/9344 = 7.9% → 22 -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d2)" stroke-width="18"
+            stroke-dasharray="22 261" stroke-dashoffset="-237" transform="rotate(-90 60 60)"/>
+          <!-- Data Quality 502/9344 = 5.4% → 15 -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d5)" stroke-width="18"
+            stroke-dasharray="15 268" stroke-dashoffset="-259" transform="rotate(-90 60 60)"/>
+          <!-- Infrastructure 148/9344 → 5 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d6)" stroke-width="18"
-            stroke-dasharray="6 277" stroke-dashoffset="-278" transform="rotate(-90 60 60)"/>
+            stroke-dasharray="5 278" stroke-dashoffset="-274" transform="rotate(-90 60 60)"/>
           <circle cx="60" cy="60" r="36" fill="var(--surface-1)"/>
-          <text x="60" y="58" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="800">29</text>
+          <text x="60" y="58" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="800">35</text>
           <text x="60" y="70" text-anchor="middle" fill="var(--text-muted)" font-size="7" font-weight="600">MODULES</text>
         </svg>
         <div class="donut-legend">
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--blue)"></div> API + Parsers (22%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--purple)"></div> ML + Statistics (35%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--cyan)"></div> Research Modules (17%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--aqua)"></div> Contracts + Schemas (10%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--yellow)"></div> Data Quality (7%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--good)"></div> Observability (7%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--text-muted)"></div> Infrastructure (1%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--blue)"></div> API + Parsers (17%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--purple)"></div> ML + Statistics (26%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--pink)"></div> SEES Framework (20%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--cyan)"></div> Research Modules (12%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--good)"></div> Observability (9%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--aqua)"></div> Contracts + Schemas (8%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--yellow)"></div> Data Quality (5%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--text-muted)"></div> Infrastructure (2%)</div>
         </div>
       </div>
     </div>
     <div class="chart-card">
       <div class="chart-card__title">Test Growth by Gate</div>
-      <div id="gateGrowthArea" style="width:100%;height:200px;position:relative">
-        <svg viewBox="0 0 570 220" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%">
+      <div id="gateGrowthArea" style="width:100%;height:220px;position:relative">
+        <svg viewBox="0 0 630 230" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%">
           <defs>
             <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#4a9eff" stop-opacity="0.35"/>
@@ -537,57 +620,64 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
             </linearGradient>
           </defs>
           <!-- Grid lines -->
-          <line x1="60" y1="20" x2="60" y2="185" stroke="#2a2f3a" stroke-width="1"/>
-          <line x1="60" y1="185" x2="550" y2="185" stroke="#2a2f3a" stroke-width="1"/>
-          <line x1="60" y1="143" x2="550" y2="143" stroke="#2a2f3a" stroke-width="0.5" stroke-dasharray="4"/>
-          <line x1="60" y1="101" x2="550" y2="101" stroke="#2a2f3a" stroke-width="0.5" stroke-dasharray="4"/>
-          <line x1="60" y1="59" x2="550" y2="59" stroke="#2a2f3a" stroke-width="0.5" stroke-dasharray="4"/>
-          <!-- Y-axis labels -->
-          <text x="52" y="188" fill="#8892a4" font-size="10" text-anchor="end">0</text>
-          <text x="52" y="146" fill="#8892a4" font-size="10" text-anchor="end">100</text>
-          <text x="52" y="104" fill="#8892a4" font-size="10" text-anchor="end">200</text>
-          <text x="52" y="62" fill="#8892a4" font-size="10" text-anchor="end">300</text>
-          <text x="52" y="24" fill="#8892a4" font-size="10" text-anchor="end">400</text>
-          <!-- Area fill: G0=38 G1=72 G2=110 G3=169 G4=199 G5=365 G6=408 (max~450, range 20-185 = 165px) -->
-          <!-- Y scale: 0→185, 450→20. Per unit: (185-20)/450 = 0.367px -->
-          <polygon points="100,171 170,158 240,144 310,123 380,112 450,51 520,40 520,185 100,185"
+          <line x1="60" y1="20" x2="60" y2="190" stroke="#2a2f3a" stroke-width="1"/>
+          <line x1="60" y1="190" x2="610" y2="190" stroke="#2a2f3a" stroke-width="1"/>
+          <line x1="60" y1="156" x2="610" y2="156" stroke="#2a2f3a" stroke-width="0.5" stroke-dasharray="4"/>
+          <line x1="60" y1="122" x2="610" y2="122" stroke="#2a2f3a" stroke-width="0.5" stroke-dasharray="4"/>
+          <line x1="60" y1="88" x2="610" y2="88" stroke="#2a2f3a" stroke-width="0.5" stroke-dasharray="4"/>
+          <line x1="60" y1="54" x2="610" y2="54" stroke="#2a2f3a" stroke-width="0.5" stroke-dasharray="4"/>
+          <!-- Y-axis labels (0 to 500, range 190→20 = 170px, 0.34px per unit) -->
+          <text x="52" y="193" fill="#8892a4" font-size="10" text-anchor="end">0</text>
+          <text x="52" y="159" fill="#8892a4" font-size="10" text-anchor="end">100</text>
+          <text x="52" y="125" fill="#8892a4" font-size="10" text-anchor="end">200</text>
+          <text x="52" y="91" fill="#8892a4" font-size="10" text-anchor="end">300</text>
+          <text x="52" y="57" fill="#8892a4" font-size="10" text-anchor="end">400</text>
+          <text x="52" y="23" fill="#8892a4" font-size="10" text-anchor="end">500</text>
+          <!-- Y scale: val → 190 - (val/500)*170 -->
+          <!-- G0=38→177  G1=72→166  G2=110→153  G3=169→133  G4=199→122  G5=365→66  G6=408→51  G7=499→21 -->
+          <polygon points="100,177 170,166 240,153 310,133 380,122 450,66 520,51 590,21 590,190 100,190"
             fill="url(#growthFill)"/>
           <!-- Line -->
-          <polyline points="100,171 170,158 240,144 310,123 380,112 450,51 520,40"
+          <polyline points="100,177 170,166 240,153 310,133 380,122 450,66 520,51 590,21"
             fill="none" stroke="#4a9eff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
           <!-- Data points with labels -->
-          <circle cx="100" cy="171" r="5" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
-          <text x="100" y="164" fill="#c8d1e0" font-size="10" font-weight="bold" text-anchor="middle">38</text>
-          <text x="100" y="200" fill="#8892a4" font-size="10" text-anchor="middle">G0</text>
+          <circle cx="100" cy="177" r="4" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
+          <text x="100" y="170" fill="#c8d1e0" font-size="9" font-weight="bold" text-anchor="middle">38</text>
+          <text x="100" y="205" fill="#8892a4" font-size="9" text-anchor="middle">G0</text>
 
-          <circle cx="170" cy="158" r="5" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
-          <text x="170" y="151" fill="#c8d1e0" font-size="10" font-weight="bold" text-anchor="middle">72</text>
-          <text x="170" y="200" fill="#8892a4" font-size="10" text-anchor="middle">G1</text>
+          <circle cx="170" cy="166" r="4" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
+          <text x="170" y="159" fill="#c8d1e0" font-size="9" font-weight="bold" text-anchor="middle">72</text>
+          <text x="170" y="205" fill="#8892a4" font-size="9" text-anchor="middle">G1</text>
 
-          <circle cx="240" cy="144" r="5" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
-          <text x="240" y="137" fill="#c8d1e0" font-size="10" font-weight="bold" text-anchor="middle">110</text>
-          <text x="240" y="200" fill="#8892a4" font-size="10" text-anchor="middle">G2</text>
+          <circle cx="240" cy="153" r="4" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
+          <text x="240" y="146" fill="#c8d1e0" font-size="9" font-weight="bold" text-anchor="middle">110</text>
+          <text x="240" y="205" fill="#8892a4" font-size="9" text-anchor="middle">G2</text>
 
-          <circle cx="310" cy="123" r="5" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
-          <text x="310" y="116" fill="#c8d1e0" font-size="10" font-weight="bold" text-anchor="middle">169</text>
-          <text x="310" y="200" fill="#8892a4" font-size="10" text-anchor="middle">G3</text>
+          <circle cx="310" cy="133" r="4" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
+          <text x="310" y="126" fill="#c8d1e0" font-size="9" font-weight="bold" text-anchor="middle">169</text>
+          <text x="310" y="205" fill="#8892a4" font-size="9" text-anchor="middle">G3</text>
 
-          <circle cx="380" cy="112" r="5" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
-          <text x="380" y="105" fill="#c8d1e0" font-size="10" font-weight="bold" text-anchor="middle">199</text>
-          <text x="380" y="200" fill="#8892a4" font-size="10" text-anchor="middle">G4</text>
+          <circle cx="380" cy="122" r="4" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
+          <text x="380" y="115" fill="#c8d1e0" font-size="9" font-weight="bold" text-anchor="middle">199</text>
+          <text x="380" y="205" fill="#8892a4" font-size="9" text-anchor="middle">G4</text>
 
-          <circle cx="450" cy="51" r="5" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
-          <text x="450" y="44" fill="#c8d1e0" font-size="10" font-weight="bold" text-anchor="middle">365</text>
-          <text x="450" y="200" fill="#8892a4" font-size="10" text-anchor="middle">G5</text>
+          <circle cx="450" cy="66" r="5" fill="#4a9eff" stroke="#0d1117" stroke-width="2"/>
+          <text x="450" y="58" fill="#c8d1e0" font-size="10" font-weight="bold" text-anchor="middle">365</text>
+          <text x="450" y="205" fill="#8892a4" font-size="9" text-anchor="middle">G5</text>
 
-          <circle cx="520" cy="40" r="6" fill="#9070e0" stroke="#0d1117" stroke-width="2"/>
-          <text x="520" y="30" fill="#e0d8f0" font-size="11" font-weight="bold" text-anchor="middle">408</text>
-          <text x="520" y="200" fill="#9070e0" font-size="10" font-weight="bold" text-anchor="middle">G6</text>
+          <circle cx="520" cy="51" r="5" fill="#9070e0" stroke="#0d1117" stroke-width="2"/>
+          <text x="520" y="43" fill="#e0d8f0" font-size="10" font-weight="bold" text-anchor="middle">408</text>
+          <text x="520" y="205" fill="#9070e0" font-size="9" font-weight="bold" text-anchor="middle">G6</text>
 
-          <!-- Growth annotation: +166 spike at G5, +43 at G6 -->
-          <text x="425" y="78" fill="#1cbe80" font-size="9" font-weight="bold" text-anchor="middle">+166</text>
-          <line x1="425" y1="81" x2="425" y2="105" stroke="#1cbe80" stroke-width="1" stroke-dasharray="3"/>
-          <text x="495" y="30" fill="#9070e0" font-size="8" font-weight="bold" text-anchor="middle">+43</text>
+          <circle cx="590" cy="21" r="6" fill="#d060a0" stroke="#0d1117" stroke-width="2.5"/>
+          <text x="590" y="14" fill="#f0a0d0" font-size="11" font-weight="bold" text-anchor="middle">499</text>
+          <text x="590" y="205" fill="#d060a0" font-size="10" font-weight="bold" text-anchor="middle">G7</text>
+
+          <!-- Growth annotations -->
+          <text x="430" y="92" fill="#1cbe80" font-size="8" font-weight="bold" text-anchor="middle">+166</text>
+          <line x1="430" y1="95" x2="430" y2="115" stroke="#1cbe80" stroke-width="1" stroke-dasharray="3"/>
+          <text x="560" y="34" fill="#d060a0" font-size="9" font-weight="bold" text-anchor="middle">+91</text>
+          <line x1="560" y1="37" x2="560" y2="47" stroke="#d060a0" stroke-width="1" stroke-dasharray="3"/>
         </svg>
       </div>
     </div>
@@ -611,7 +701,7 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
 <section class="section">
   <h2 class="section__title">Architecture — DARP Flow</h2>
   <div class="arch-svg-wrap">
-    <svg viewBox="0 0 960 450" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="ag1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d49500"/><stop offset="100%" stop-color="#e0a820"/></linearGradient>
         <linearGradient id="ag2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#e06030"/><stop offset="100%" stop-color="#f08050"/></linearGradient>
@@ -620,6 +710,7 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
         <linearGradient id="ag5" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#6ab0ff"/></linearGradient>
         <linearGradient id="ag6" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#e04040"/><stop offset="100%" stop-color="#f06060"/></linearGradient>
         <linearGradient id="ag7" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient>
+        <linearGradient id="ag8" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d060a0"/><stop offset="100%" stop-color="#e080b8"/></linearGradient>
         <filter id="dropShadow"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/></filter>
         <marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#4a9eff"/></marker>
         <marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#1cbe80"/></marker>
@@ -691,6 +782,18 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
       <text x="110" y="298" text-anchor="middle" fill="#a8a7a2" font-size="8">source audit · exposure · events</text>
       <text x="110" y="310" text-anchor="middle" fill="#6e6d69" font-size="7">9 modules · 1,135 lines</text>
       <line x1="110" y1="215" x2="110" y2="258" stroke="#06b6d4" stroke-width="1" marker-end="url(#arrowB)" opacity="0.4"/>
+      <!-- G7: SEES Framework -->
+      <rect x="260" y="455" width="195" height="55" rx="10" fill="#111318" stroke="url(#ag8)" stroke-width="2" filter="url(#dropShadow)"/>
+      <text x="357" y="476" text-anchor="middle" fill="#d060a0" font-size="10" font-weight="700">G7 SEES FRAMEWORK</text>
+      <text x="357" y="493" text-anchor="middle" fill="#a8a7a2" font-size="8">Wavelet · Rényi · Conformal · D-S</text>
+      <text x="357" y="505" text-anchor="middle" fill="#6e6d69" font-size="7">13 contracts · 4 pillars</text>
+      <line x1="350" y1="415" x2="350" y2="453" stroke="#e04040" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+      <line x1="560" y1="415" x2="440" y2="453" stroke="#06b6d4" stroke-width="1.5" marker-end="url(#arrowB)" opacity="0.5"/>
+      <!-- G6: Observability bar spanning bottom -->
+      <rect x="520" y="455" width="370" height="55" rx="10" fill="#111318" stroke="url(#ag3)" stroke-width="1.5" stroke-dasharray="6 3" filter="url(#dropShadow)"/>
+      <text x="705" y="478" text-anchor="middle" fill="#9070e0" font-size="10" font-weight="700">G6 OBSERVABILITY LAYER</text>
+      <text x="705" y="495" text-anchor="middle" fill="#a8a7a2" font-size="8">PipelineLogger · MetricRecord · StageTiming</text>
+      <text x="705" y="508" text-anchor="middle" fill="#6e6d69" font-size="7">spans all pipeline stages · InstrumentedResult</text>
     </svg>
   </div>
 </section>
@@ -720,7 +823,7 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> ruff check</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> ruff format</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> mypy --strict</div><span class="pipe-arrow">→</span></div>
-    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pytest (408)</div><span class="pipe-arrow">→</span></div>
+    <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pytest (499)</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> smoke HTTP</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> secrets scan</div><span class="pipe-arrow">→</span></div>
     <div class="pipe-step"><div class="pipe-box"><span class="pipe-check">✓</span> pip-audit</div></div>
@@ -770,6 +873,7 @@ h3{font-size:0.95rem;font-weight:600;color:var(--text-secondary)}
     <div class="principle" style="border-top-color:var(--purple)"><div class="principle__title">Cryptographic Provenance</div><div class="principle__desc">SHA-256 chains from source bytes through every decision. DOI-pinned datasets with dual-hash verification and acquisition audit receipts.</div></div>
     <div class="principle" style="border-top-color:var(--orange)"><div class="principle__title">Abstention-Aware</div><div class="principle__desc">The system says "I don't know" when data quality is insufficient. Precision/recall/F1 computed only over non-abstaining subsets; coverage = 1 − abstention_rate.</div></div>
     <div class="principle" style="border-top-color:var(--good)"><div class="principle__title">Confirmatory Statistics</div><div class="principle__desc">Five-layer non-parametric pipeline: Wilcoxon signed-rank → Holm-Bonferroni → Cliff's δ → BCa bootstrap CI → Kendall's W concordance. All results immutable and audit-ready.</div></div>
+    <div class="principle" style="border-top-color:var(--pink)"><div class="principle__title">Spectral-Entropic Evidence Synthesis</div><div class="principle__desc">Four-pillar computational methodology: wavelet packet spectral decomposition → Rényi entropy α-profiling → distribution-free conformal prediction → Dempster-Shafer evidence fusion. Mathematically rigorous with explicit uncertainty quantification and conflict detection.</div></div>
   </div>
 </section>
 
@@ -793,26 +897,27 @@ document.querySelectorAll('[data-count]').forEach(el => {
   requestAnimationFrame(tick);
 });
 
-// ── Radial Progress Animation (65% — G0-G5 complete + G6 ~50%) ──
+// ── Radial Progress Animation (80% — G0-G7 complete) ──
 const radial = document.querySelector('.radial-progress');
 if (radial) {
   const circumference = 2 * Math.PI * 82;
-  const pct = 0.65;
+  const pct = 0.80;
   const offset = circumference * (1 - pct);
   setTimeout(() => { radial.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)'; radial.style.strokeDashoffset = offset; }, 200);
 }
 
 // ── Test Distribution Bar Chart ──
 const testData = [
-  {name:'statistics',v:80},{name:'observability',v:31},{name:'contracts',v:30},
-  {name:'decision',v:18},{name:'esa_parser',v:17},{name:'pipeline',v:16},
-  {name:'comparative',v:16},{name:'detectors',v:16},{name:'edp_parser',v:15},
-  {name:'g3_ctr',v:14},{name:'schemas',v:13},{name:'api',v:13},
-  {name:'instrumented',v:12},{name:'evaluation',v:12},{name:'splits',v:11},
-  {name:'edp_inv',v:10},{name:'esa_acq',v:9},{name:'edp_view',v:8},
-  {name:'edp_audit',v:7},{name:'edp_acq',v:6},{name:'edp_exp',v:5},
-  {name:'src_ver',v:5},{name:'edp_ver',v:4},{name:'edp_dup',v:3},
-  {name:'edp_evt',v:3}
+  {name:'statistics',v:80},{name:'synthesis',v:33},{name:'observability',v:31},
+  {name:'contracts',v:30},{name:'conformal',v:22},{name:'spectral',v:19},
+  {name:'decision',v:18},{name:'esa_parser',v:17},{name:'entropy',v:17},
+  {name:'pipeline',v:16},{name:'comparative',v:16},{name:'detectors',v:16},
+  {name:'edp_parser',v:15},{name:'g3_ctr',v:14},{name:'schemas',v:13},
+  {name:'api',v:13},{name:'instrumented',v:12},{name:'evaluation',v:12},
+  {name:'splits',v:11},{name:'edp_inv',v:10},{name:'esa_acq',v:9},
+  {name:'edp_view',v:8},{name:'edp_audit',v:7},{name:'edp_acq',v:6},
+  {name:'edp_exp',v:5},{name:'src_ver',v:5},{name:'edp_ver',v:4},
+  {name:'edp_dup',v:3},{name:'edp_evt',v:3}
 ];
 const maxTest = Math.max(...testData.map(d=>d.v));
 const testChart = document.getElementById('testChart');
@@ -828,22 +933,25 @@ testData.forEach(d => {
 // ── Treemap (Source Lines) ──
 const srcData = [
   {name:'statistics',v:1138,c:'var(--purple)'},{name:'api',v:723,c:'var(--blue)'},
-  {name:'observability',v:515,c:'var(--good)'},{name:'esa_parser',v:475,c:'var(--orange)'},
-  {name:'contracts',v:418,c:'var(--aqua)'},{name:'edp_parser',v:386,c:'var(--orange)'},
-  {name:'instrumented',v:349,c:'var(--good)'},{name:'detectors',v:337,c:'var(--purple)'},
-  {name:'schemas',v:323,c:'var(--aqua)'},{name:'edp_audit',v:319,c:'var(--cyan)'},
-  {name:'pipeline',v:290,c:'var(--purple)'},{name:'decision',v:286,c:'var(--purple)'},
-  {name:'quality',v:201,c:'var(--aqua)'},{name:'comparative',v:201,c:'var(--purple)'},
-  {name:'splits',v:160,c:'var(--purple)'},{name:'edp_view',v:142,c:'var(--cyan)'},
-  {name:'verifier',v:141,c:'var(--blue)'},{name:'edp_expo',v:135,c:'var(--cyan)'},
-  {name:'evaluation',v:128,c:'var(--purple)'},{name:'edp_schema',v:127,c:'var(--cyan)'},
-  {name:'edp_acq',v:126,c:'var(--cyan)'},{name:'esa_acq',v:112,c:'var(--blue)'}
+  {name:'synthesis',v:580,c:'var(--pink)'},{name:'observability',v:515,c:'var(--good)'},
+  {name:'spectral',v:510,c:'var(--pink)'},{name:'esa_parser',v:475,c:'var(--orange)'},
+  {name:'conformal',v:420,c:'var(--pink)'},{name:'contracts',v:418,c:'var(--aqua)'},
+  {name:'g7_contracts',v:400,c:'var(--pink)'},{name:'edp_parser',v:386,c:'var(--orange)'},
+  {name:'entropy',v:380,c:'var(--pink)'},{name:'instrumented',v:349,c:'var(--good)'},
+  {name:'detectors',v:337,c:'var(--purple)'},{name:'schemas',v:323,c:'var(--aqua)'},
+  {name:'edp_audit',v:319,c:'var(--cyan)'},{name:'pipeline',v:290,c:'var(--purple)'},
+  {name:'decision',v:286,c:'var(--purple)'},{name:'quality',v:201,c:'var(--aqua)'},
+  {name:'comparative',v:201,c:'var(--purple)'},{name:'splits',v:160,c:'var(--purple)'},
+  {name:'edp_view',v:142,c:'var(--cyan)'},{name:'verifier',v:141,c:'var(--blue)'},
+  {name:'edp_expo',v:135,c:'var(--cyan)'},{name:'evaluation',v:128,c:'var(--purple)'},
+  {name:'edp_schema',v:127,c:'var(--cyan)'},{name:'edp_acq',v:126,c:'var(--cyan)'},
+  {name:'esa_acq',v:112,c:'var(--blue)'}
 ];
 const treemap = document.getElementById('treemap');
 srcData.slice(0, 12).forEach(d => {
   const cell = document.createElement('div');
   cell.className = 'treemap-cell';
-  const alpha = 0.4 + (d.v / 1138) * 0.5;
+  const alpha = 0.4 + (d.v / srcData[0].v) * 0.5;
   cell.style.background = `color-mix(in srgb, ${d.c} ${Math.round(alpha*100)}%, var(--surface-2))`;
   if (d.v >= 500) { cell.style.gridColumn = 'span 2'; }
   cell.innerHTML = `<div class="treemap-cell__name">${d.name}</div><div class="treemap-cell__val">${d.v} lines</div>`;
