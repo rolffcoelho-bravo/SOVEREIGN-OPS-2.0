@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 
+from sovereign_ops.contracts import DatasetId
 from sovereign_ops.g7_contracts import SpectralDivergenceScore, WaveletPacketSpectrum
 from sovereign_ops.spectral import (
     build_energy_spectrum,
@@ -143,13 +144,13 @@ class TestSpectralDivergence:
     """KL and JS divergence between energy spectra."""
 
     def _make_spectrum(
-        self, signal: np.ndarray, dataset_id: str = "ESA-AD-v2"
+        self, signal: np.ndarray, dataset_id: DatasetId = "ESA-AD-v2"
     ) -> WaveletPacketSpectrum:
         return build_energy_spectrum(
             signal,
             dataset_id=dataset_id,
             depth=3,
-            source_sha256="f" * 64,  # type: ignore[arg-type]
+            source_sha256="f" * 64,
         )
 
     def test_identical_signals_zero_divergence(self) -> None:

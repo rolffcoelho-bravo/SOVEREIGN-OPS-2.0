@@ -222,7 +222,7 @@ class TestSpectralWindow:
     def test_frozen(self) -> None:
         w = _window()
         with pytest.raises(ValidationError):
-            w.js_divergence = 0.5  # type: ignore[misc]
+            w.js_divergence = 0.5
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -321,7 +321,7 @@ class TestAdaptiveBandwidth:
     def test_frozen(self) -> None:
         b = _bandwidth()
         with pytest.raises(ValidationError):
-            b.silverman_h = 1.0  # type: ignore[misc]
+            b.silverman_h = 1.0
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -369,7 +369,7 @@ class TestSpectralTrackingState:
     def test_frozen(self) -> None:
         s = _tracking_state()
         with pytest.raises(ValidationError):
-            s.n_windows = 10  # type: ignore[misc]
+            s.n_windows = 10
 
     def test_extra_forbidden(self) -> None:
         ws = (_window(),)
@@ -411,7 +411,7 @@ class TestCUSUMState:
     def test_frozen(self) -> None:
         c = _cusum_state()
         with pytest.raises(ValidationError):
-            c.alarm_plus = True  # type: ignore[misc]
+            c.alarm_plus = True
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -468,7 +468,7 @@ class TestChangePoint:
     def test_frozen(self) -> None:
         cp = _change_point()
         with pytest.raises(ValidationError):
-            cp.location = 100  # type: ignore[misc]
+            cp.location = 100
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -532,7 +532,7 @@ class TestChangePointSeries:
     def test_frozen(self) -> None:
         cps = _change_point_series()
         with pytest.raises(ValidationError):
-            cps.cusum_k = 1.0  # type: ignore[misc]
+            cps.cusum_k = 1.0
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -584,7 +584,7 @@ class TestRegimeSignature:
     def test_frozen(self) -> None:
         s = _signature()
         with pytest.raises(ValidationError):
-            s.shannon_entropy = 2.0  # type: ignore[misc]
+            s.shannon_entropy = 2.0
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -616,7 +616,7 @@ class TestRegimeCentroid:
     def test_frozen(self) -> None:
         c = _centroid()
         with pytest.raises(ValidationError):
-            c.regime_id = 5  # type: ignore[misc]
+            c.regime_id = 5
 
     def test_invalid_label_rejected(self) -> None:
         with pytest.raises(ValidationError):
@@ -633,7 +633,7 @@ class TestRegimeCentroid:
         for label in ("nominal", "degraded", "anomalous", "transitional"):
             c = RegimeCentroid(
                 regime_id=0,
-                regime_label=label,  # type: ignore[arg-type]
+                regime_label=label,
                 centroid_entropies=((1.0, 0.5),),
                 centroid_complexity=1.0,
                 n_members=1,
@@ -654,7 +654,7 @@ class TestRegimeSegment:
     def test_frozen(self) -> None:
         s = _segment()
         with pytest.raises(ValidationError):
-            s.regime_id = 99  # type: ignore[misc]
+            s.regime_id = 99
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -690,7 +690,7 @@ class TestRegimeTransitionMatrix:
     def test_frozen(self) -> None:
         m = _transition_matrix()
         with pytest.raises(ValidationError):
-            m.stationarity_index = 0.5  # type: ignore[misc]
+            m.stationarity_index = 0.5
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -731,7 +731,7 @@ class TestRegimeClassificationResult:
     def test_frozen(self) -> None:
         r = _classification()
         with pytest.raises(ValidationError):
-            r.silhouette_score = 0.9  # type: ignore[misc]
+            r.silhouette_score = 0.9
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -774,7 +774,7 @@ class TestRegimeCalibration:
     def test_frozen(self) -> None:
         c = _calibration()
         with pytest.raises(ValidationError):
-            c.quantile_threshold = 5.0  # type: ignore[misc]
+            c.quantile_threshold = 5.0
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -813,7 +813,7 @@ class TestRegimeCalibration:
         for label in ("nominal", "degraded", "anomalous", "transitional"):
             c = RegimeCalibration(
                 regime_id=0,
-                regime_label=label,  # type: ignore[arg-type]
+                regime_label=label,
                 n_calibration=50,
                 significance_level=0.1,
                 quantile_threshold=2.5,
@@ -834,7 +834,7 @@ class TestRegimeConditionedScore:
     def test_frozen(self) -> None:
         s = _conditioned_score()
         with pytest.raises(ValidationError):
-            s.is_anomalous = False  # type: ignore[misc]
+            s.is_anomalous = False
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
@@ -886,7 +886,7 @@ class TestASRDReport:
     def test_frozen(self) -> None:
         r = _asrd_report()
         with pytest.raises(ValidationError):
-            r.regime_aware_score = 0.5  # type: ignore[misc]
+            r.regime_aware_score = 0.5
 
     def test_extra_forbidden(self) -> None:
         with pytest.raises(ValidationError, match="extra"):
