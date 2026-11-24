@@ -524,7 +524,7 @@ class TestTrackSpectralDivergence:
     def test_window_source_sha256_propagated(self) -> None:
         """Each window carries the source SHA-256."""
         sig = np.ones(256)
-        sha = "abc123def456"
+        sha = "test_source_sha256"
         result = track_spectral_divergence(
             sig,
             "ESA-AD-v2",
