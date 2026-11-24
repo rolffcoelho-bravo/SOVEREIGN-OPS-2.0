@@ -206,6 +206,19 @@ def compute_adaptive_bandwidth(
     AdaptiveBandwidth
         DARP-compliant frozen contract.
     """
+    _MIN_OBSERVATIONS = 4  # AdaptiveBandwidth contract floor
+
+    n_raw = len(divergence_series)
+
+    # Pad short divergence series to meet contract minimum.
+    # With < 4 observations Silverman's rule is degenerate anyway,
+    # so the bandwidth falls back to the base window size.
+    if n_raw < _MIN_OBSERVATIONS and n_raw > 0:
+        # Tile-and-trim: repeats existing values to reach the floor
+        reps = int(np.ceil(_MIN_OBSERVATIONS / n_raw))
+        padded = np.tile(divergence_series, reps)[:_MIN_OBSERVATIONS]
+        divergence_series = padded  # noqa: PLW0642 — intentional rebind
+
     n = len(divergence_series)
     std = float(np.std(divergence_series, ddof=1)) if n > 1 else 0.0
     q75, q25 = (
@@ -225,6 +238,11 @@ def compute_adaptive_bandwidth(
     else:
         adapted = base_window_size
     adapted = max(_MIN_WINDOW, min(adapted, base_window_size * 2))
+
+    # When observations were padded, Silverman estimate is unreliable —
+    # fall back to base window size to avoid misleading adaptation.
+    if n_raw < _MIN_OBSERVATIONS:
+        adapted = base_window_size
 
     return AdaptiveBandwidth(
         dataset_id=dataset_id,

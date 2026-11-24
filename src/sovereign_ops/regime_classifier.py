@@ -20,7 +20,7 @@ number of observations between false alarms.
 **Pillar 3 — Entropy-Signature Regime Classification:**
 
 Each segment between change points is characterised by its Rényi
-α-spectrum — the curve H_α(X) for α ∈ (0, ∞) \ {1}:
+α-spectrum — the curve H_α(X) for α ∈ (0, ∞) \\ {1}:
 
     H_α(X) = 1/(1−α) · log₂(∑ᵢ pᵢ^α)
 
@@ -187,7 +187,12 @@ def build_change_point_series(
     # Estimate in-control ARL₀
     # ARL₀ ≈ exp(2hk/σ²) / (2hk/σ²) for small k
     ratio = 2 * h * k / max(std_0**2, 1e-12)
-    arl_0 = math.exp(ratio) / max(ratio, 1e-12) if ratio > 0 else float("inf")
+    if ratio > 0:
+        # Cap exponent to prevent OverflowError — exp(700) ≈ 1e304
+        capped_ratio = min(ratio, 700.0)
+        arl_0 = math.exp(capped_ratio) / max(ratio, 1e-12)
+    else:
+        arl_0 = float("inf")
     arl_0 = min(arl_0, 1e10)  # cap for numerical sanity
 
     sha = hashlib.sha256(series.tobytes()).hexdigest()
