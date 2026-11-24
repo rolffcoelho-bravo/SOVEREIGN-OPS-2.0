@@ -54,18 +54,13 @@ def test_gates_endpoint_returns_development_progress() -> None:
         response = client.get("/meta/gates")
         assert response.status_code == 200
         body = response.json()
-        assert body["current_gate"] == "G5"
+        assert body["current_gate"] == "G9"
         assert len(body["gates"]) == 10
         gate_ids = [g["gate"] for g in body["gates"]]
         assert gate_ids == [f"G{i}" for i in range(10)]
-        # G0–G4 all COMPLETE
-        assert body["gates"][0]["status"] == "COMPLETE"
-        assert body["gates"][1]["status"] == "COMPLETE"
-        assert body["gates"][2]["status"] == "COMPLETE"
-        assert body["gates"][3]["status"] == "COMPLETE"
-        assert body["gates"][4]["status"] == "COMPLETE"
-        # G5 now IN_PROGRESS
-        assert body["gates"][5]["status"] == "IN_PROGRESS"
+        # All gates COMPLETE (G0-G9)
+        for gate in body["gates"]:
+            assert gate["status"] == "COMPLETE", f"{gate['gate']} should be COMPLETE"
 
 
 def test_unimplemented_routes_return_404() -> None:
