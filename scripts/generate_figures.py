@@ -101,8 +101,8 @@ def _save(fig: Figure, name: str, output_dir: Path) -> None:
 def fig_gate_progress(output_dir: Path) -> None:
     """Horizontal bar chart showing gate progression with test counts."""
     gates = ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"]
-    tests = [38, 72, 110, 169, 199, 365, 0, 0, 0, 0]
-    status = ["COMPLETE"] * 5 + ["IN PROGRESS"] + ["PLANNED"] * 4
+    tests = [38, 72, 110, 169, 199, 365, 410, 548, 802, 882]
+    status = ["COMPLETE"] * 10
     colors = []
     for s in status:
         if s == "COMPLETE":
@@ -154,8 +154,6 @@ def fig_gate_progress(output_dir: Path) -> None:
     # Legend
     legend_elements = [
         mpatches.Patch(facecolor=EMERALD_500, label="Complete"),
-        mpatches.Patch(facecolor=BLUE_600, label="In Progress"),
-        mpatches.Patch(facecolor=GRAY_300, label="Planned"),
     ]
     ax.legend(handles=legend_elements, loc="lower right", fontsize=9, frameon=False)
 
@@ -170,9 +168,9 @@ def fig_gate_progress(output_dir: Path) -> None:
 
 def fig_test_growth(output_dir: Path) -> None:
     """Stacked area showing test growth across gate milestones."""
-    gates = ["G0", "G1", "G2", "G3", "G4", "G5"]
-    total = [38, 72, 110, 169, 199, 365]
-    added = [38, 34, 38, 59, 30, 166]
+    gates = ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"]
+    total = [38, 72, 110, 169, 199, 365, 410, 548, 802, 882]
+    added = [38, 34, 38, 59, 30, 166, 45, 138, 254, 80]
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
@@ -231,10 +229,20 @@ class _CategoryInfo(TypedDict):
 def fig_source_architecture(output_dir: Path) -> None:
     """Treemap-style horizontal bars showing codebase composition."""
     categories: dict[str, _CategoryInfo] = {
-        "API & Parsers": {
-            "modules": ["api", "edp_parser", "esa_parser"],
-            "lines": 1584,
-            "color": BLUE_600,
+        "G7-G9 Advanced Methods": {
+            "modules": [
+                "spectral",
+                "entropy",
+                "synthesis",
+                "conformal",
+                "spectral_tracking",
+                "regime_classifier",
+                "regime_conformal",
+                "asrd_pipeline",
+                "transfer_validation",
+            ],
+            "lines": 3663,
+            "color": ROSE_500,
         },
         "ML & Statistics": {
             "modules": [
@@ -249,14 +257,21 @@ def fig_source_architecture(output_dir: Path) -> None:
             "color": EMERALD_500,
         },
         "Contracts & Schemas": {
-            "modules": ["contracts", "schemas"],
-            "lines": 741,
+            "modules": [
+                "contracts",
+                "schemas",
+                "edp_contracts",
+                "g7_contracts",
+                "g8_contracts",
+                "g9_contracts",
+            ],
+            "lines": 2021,
             "color": VIOLET_500,
         },
-        "Data Quality": {
-            "modules": ["quality_profiler", "source_verifier", "splits"],
-            "lines": 502,
-            "color": AMBER_500,
+        "API & Parsers": {
+            "modules": ["api", "edp_parser", "esa_parser"],
+            "lines": 1602,
+            "color": BLUE_600,
         },
         "Research Modules": {
             "modules": [
@@ -264,14 +279,32 @@ def fig_source_architecture(output_dir: Path) -> None:
                 "edp_view_comparison",
                 "edp_exposure",
                 "edp_source_schemas",
+                "edp_source_values",
                 "edp_acquisition",
                 "edp_events",
                 "edp_duplicates",
                 "edp_version_audit",
                 "esa_acquisition",
             ],
-            "lines": 1135,
+            "lines": 1211,
             "color": CYAN_500,
+        },
+        "Observability": {
+            "modules": [
+                "observability",
+                "instrumented_pipeline",
+            ],
+            "lines": 885,
+            "color": AMBER_500,
+        },
+        "Data Quality": {
+            "modules": [
+                "quality_profiler",
+                "source_verifier",
+                "splits",
+            ],
+            "lines": 502,
+            "color": BLUE_400,
         },
         "Infrastructure": {
             "modules": ["adapters", "audit", "__init__"],
@@ -524,7 +557,7 @@ def fig_ci_pipeline(output_dir: Path) -> None:
         ("ruff\ncheck", BLUE_600),
         ("ruff\nformat", BLUE_400),
         ("mypy\n--strict", VIOLET_500),
-        ("pytest\n(365)", EMERALD_500),
+        ("pytest\n(882)", EMERALD_500),
         ("smoke\nHTTP", CYAN_500),
         ("secrets\nscan", AMBER_500),
         ("pip\naudit", ROSE_500),
