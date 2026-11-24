@@ -65,28 +65,41 @@ All 5 layers produce immutable Pydantic contracts with SHA-256 provenance chains
 The second methodological pillar is **SEES** (G7), a novel four-component framework for multi-domain anomaly characterisation that fuses signal-theoretic, information-theoretic, and uncertainty-aware evidence into a single auditable score. All four components are implemented from first principles with **zero external signal-processing dependencies**.
 
 ```
-                              ┌──────────────────────┐
-        time-series           │   Wavelet Packet      │  energy-normalised
-       observation ──────────▶│   Spectral Decomp.    │──── spectral profile
-                              │   (Haar, depth d)     │       ↓
-                              └──────────────────────┘    KL + JS divergence
-                                                              ↓
-                              ┌──────────────────────┐    spectral score
-        residual              │   Rényi Entropy       │       ↓
-       distribution ─────────▶│   α-Profiling         │──── max |Δα|
-                              │   (α ∈ {0,…,∞})      │    entropy score
-                              └──────────────────────┘       ↓
-                                                              ↓
-                              ┌──────────────────────┐    conformal score
-        nonconformity         │   Conformal           │       ↓
-       scores ───────────────▶│   Prediction          │──── anomalous frac.
-                              │   (coverage ≥ 1−ε)   │       ↓
-                              └──────────────────────┘       ↓
-                                                        ┌──────────┐
-                              3 pillar scores ─────────▶│ Dempster- │── SEES score
-                                 ↓   ↓   ↓             │ Shafer   │   = Pl(anomaly)
-                              mass assignments          │ Fusion   │
-                                                        └──────────┘
+ ╔══════════════════════════════════════════════════════════════════════════════╗
+ ║                  SEES — Spectral-Entropic Evidence Synthesis                ║
+ ╚══════════════════════════════════════════════════════════════════════════════╝
+
+  INPUT                     PILLAR                          OUTPUT
+ ───────────────────────────────────────────────────────────────────────
+
+  Time-Series      ┌─────────────────────────┐
+  Observation ────▶│ P1  Wavelet Packet      │────▶  Spectral Score ──────┐
+                   │     Spectral Decomp.    │      (KL + JS divergence)  │
+                   │     (Haar, depth d)     │                            │
+                   └─────────────────────────┘                            │
+                                                                          │
+  Residual         ┌─────────────────────────┐                            │
+  Distribution ───▶│ P2  Rényi Entropy       │────▶  Entropy Score ───────┤
+                   │     α-Profiling         │      (max |Δα|)            │
+                   │     (α ∈ {0,…,∞})       │                            │
+                   └─────────────────────────┘                            │
+                                                                          │
+  Nonconformity    ┌─────────────────────────┐                            │
+  Scores ─────────▶│ P3  Conformal           │────▶  Conformal Score ─────┤
+                   │     Prediction          │      (anomalous fraction)  │
+                   │     (coverage ≥ 1−ε)    │                            │
+                   └─────────────────────────┘                            │
+                                                                          ▼
+                                                        ┌─────────────────────┐
+                      3 pillar scores ─────────────────▶│ P4  Dempster-Shafer │
+                      + mass assignments                │     Fusion          │
+                                                        └─────────┬───────────┘
+                                                                  │
+                                                                  ▼
+                                                        ╔═════════════════╗
+                                                        ║   SEES Score    ║
+                                                        ║  = Pl(anomaly)  ║
+                                                        ╚═════════════════╝
 ```
 
 | Pillar | Method | Key property |
@@ -211,7 +224,7 @@ Additional domains (Scania fleet, HAI security testbed, TraCSS orbital) are regi
 
 ## Development status
 
-**100% complete — all 10 gates passed.** 882 tests · 42 source modules · 12,315 lines · mypy --strict
+**100% complete — all 10 gates passed.** 882 tests · 42 source modules · 12,333 lines · mypy --strict
 
 | Gate | Status | Description | Tests |
 |---|---|---|---|
@@ -221,8 +234,8 @@ Additional domains (Scania fleet, HAI security testbed, TraCSS orbital) are regi
 | **G3** | ✅ COMPLETE | Baseline models — Z-Score (MAD), Isolation Forest, abstention-aware eval | 169 |
 | **G4** | ✅ COMPLETE | DARP core — pipeline orchestrator, decision engine, evidence chains | 199 |
 | **G5** | ✅ COMPLETE | Confirmatory eval — 5-layer statistical pipeline (Wilcoxon, Holm, Cliff's δ, BCa, Kendall's W) | 365 |
-| **G6** | ✅ COMPLETE | Observability — pipeline logger, metrics, stage timing, audit trail | 408 |
-| **G7** | ✅ COMPLETE | SEES framework — wavelet spectral, Rényi entropy, conformal prediction, Dempster-Shafer fusion | 499 |
+| **G6** | ✅ COMPLETE | Observability — pipeline logger, metrics, stage timing, audit trail | 410 |
+| **G7** | ✅ COMPLETE | SEES framework — wavelet spectral, Rényi entropy, conformal prediction, Dempster-Shafer fusion | 548 |
 | **G8** | ✅ COMPLETE | ASRD — adaptive spectral regime detection (spectral tracking, CUSUM, PAM clustering, regime conformal) | 802 |
 | **G9** | ✅ COMPLETE | CDTV — cross-domain transfer validation (5-pillar generalization proof) | 882 |
 
@@ -260,7 +273,7 @@ uv run --locked python scripts/verify.py
 
 ```
 sovereign-ops-2.0/
-├── src/sovereign_ops/         # Python package (42 modules, 12,315 lines)
+├── src/sovereign_ops/         # Python package (42 modules, 12,333 lines)
 │   ├── contracts.py           # Immutable Pydantic contracts (22 frozen types)
 │   ├── schemas.py             # Domain-specific schema definitions
 │   ├── adapters.py            # Domain adapter protocols
