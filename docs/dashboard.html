@@ -312,7 +312,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
   <p class="subtitle">Domain-Aware Reliability Protocol — Abstention-First Anomaly Detection</p>
   <p class="tagline">A novel confirmatory evaluation framework with cryptographic provenance</p>
   <div class="badges">
-    <span class="badge badge--good">CI ✓ 802 Tests Passing</span>
+    <span class="badge badge--good">CI ✓ 882 Tests Passing</span>
     <span class="badge badge--blue">Python 3.12+ · mypy --strict</span>
     <span class="badge badge--aqua">Apache 2.0</span>
     <span class="badge badge--purple">DOI: 10.5281/zenodo.24364517</span>
@@ -325,15 +325,15 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
     <div class="stat__glow" style="background:var(--good)"></div>
     <div class="stat__icon">🧪</div>
     <div class="stat__label">Tests</div>
-    <div class="stat__value stat__value--good" data-count="802">0</div>
-    <div class="stat__detail">35 test modules · 100% passing</div>
+    <div class="stat__value stat__value--good" data-count="882">0</div>
+    <div class="stat__detail">37 test modules · 100% passing</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--blue)"></div>
     <div class="stat__icon">📐</div>
     <div class="stat__label">Source Modules</div>
-    <div class="stat__value stat__value--blue" data-count="40">0</div>
-    <div class="stat__detail">11,333 lines · mypy --strict</div>
+    <div class="stat__value stat__value--blue" data-count="42">0</div>
+    <div class="stat__detail">12,315 lines · mypy --strict</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--purple)"></div>
@@ -401,8 +401,8 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
           </g>
         </svg>
         <div class="radial-center">
-          <div class="radial-center__pct">90%</div>
-          <div class="radial-center__label">G8 Complete</div>
+          <div class="radial-center__pct">100%</div>
+          <div class="radial-center__label">G9 Complete</div>
         </div>
       </div>
     </div>
@@ -416,7 +416,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
       <div class="gate gate--complete"><div><div class="gate__id">G6</div><div class="gate__name">Observability</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
       <div class="gate gate--complete"><div><div class="gate__id">G7</div><div class="gate__name">SEES Framework</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
       <div class="gate gate--complete"><div><div class="gate__id">G8</div><div class="gate__name">Adaptive Spectral Regime Detection</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
-      <div class="gate gate--progress"><div><div class="gate__id">G9</div><div class="gate__name">Cross-Domain Transfer Validation</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>IN PROGRESS</div></div>
+      <div class="gate gate--complete"><div><div class="gate__id">G9</div><div class="gate__name">Cross-Domain Transfer Validation</div></div><div class="gate__bar-track"><div class="gate__bar-fill"></div></div><div class="gate__status"><span class="status-dot"></span>COMPLETE</div></div>
     </div>
   </div>
 </section>
@@ -623,16 +623,123 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
   </div>
 </section>
 
+<!-- ═══════════ G9: CDTV FRAMEWORK ═══════════ -->
+<section class="section">
+  <h2 class="section__title">G9 — Cross-Domain Transfer Validation (CDTV)</h2>
+  <p style="color:var(--text-secondary);max-width:780px;margin-bottom:28px;font-size:0.88rem;line-height:1.6">
+    Validating that analytical pipelines generalize across domains through 5 statistical pillars —
+    proving the methodology transfers between ESA satellite anomaly data and EDP SCADA energy infrastructure
+    without overfitting to domain-specific artefacts.
+  </p>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-card__title">G9 CDTV — 5-Pillar Architecture <span>cross-domain generalization proof</span></div>
+      <div style="padding:20px 10px">
+        <svg viewBox="0 0 680 240" style="width:100%">
+          <!-- Pillar 1 -->
+          <rect x="10" y="10" width="120" height="85" rx="10" fill="var(--surface-2)" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="70" y="32" text-anchor="middle" fill="var(--blue)" font-size="8.5" font-weight="700">P1 STRUCTURAL</text>
+          <text x="70" y="44" text-anchor="middle" fill="var(--blue)" font-size="8.5" font-weight="700">ISOMORPHISM</text>
+          <text x="70" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="7">Chi-squared / Fisher</text>
+          <text x="70" y="74" text-anchor="middle" fill="var(--text-secondary)" font-size="7">Cramér's V effect size</text>
+          <text x="70" y="86" text-anchor="middle" fill="var(--text-muted)" font-size="6.5">decision structure match</text>
+
+          <!-- Pillar 2 -->
+          <rect x="145" y="10" width="120" height="85" rx="10" fill="var(--surface-2)" stroke="var(--purple)" stroke-width="1.5"/>
+          <text x="205" y="32" text-anchor="middle" fill="var(--purple)" font-size="8.5" font-weight="700">P2 PIPELINE</text>
+          <text x="205" y="44" text-anchor="middle" fill="var(--purple)" font-size="8.5" font-weight="700">FIDELITY</text>
+          <text x="205" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="7">Mann-Whitney U</text>
+          <text x="205" y="74" text-anchor="middle" fill="var(--text-secondary)" font-size="7">Spectral compatibility</text>
+          <text x="205" y="86" text-anchor="middle" fill="var(--text-muted)" font-size="6.5">processing behavior match</text>
+
+          <!-- Pillar 3 -->
+          <rect x="280" y="10" width="120" height="85" rx="10" fill="var(--surface-2)" stroke="var(--pink)" stroke-width="1.5"/>
+          <text x="340" y="32" text-anchor="middle" fill="var(--pink)" font-size="8.5" font-weight="700">P3 REGIME</text>
+          <text x="340" y="44" text-anchor="middle" fill="var(--pink)" font-size="8.5" font-weight="700">TRANSFER</text>
+          <text x="340" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="7">Stability coherence</text>
+          <text x="340" y="74" text-anchor="middle" fill="var(--text-secondary)" font-size="7">Transition density</text>
+          <text x="340" y="86" text-anchor="middle" fill="var(--text-muted)" font-size="6.5">regime dynamics match</text>
+
+          <!-- Pillar 4 -->
+          <rect x="415" y="10" width="120" height="85" rx="10" fill="var(--surface-2)" stroke="var(--aqua)" stroke-width="1.5"/>
+          <text x="475" y="32" text-anchor="middle" fill="var(--aqua)" font-size="8.5" font-weight="700">P4 DECISION</text>
+          <text x="475" y="44" text-anchor="middle" fill="var(--aqua)" font-size="8.5" font-weight="700">BOUNDARY</text>
+          <text x="475" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="7">Conformal threshold</text>
+          <text x="475" y="74" text-anchor="middle" fill="var(--text-secondary)" font-size="7">convergence analysis</text>
+          <text x="475" y="86" text-anchor="middle" fill="var(--text-muted)" font-size="6.5">decision calibration match</text>
+
+          <!-- Pillar 5 -->
+          <rect x="550" y="10" width="120" height="85" rx="10" fill="var(--surface-2)" stroke="var(--warning)" stroke-width="1.5"/>
+          <text x="610" y="32" text-anchor="middle" fill="var(--warning)" font-size="8.5" font-weight="700">P5 PROVENANCE</text>
+          <text x="610" y="44" text-anchor="middle" fill="var(--warning)" font-size="8.5" font-weight="700">CHAIN</text>
+          <text x="610" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="7">SHA-256 verification</text>
+          <text x="610" y="74" text-anchor="middle" fill="var(--text-secondary)" font-size="7">End-to-end integrity</text>
+          <text x="610" y="86" text-anchor="middle" fill="var(--text-muted)" font-size="6.5">cryptographic audit trail</text>
+
+          <!-- Arrows to verdict -->
+          <line x1="70" y1="95" x2="70" y2="130" stroke="var(--blue)" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="205" y1="95" x2="205" y2="130" stroke="var(--purple)" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="340" y1="95" x2="340" y2="130" stroke="var(--pink)" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="475" y1="95" x2="475" y2="130" stroke="var(--aqua)" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="610" y1="95" x2="610" y2="130" stroke="var(--warning)" stroke-width="1" stroke-dasharray="3"/>
+
+          <!-- Verdict Engine -->
+          <rect x="120" y="130" width="440" height="50" rx="12" fill="var(--surface-1)" stroke="var(--good)" stroke-width="2"/>
+          <text x="340" y="152" text-anchor="middle" fill="var(--good)" font-size="11" font-weight="800" letter-spacing="0.08em">CDTV VERDICT ENGINE</text>
+          <text x="340" y="168" text-anchor="middle" fill="var(--text-secondary)" font-size="7.5">5/5 → VALIDATED · 3-4/5 → PARTIAL · ≤2/5 → REJECTED · &lt;min_obs → INSUFFICIENT</text>
+
+          <!-- Verdict outcomes -->
+          <rect x="90" y="200" width="120" height="28" rx="8" fill="var(--good-wash)" stroke="var(--good)" stroke-width="1"/>
+          <text x="150" y="218" text-anchor="middle" fill="var(--good)" font-size="8" font-weight="700">TRANSFER_VALIDATED</text>
+          <rect x="225" y="200" width="110" height="28" rx="8" fill="var(--warning-wash)" stroke="var(--warning)" stroke-width="1"/>
+          <text x="280" y="218" text-anchor="middle" fill="var(--warning)" font-size="8" font-weight="700">PARTIAL_TRANSFER</text>
+          <rect x="350" y="200" width="115" height="28" rx="8" fill="var(--critical-wash)" stroke="var(--critical)" stroke-width="1"/>
+          <text x="407" y="218" text-anchor="middle" fill="var(--critical)" font-size="8" font-weight="700">TRANSFER_REJECTED</text>
+          <rect x="480" y="200" width="115" height="28" rx="8" fill="var(--blue-wash)" stroke="var(--blue)" stroke-width="1"/>
+          <text x="537" y="218" text-anchor="middle" fill="var(--blue)" font-size="8" font-weight="700">INSUFFICIENT_DATA</text>
+        </svg>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card__title">G9 CDTV Contract Types <span>11 immutable types</span></div>
+      <div class="contract-grid">
+        <div class="cc" style="border-left-color:var(--orange)"><div class="cc__name">CDTVConfig</div><div class="cc__desc">significance · min_obs · tolerance · stability · label overlap</div></div>
+        <div class="cc" style="border-left-color:var(--orange)"><div class="cc__name">DomainPipelineProfile</div><div class="cc__desc">dataset · observations · anomalies · regimes · spectral · conformal · provenance</div></div>
+        <div class="cc" style="border-left-color:var(--blue)"><div class="cc__name">StructuralIsomorphismResult</div><div class="cc__desc">chi2/fisher · p-value · Cramér's V · effect_size · isomorphic</div></div>
+        <div class="cc" style="border-left-color:var(--purple)"><div class="cc__name">PipelineFidelityResult</div><div class="cc__desc">spectral_p · spectral_compatible · regime_count · change_point · fidelity</div></div>
+        <div class="cc" style="border-left-color:var(--pink)"><div class="cc__name">RegimeTransferResult</div><div class="cc__desc">stability_diff · transition_coherence · label_overlap · regime_coherent</div></div>
+        <div class="cc" style="border-left-color:var(--aqua)"><div class="cc__name">DecisionBoundaryComparison</div><div class="cc__desc">threshold_a · threshold_b · difference · tolerance · converged</div></div>
+        <div class="cc" style="border-left-color:var(--warning)"><div class="cc__name">ChainCompletenessResult</div><div class="cc__desc">a_complete · b_complete · chain_lengths · root_shas · overall</div></div>
+        <div class="cc" style="border-left-color:var(--good)"><div class="cc__name">CDTVReport</div><div class="cc__desc">verdict · pillars_passed · 5 pillar results · profiles · provenance_chain</div></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card__title">CDTV vs. Standard Approaches <span>cross-domain validation</span></div>
+      <table class="compare-table">
+        <thead><tr><th></th><th>Simple<br>Train/Test</th><th>k-Fold<br>Cross-Val</th><th>CDTV<br>(This Work)</th></tr></thead>
+        <tbody>
+          <tr><td>Cross-domain</td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--yellow">~</span></td><td><span class="dot dot--green">✓</span></td></tr>
+          <tr><td>Structural proof</td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--green">✓</span></td></tr>
+          <tr><td>Regime-aware</td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--green">✓</span></td></tr>
+          <tr><td>Provenance chain</td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--green">✓</span></td></tr>
+          <tr><td>Multi-pillar verdict</td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--green">✓</span></td></tr>
+          <tr><td>Effect size quantification</td><td><span class="dot dot--red">✗</span></td><td><span class="dot dot--yellow">~</span></td><td><span class="dot dot--green">✓</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════ CODEBASE ANALYTICS ═══════════ -->
 <section class="section">
   <h2 class="section__title">Codebase Analytics</h2>
   <div class="chart-grid">
     <div class="chart-card">
-      <div class="chart-card__title">Test Distribution by Module <span>802 total</span></div>
+      <div class="chart-card__title">Test Distribution by Module <span>882 total</span></div>
       <div class="bar-chart" id="testChart"></div>
     </div>
     <div class="chart-card">
-      <div class="chart-card__title">Source Code Heatmap <span>10,993 lines</span></div>
+      <div class="chart-card__title">Source Code Heatmap <span>12,315 lines</span></div>
       <div class="treemap" id="treemap" style="grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr)"></div>
     </div>
     <div class="chart-card">
@@ -650,43 +757,47 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
             <linearGradient id="d8" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="var(--pink)"/><stop offset="100%" stop-color="#f472b6"/></linearGradient>
             <linearGradient id="d9" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="var(--critical)"/><stop offset="100%" stop-color="#f87171"/></linearGradient>
           </defs>
-          <!-- circ = 2π×45 ≈ 283. Scaled to 11,333 total lines -->
-          <!-- API+Parsers ~1584 = 14.4% → 41 -->
+          <!-- circ = 2π×45 ≈ 283. Scaled to 12,315 total lines -->
+          <!-- API+Parsers ~1584 = 12.9% → 36 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d1)" stroke-width="18"
-            stroke-dasharray="41 242" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
-          <!-- ML+Statistics ~2380 = 21.6% → 61 -->
+            stroke-dasharray="36 247" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <!-- ML+Statistics ~2380 = 19.3% → 55 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d3)" stroke-width="18"
-            stroke-dasharray="61 222" stroke-dashoffset="-41" transform="rotate(-90 60 60)"/>
-          <!-- SEES G7 ~1890 = 17.2% → 49 -->
+            stroke-dasharray="55 228" stroke-dashoffset="-36" transform="rotate(-90 60 60)"/>
+          <!-- SEES G7 ~1890 = 15.3% → 43 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d8)" stroke-width="18"
-            stroke-dasharray="49 234" stroke-dashoffset="-102" transform="rotate(-90 60 60)"/>
-          <!-- ASRD G8 ~1660 = 15.1% → 43 -->
+            stroke-dasharray="43 240" stroke-dashoffset="-91" transform="rotate(-90 60 60)"/>
+          <!-- ASRD G8 ~1660 = 13.5% → 38 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d9)" stroke-width="18"
-            stroke-dasharray="43 240" stroke-dashoffset="-151" transform="rotate(-90 60 60)"/>
-          <!-- Research ~1135 = 10.3% → 29 -->
-          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d4)" stroke-width="18"
-            stroke-dasharray="29 254" stroke-dashoffset="-194" transform="rotate(-90 60 60)"/>
-          <!-- Observability G6 ~864 = 7.9% → 22 -->
-          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d7)" stroke-width="18"
-            stroke-dasharray="22 261" stroke-dashoffset="-223" transform="rotate(-90 60 60)"/>
-          <!-- Contracts+Schemas ~741 = 6.7% → 19 -->
-          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d2)" stroke-width="18"
-            stroke-dasharray="19 264" stroke-dashoffset="-245" transform="rotate(-90 60 60)"/>
-          <!-- Data Quality + Infra ~739 = 6.7% → 19 -->
+            stroke-dasharray="38 245" stroke-dashoffset="-134" transform="rotate(-90 60 60)"/>
+          <!-- CDTV G9 ~982 = 8.0% → 23 -->
           <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d5)" stroke-width="18"
-            stroke-dasharray="19 264" stroke-dashoffset="-264" transform="rotate(-90 60 60)"/>
+            stroke-dasharray="23 260" stroke-dashoffset="-172" transform="rotate(-90 60 60)"/>
+          <!-- Research ~1135 = 9.2% → 26 -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d4)" stroke-width="18"
+            stroke-dasharray="26 257" stroke-dashoffset="-195" transform="rotate(-90 60 60)"/>
+          <!-- Observability G6 ~864 = 7.0% → 20 -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d7)" stroke-width="18"
+            stroke-dasharray="20 263" stroke-dashoffset="-221" transform="rotate(-90 60 60)"/>
+          <!-- Contracts+Schemas ~741 = 6.0% → 17 -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d2)" stroke-width="18"
+            stroke-dasharray="17 266" stroke-dashoffset="-241" transform="rotate(-90 60 60)"/>
+          <!-- Data Quality + Infra ~739 = 6.0% → 17 -->
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#d6)" stroke-width="18"
+            stroke-dasharray="25 258" stroke-dashoffset="-258" transform="rotate(-90 60 60)"/>
           <circle cx="60" cy="60" r="36" fill="var(--surface-1)"/>
-          <text x="60" y="58" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="900">40</text>
+          <text x="60" y="58" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="900">42</text>
           <text x="60" y="70" text-anchor="middle" fill="var(--text-muted)" font-size="7" font-weight="600">MODULES</text>
         </svg>
         <div class="donut-legend">
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--blue)"></div> API + Parsers (14%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--purple)"></div> ML + Statistics (22%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--pink)"></div> SEES Framework (17%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--critical)"></div> ASRD G8 (15%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--cyan)"></div> Research Modules (10%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--good)"></div> Observability (8%)</div>
-          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--aqua)"></div> Contracts + Schemas (7%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--blue)"></div> API + Parsers (13%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--purple)"></div> ML + Statistics (19%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--pink)"></div> SEES Framework (15%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--critical)"></div> ASRD G8 (14%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--warning)"></div> CDTV G9 (8%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--cyan)"></div> Research Modules (9%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--good)"></div> Observability (7%)</div>
+          <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--aqua)"></div> Contracts + Schemas (6%)</div>
           <div class="donut-legend__item"><div class="donut-legend__dot" style="background:var(--warning)"></div> Data Quality + Infra (7%)</div>
         </div>
       </div>
@@ -709,60 +820,65 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
           <line x1="60" y1="90" x2="680" y2="90" stroke="var(--grid)" stroke-width="0.5" stroke-dasharray="3"/>
           <line x1="60" y1="55" x2="680" y2="55" stroke="var(--grid)" stroke-width="0.5" stroke-dasharray="3"/>
           <line x1="60" y1="20" x2="680" y2="20" stroke="var(--grid)" stroke-width="0.5" stroke-dasharray="3"/>
-          <!-- Y-axis: 0→900 range, 195→20 = 175px => val → 195 - (val/900)*175 -->
+          <!-- Y-axis: 0→1000 range, 195→20 = 175px => val → 195 - (val/1000)*175 -->
           <text x="52" y="198" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">0</text>
-          <text x="52" y="163" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">180</text>
-          <text x="52" y="128" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">360</text>
-          <text x="52" y="93" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">540</text>
-          <text x="52" y="58" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">720</text>
-          <text x="52" y="23" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">900</text>
-          <!-- G0=38→187.6 G1=72→181 G2=110→173.6 G3=169→162.1 G4=199→156.3 G5=365→124 G6=408→115.7 G7=499→98 G8=802→39.1 -->
-          <polygon points="100,188 168,181 236,174 304,162 372,156 440,124 508,116 576,98 644,39 644,195 100,195"
+          <text x="52" y="163" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">200</text>
+          <text x="52" y="128" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">400</text>
+          <text x="52" y="93" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">600</text>
+          <text x="52" y="58" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">800</text>
+          <text x="52" y="23" fill="var(--text-muted)" font-size="9" text-anchor="end" font-family="'JetBrains Mono',monospace">1000</text>
+          <!-- Y: 0→1000 range, 195→20 = 175px => val → 195 - (val/1000)*175 -->
+          <!-- G0=38→188 G1=72→182 G2=110→176 G3=169→165 G4=199→160 G5=365→131 G6=408→124 G7=499→108 G8=802→55 G9=882→41 -->
+          <polygon points="100,188 164,182 228,176 292,165 356,160 420,131 484,124 548,108 612,55 676,41 676,195 100,195"
             fill="url(#growthFill)"/>
-          <polyline points="100,188 168,181 236,174 304,162 372,156 440,124 508,116 576,98 644,39"
+          <polyline points="100,188 164,182 228,176 292,165 356,160 420,131 484,124 548,108 612,55 676,41"
             fill="none" stroke="var(--blue)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
           <!-- Data points -->
           <circle cx="100" cy="188" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
           <text x="100" y="182" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">38</text>
           <text x="100" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G0</text>
 
-          <circle cx="168" cy="181" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
-          <text x="168" y="175" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">72</text>
-          <text x="168" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G1</text>
+          <circle cx="164" cy="182" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="164" y="176" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">72</text>
+          <text x="164" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G1</text>
 
-          <circle cx="236" cy="174" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
-          <text x="236" y="168" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">110</text>
-          <text x="236" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G2</text>
+          <circle cx="228" cy="176" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="228" y="170" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">110</text>
+          <text x="228" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G2</text>
 
-          <circle cx="304" cy="162" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
-          <text x="304" y="156" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">169</text>
-          <text x="304" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G3</text>
+          <circle cx="292" cy="165" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="292" y="159" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">169</text>
+          <text x="292" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G3</text>
 
-          <circle cx="372" cy="156" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
-          <text x="372" y="150" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">199</text>
-          <text x="372" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G4</text>
+          <circle cx="356" cy="160" r="3.5" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="356" y="154" fill="var(--text-secondary)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">199</text>
+          <text x="356" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G4</text>
 
-          <circle cx="440" cy="124" r="4" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
-          <text x="440" y="117" fill="var(--text-primary)" font-size="9" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">365</text>
-          <text x="440" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G5</text>
+          <circle cx="420" cy="131" r="4" fill="var(--blue)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="420" y="124" fill="var(--text-primary)" font-size="9" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">365</text>
+          <text x="420" y="208" fill="var(--text-muted)" font-size="8" text-anchor="middle">G5</text>
 
-          <circle cx="508" cy="116" r="4" fill="var(--purple)" stroke="var(--bg)" stroke-width="2"/>
-          <text x="508" y="109" fill="var(--purple)" font-size="9" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">408</text>
-          <text x="508" y="208" fill="var(--purple)" font-size="9" font-weight="700" text-anchor="middle">G6</text>
+          <circle cx="484" cy="124" r="4" fill="var(--purple)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="484" y="117" fill="var(--purple)" font-size="9" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">408</text>
+          <text x="484" y="208" fill="var(--purple)" font-size="9" font-weight="700" text-anchor="middle">G6</text>
 
-          <circle cx="576" cy="98" r="4.5" fill="var(--pink)" stroke="var(--bg)" stroke-width="2"/>
-          <text x="576" y="91" fill="var(--pink)" font-size="9" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">499</text>
-          <text x="576" y="208" fill="var(--pink)" font-size="9" font-weight="700" text-anchor="middle">G7</text>
+          <circle cx="548" cy="108" r="4.5" fill="var(--pink)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="548" y="101" fill="var(--pink)" font-size="9" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">499</text>
+          <text x="548" y="208" fill="var(--pink)" font-size="9" font-weight="700" text-anchor="middle">G7</text>
 
-          <circle cx="644" cy="39" r="5" fill="var(--good)" stroke="var(--bg)" stroke-width="2.5"/>
-          <text x="644" y="31" fill="var(--good)" font-size="10" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono',monospace">802</text>
-          <text x="644" y="208" fill="var(--good)" font-size="9" font-weight="800" text-anchor="middle">G8</text>
+          <circle cx="612" cy="55" r="4.5" fill="var(--critical)" stroke="var(--bg)" stroke-width="2"/>
+          <text x="612" y="48" fill="var(--critical)" font-size="9" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">802</text>
+          <text x="612" y="208" fill="var(--critical)" font-size="9" font-weight="700" text-anchor="middle">G8</text>
+
+          <circle cx="676" cy="41" r="5.5" fill="var(--good)" stroke="var(--bg)" stroke-width="2.5"/>
+          <text x="676" y="33" fill="var(--good)" font-size="10" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono',monospace">882</text>
+          <text x="676" y="208" fill="var(--good)" font-size="9" font-weight="800" text-anchor="middle">G9</text>
 
           <!-- Growth annotations -->
-          <text x="420" y="140" fill="var(--aqua)" font-size="7.5" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">+166</text>
-          <line x1="420" y1="142" x2="420" y2="152" stroke="var(--aqua)" stroke-width="0.8" stroke-dasharray="2" opacity="0.6"/>
-          <text x="612" y="58" fill="var(--good)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">+303</text>
-          <line x1="612" y1="60" x2="612" y2="72" stroke="var(--good)" stroke-width="0.8" stroke-dasharray="2" opacity="0.6"/>
+          <text x="400" y="148" fill="var(--aqua)" font-size="7.5" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">+166</text>
+          <line x1="400" y1="150" x2="400" y2="158" stroke="var(--aqua)" stroke-width="0.8" stroke-dasharray="2" opacity="0.6"/>
+          <text x="644" y="40" fill="var(--good)" font-size="8" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">+80</text>
+          <line x1="644" y1="42" x2="644" y2="50" stroke="var(--good)" stroke-width="0.8" stroke-dasharray="2" opacity="0.6"/>
         </svg>
       </div>
     </div>
@@ -905,7 +1021,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
     <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> ruff check</div><span class="ci-arrow">→</span></div>
     <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> ruff format</div><span class="ci-arrow">→</span></div>
     <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> mypy --strict</div><span class="ci-arrow">→</span></div>
-    <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> pytest (802)</div><span class="ci-arrow">→</span></div>
+    <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> pytest (882)</div><span class="ci-arrow">→</span></div>
     <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> smoke HTTP</div><span class="ci-arrow">→</span></div>
     <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> secrets scan</div><span class="ci-arrow">→</span></div>
     <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> pip-audit</div></div>
@@ -980,37 +1096,39 @@ document.querySelectorAll('[data-count]').forEach(el => {
   requestAnimationFrame(tick);
 });
 
-// ── Radial Progress (90%) ──
+// ── Radial Progress (100%) ──
 const radial = document.querySelector('.radial-progress');
 if (radial) {
   const circumference = 2 * Math.PI * 82;
-  const pct = 0.90;
+  const pct = 1.00;
   const offset = circumference * (1 - pct);
   setTimeout(() => { radial.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)'; radial.style.strokeDashoffset = offset; }, 200);
 }
 
 // ── Test Distribution Bar Chart ──
 const testData = [
-  {name:'g8_contracts',v:102},{name:'statistics',v:91},{name:'regime_cls',v:60},
-  {name:'spectral',v:52},{name:'asrd_pipe',v:52},{name:'contracts',v:41},
-  {name:'conformal',v:37},{name:'observability',v:31},{name:'g7_synth',v:29},
-  {name:'schemas',v:26},{name:'g7_entropy',v:23},{name:'detectors',v:22},
-  {name:'edp_ingest',v:21},{name:'g7_conformal',v:20},{name:'g7_spectral',v:19},
-  {name:'decision',v:18},{name:'evaluation',v:17},{name:'esa_parser',v:17},
-  {name:'splits',v:15},{name:'pipeline',v:15},{name:'g3_ctr',v:14},
-  {name:'edp_parser',v:14},{name:'comparative',v:13},{name:'api',v:13},
-  {name:'instrumented',v:12},{name:'edp_inv',v:5},{name:'src_ver',v:4},
-  {name:'esa_acq',v:4},{name:'edp_exp',v:4},{name:'edp_view',v:3},
-  {name:'edp_ver',v:2},{name:'edp_audit',v:2},{name:'edp_acq',v:2},
-  {name:'edp_evt',v:1},{name:'edp_dup',v:1}
+  {name:'g8_contracts',v:102},{name:'statistics',v:91},{name:'g9_transfer',v:59},
+  {name:'regime_cls',v:60},{name:'spectral',v:52},{name:'asrd_pipe',v:52},
+  {name:'contracts',v:41},{name:'conformal',v:37},{name:'observability',v:31},
+  {name:'g7_synth',v:29},{name:'schemas',v:26},{name:'g7_entropy',v:23},
+  {name:'detectors',v:22},{name:'g9_contracts',v:21},{name:'edp_ingest',v:21},
+  {name:'g7_conformal',v:20},{name:'g7_spectral',v:19},{name:'decision',v:18},
+  {name:'evaluation',v:17},{name:'esa_parser',v:17},{name:'splits',v:15},
+  {name:'pipeline',v:15},{name:'g3_ctr',v:14},{name:'edp_parser',v:14},
+  {name:'comparative',v:13},{name:'api',v:13},{name:'instrumented',v:12},
+  {name:'edp_inv',v:5},{name:'src_ver',v:4},{name:'esa_acq',v:4},
+  {name:'edp_exp',v:4},{name:'edp_view',v:3},{name:'edp_ver',v:2},
+  {name:'edp_audit',v:2},{name:'edp_acq',v:2},{name:'edp_evt',v:1},
+  {name:'edp_dup',v:1}
 ];
 const maxTest = Math.max(...testData.map(d=>d.v));
 const testChart = document.getElementById('testChart');
 const barColors = {
-  g8_contracts:'var(--critical)',statistics:'var(--purple)',regime_cls:'var(--orange)',
-  spectral:'var(--cyan)',asrd_pipe:'var(--pink)',conformal:'var(--aqua)',
-  observability:'var(--good)',g7_synth:'var(--pink)',g7_entropy:'var(--pink)',
-  g7_conformal:'var(--aqua)',g7_spectral:'var(--cyan)'
+  g8_contracts:'var(--critical)',statistics:'var(--purple)',g9_transfer:'var(--orange)',
+  regime_cls:'var(--orange)',spectral:'var(--cyan)',asrd_pipe:'var(--pink)',
+  conformal:'var(--aqua)',observability:'var(--good)',g7_synth:'var(--pink)',
+  g7_entropy:'var(--pink)',g7_conformal:'var(--aqua)',g7_spectral:'var(--cyan)',
+  g9_contracts:'var(--orange)'
 };
 testData.forEach(d => {
   const col = document.createElement('div');
