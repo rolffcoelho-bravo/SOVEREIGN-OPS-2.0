@@ -11,7 +11,7 @@ def test_liveness_reports_g3_stage() -> None:
         assert response.status_code == 200
         body = response.json()
         assert body["status"] == "alive"
-        assert body["stage"] == "G5"
+        assert body["stage"] == "G9"
         assert body["mode"] == "RESEARCH_ONLY"
         assert body["inference"] == "NOT_IMPLEMENTED"
 
@@ -112,7 +112,7 @@ def test_pipeline_config_returns_defaults() -> None:
         response = client.get("/pipeline/config")
         assert response.status_code == 200
         body = response.json()
-        assert body["stage"] == "G5"
+        assert body["stage"] == "G9"
         assert body["default_train_frac"] == 0.6
         assert body["default_calibration_frac"] == 0.2
         assert body["default_test_frac"] == 0.2

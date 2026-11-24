@@ -58,7 +58,7 @@ class LivenessResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     status: Literal["alive"] = "alive"
-    stage: Literal["G5"] = "G5"
+    stage: Literal["G9"] = "G9"
     mode: Literal["RESEARCH_ONLY"] = "RESEARCH_ONLY"
     inference: Literal["NOT_IMPLEMENTED"] = "NOT_IMPLEMENTED"
 
@@ -176,7 +176,7 @@ class EvaluationProtocolResponse(BaseModel):
 class PipelineConfigResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    stage: Literal["G5"] = "G5"
+    stage: Literal["G9"] = "G9"
     description: str = (
         "Single-domain analysis pipeline: points → chronological_split "
         "→ detector.fit(train) → detector.predict(test) → "
