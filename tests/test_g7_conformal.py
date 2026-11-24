@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from pydantic import ValidationError
 
 from sovereign_ops.conformal import calibrate_conformal, conformal_predict
 from sovereign_ops.g7_contracts import ConformalCalibration, ConformalPredictionSet
-
 
 # ---------------------------------------------------------------------------
 # Calibration
@@ -19,18 +19,14 @@ class TestCalibrateConformal:
 
     def test_returns_frozen_contract(self) -> None:
         scores = np.array([0.1, 0.3, 0.5, 0.7, 0.9])
-        cal = calibrate_conformal(
-            scores, dataset_id="ESA-AD-v2", model_id="zscore"
-        )
+        cal = calibrate_conformal(scores, dataset_id="ESA-AD-v2", model_id="zscore")
         assert isinstance(cal, ConformalCalibration)
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             cal.n_calibration = 10
 
     def test_n_calibration_matches_input(self) -> None:
         scores = np.arange(20, dtype=np.float64) / 20
-        cal = calibrate_conformal(
-            scores, dataset_id="ESA-AD-v2", model_id="zscore"
-        )
+        cal = calibrate_conformal(scores, dataset_id="ESA-AD-v2", model_id="zscore")
         assert cal.n_calibration == 20
 
     def test_threshold_at_significance_01(self) -> None:
@@ -74,9 +70,7 @@ class TestCalibrateConformal:
 
     def test_nans_excluded(self) -> None:
         scores = np.array([0.1, np.nan, 0.5, 0.9, np.nan])
-        cal = calibrate_conformal(
-            scores, dataset_id="ESA-AD-v2", model_id="zscore"
-        )
+        cal = calibrate_conformal(scores, dataset_id="ESA-AD-v2", model_id="zscore")
         assert cal.n_calibration == 3  # Only non-NaN
 
     def test_rejects_empty_scores(self) -> None:
@@ -122,12 +116,8 @@ class TestCalibrateConformal:
 
     def test_provenance_hash_deterministic(self) -> None:
         scores = np.array([0.1, 0.5, 0.9])
-        cal1 = calibrate_conformal(
-            scores, dataset_id="ESA-AD-v2", model_id="zscore"
-        )
-        cal2 = calibrate_conformal(
-            scores, dataset_id="ESA-AD-v2", model_id="zscore"
-        )
+        cal1 = calibrate_conformal(scores, dataset_id="ESA-AD-v2", model_id="zscore")
+        cal2 = calibrate_conformal(scores, dataset_id="ESA-AD-v2", model_id="zscore")
         assert cal1.calibration_scores_sha256 == cal2.calibration_scores_sha256
 
 
@@ -149,73 +139,52 @@ class TestConformalPredict:
             significance_level=0.1,
         )
 
-    def test_returns_frozen_contract(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_returns_frozen_contract(self, calibration: ConformalCalibration) -> None:
         test_scores = np.array([50.0, 110.0, 5.0])
         result = conformal_predict(test_scores, calibration)
         assert isinstance(result, ConformalPredictionSet)
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             result.n_test = 100
 
-    def test_counts_sum_to_n_test(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_counts_sum_to_n_test(self, calibration: ConformalCalibration) -> None:
         rng = np.random.default_rng(42)
         test_scores = rng.standard_normal(50) * 50 + 50
         result = conformal_predict(test_scores, calibration)
-        assert (
-            result.n_anomalous + result.n_normal + result.n_ambiguous
-            == result.n_test
-        )
+        assert result.n_anomalous + result.n_normal + result.n_ambiguous == result.n_test
 
-    def test_high_scores_flagged_anomalous(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_high_scores_flagged_anomalous(self, calibration: ConformalCalibration) -> None:
         # Scores well above threshold
         test_scores = np.array([200.0, 300.0, 500.0])
         result = conformal_predict(test_scores, calibration)
         assert result.n_anomalous == 3
 
-    def test_low_scores_flagged_normal(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_low_scores_flagged_normal(self, calibration: ConformalCalibration) -> None:
         # Scores well below threshold
         test_scores = np.array([0.1, 0.2, 0.3])
         result = conformal_predict(test_scores, calibration)
         assert result.n_normal == 3
 
-    def test_empirical_coverage_with_labels(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_empirical_coverage_with_labels(self, calibration: ConformalCalibration) -> None:
         # Create test data where all anomalies are high-scoring
         test_scores = np.array([200.0, 300.0, 1.0, 2.0, 3.0])
         labels = np.array([True, True, False, False, False])
-        result = conformal_predict(
-            test_scores, calibration, labels=labels
-        )
+        result = conformal_predict(test_scores, calibration, labels=labels)
         # Both true anomalies (200, 300) should be detected
         assert result.empirical_coverage == 1.0
 
-    def test_coverage_without_labels(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_coverage_without_labels(self, calibration: ConformalCalibration) -> None:
         test_scores = np.array([50.0, 60.0])
         result = conformal_predict(test_scores, calibration)
         # Without labels, coverage = 1 - significance_level
         assert abs(result.empirical_coverage - 0.9) < 1e-6
 
-    def test_provenance_deterministic(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_provenance_deterministic(self, calibration: ConformalCalibration) -> None:
         scores = np.array([10.0, 50.0, 100.0])
         r1 = conformal_predict(scores, calibration)
         r2 = conformal_predict(scores, calibration)
         assert r1.test_scores_sha256 == r2.test_scores_sha256
 
-    def test_rejects_label_length_mismatch(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_rejects_label_length_mismatch(self, calibration: ConformalCalibration) -> None:
         with pytest.raises(ValueError, match="[Ll]abels"):
             conformal_predict(
                 np.ones(5),
@@ -223,8 +192,6 @@ class TestConformalPredict:
                 labels=np.array([True, False]),
             )
 
-    def test_rejects_empty_input(
-        self, calibration: ConformalCalibration
-    ) -> None:
+    def test_rejects_empty_input(self, calibration: ConformalCalibration) -> None:
         with pytest.raises(ValueError):
             conformal_predict(np.array([]), calibration)

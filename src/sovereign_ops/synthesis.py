@@ -429,12 +429,14 @@ def sees_synthesise(
 
     # Provenance: SHA-256 of all input digests
     provenance = hashlib.sha256(
-        "|".join([
-            spectral.sha256_digest(),
-            entropy.sha256_digest(),
-            conformal.sha256_digest(),
-            fusion.sha256_digest(),
-        ]).encode()
+        "|".join(
+            [
+                spectral.sha256_digest(),
+                entropy.sha256_digest(),
+                conformal.sha256_digest(),
+                fusion.sha256_digest(),
+            ]
+        ).encode()
     ).hexdigest()
 
     return SEESReport(

@@ -82,7 +82,9 @@ _ALPHA_LABELS: dict[str, tuple[float, float]] = {
 }
 
 
-def _classify_alpha(alpha: float) -> Literal[
+def _classify_alpha(
+    alpha: float,
+) -> Literal[
     "hartley",
     "sub_shannon",
     "shannon",
@@ -347,10 +349,12 @@ def entropy_divergence_profile(
     EntropyDivergenceProfile contract.
     """
     # Shared binning for consistent comparison
-    all_vals = np.concatenate([
-        reference[~np.isnan(reference)],
-        test[~np.isnan(test)],
-    ])
+    all_vals = np.concatenate(
+        [
+            reference[~np.isnan(reference)],
+            test[~np.isnan(test)],
+        ]
+    )
     if len(all_vals) < 4:
         raise ValueError("Need at least 4 total non-NaN values")
 

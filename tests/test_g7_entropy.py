@@ -6,6 +6,7 @@ import math
 
 import numpy as np
 import pytest
+from pydantic import ValidationError
 
 from sovereign_ops.entropy import (
     build_alpha_spectrum,
@@ -14,7 +15,6 @@ from sovereign_ops.entropy import (
     renyi_entropy,
 )
 from sovereign_ops.g7_contracts import EntropyAlphaSpectrum, EntropyDivergenceProfile
-
 
 # ---------------------------------------------------------------------------
 # Histogram Density
@@ -126,27 +126,21 @@ class TestBuildAlphaSpectrum:
     def test_returns_frozen_contract(self) -> None:
         rng = np.random.default_rng(42)
         values = rng.standard_normal(200)
-        spec = build_alpha_spectrum(
-            values, dataset_id="ESA-AD-v2", source_sha256="a" * 64
-        )
+        spec = build_alpha_spectrum(values, dataset_id="ESA-AD-v2", source_sha256="a" * 64)
         assert isinstance(spec, EntropyAlphaSpectrum)
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             spec.n_bins = 50
 
     def test_default_7_alpha_points(self) -> None:
         rng = np.random.default_rng(1)
         values = rng.standard_normal(100)
-        spec = build_alpha_spectrum(
-            values, dataset_id="ESA-AD-v2", source_sha256="b" * 64
-        )
+        spec = build_alpha_spectrum(values, dataset_id="ESA-AD-v2", source_sha256="b" * 64)
         assert len(spec.points) == 7
 
     def test_shannon_matches_alpha_1(self) -> None:
         rng = np.random.default_rng(2)
         values = rng.standard_normal(500)
-        spec = build_alpha_spectrum(
-            values, dataset_id="ESA-AD-v2", source_sha256="c" * 64
-        )
+        spec = build_alpha_spectrum(values, dataset_id="ESA-AD-v2", source_sha256="c" * 64)
         # Find the α=1 point
         shannon_pt = [p for p in spec.points if p.alpha_label == "shannon"]
         assert len(shannon_pt) == 1
@@ -155,17 +149,13 @@ class TestBuildAlphaSpectrum:
     def test_entropy_ratio_in_01(self) -> None:
         rng = np.random.default_rng(3)
         values = rng.standard_normal(200)
-        spec = build_alpha_spectrum(
-            values, dataset_id="EDP-SCADA-v2", source_sha256="d" * 64
-        )
+        spec = build_alpha_spectrum(values, dataset_id="EDP-SCADA-v2", source_sha256="d" * 64)
         assert 0.0 < spec.entropy_ratio <= 1.0 + 1e-10
 
     def test_min_entropy_leq_shannon(self) -> None:
         rng = np.random.default_rng(4)
         values = rng.standard_normal(200)
-        spec = build_alpha_spectrum(
-            values, dataset_id="ESA-AD-v2", source_sha256="e" * 64
-        )
+        spec = build_alpha_spectrum(values, dataset_id="ESA-AD-v2", source_sha256="e" * 64)
         assert spec.min_entropy <= spec.shannon_entropy + 1e-10
 
 
@@ -181,42 +171,32 @@ class TestEntropyDivergenceProfile:
         rng = np.random.default_rng(10)
         ref = rng.standard_normal(200)
         test = rng.standard_normal(200) + 2
-        result = entropy_divergence_profile(
-            ref, test, dataset_id="ESA-AD-v2"
-        )
+        result = entropy_divergence_profile(ref, test, dataset_id="ESA-AD-v2")
         assert isinstance(result, EntropyDivergenceProfile)
 
     def test_identical_signals_near_zero(self) -> None:
         rng = np.random.default_rng(11)
         values = rng.standard_normal(500)
-        result = entropy_divergence_profile(
-            values, values, dataset_id="ESA-AD-v2"
-        )
+        result = entropy_divergence_profile(values, values, dataset_id="ESA-AD-v2")
         assert result.mean_divergence < 0.01
 
     def test_different_signals_positive_divergence(self) -> None:
         rng = np.random.default_rng(12)
         ref = rng.standard_normal(500)
         test = rng.exponential(2.0, 500)
-        result = entropy_divergence_profile(
-            ref, test, dataset_id="ESA-AD-v2"
-        )
+        result = entropy_divergence_profile(ref, test, dataset_id="ESA-AD-v2")
         assert result.max_divergence > 0
 
     def test_max_geq_mean(self) -> None:
         rng = np.random.default_rng(13)
         ref = rng.standard_normal(200)
         test = rng.standard_normal(200) + 3
-        result = entropy_divergence_profile(
-            ref, test, dataset_id="EDP-SCADA-v2"
-        )
+        result = entropy_divergence_profile(ref, test, dataset_id="EDP-SCADA-v2")
         assert result.max_divergence >= result.mean_divergence - 1e-10
 
     def test_7_alpha_divergence_pairs(self) -> None:
         rng = np.random.default_rng(14)
         ref = rng.standard_normal(200)
         test = rng.standard_normal(200) * 2
-        result = entropy_divergence_profile(
-            ref, test, dataset_id="ESA-AD-v2"
-        )
+        result = entropy_divergence_profile(ref, test, dataset_id="ESA-AD-v2")
         assert len(result.alpha_divergences) == 7

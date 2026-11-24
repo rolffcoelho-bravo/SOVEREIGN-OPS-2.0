@@ -222,11 +222,7 @@ def conformal_predict(
         n_true_anomalies = int(np.sum(labels))
         if n_true_anomalies > 0:
             detected_anomalies = sum(
-                1
-                for i in range(n_test)
-                if labels[i] and (
-                    float(test_scores[i]) > threshold - band
-                )
+                1 for i in range(n_test) if labels[i] and (float(test_scores[i]) > threshold - band)
             )
             empirical_cov = detected_anomalies / n_true_anomalies
         else:

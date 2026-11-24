@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from pydantic import ValidationError
 
 from sovereign_ops.g7_contracts import SpectralDivergenceScore, WaveletPacketSpectrum
 from sovereign_ops.spectral import (
@@ -11,7 +12,6 @@ from sovereign_ops.spectral import (
     haar_wavelet_packet_decompose,
     spectral_divergence,
 )
-
 
 # ---------------------------------------------------------------------------
 # Wavelet Packet Decomposition
@@ -27,20 +27,20 @@ class TestHaarWaveletPacketDecompose:
         assert (1, 0) in tree  # low-pass
         assert (1, 1) in tree  # high-pass
         # Tree includes root (0,0) + 2 leaves
-        leaves = [(l, i) for (l, i) in tree if l == 1]
+        leaves = [(lvl, i) for (lvl, i) in tree if lvl == 1]
         assert len(leaves) == 2
 
     def test_depth_2_produces_four_leaf_nodes(self) -> None:
         signal = np.arange(8, dtype=np.float64)
         tree = haar_wavelet_packet_decompose(signal, depth=2)
         # 4 leaf nodes at level 2
-        leaves = [(l, i) for (l, i) in tree if l == 2]
+        leaves = [(lvl, i) for (lvl, i) in tree if lvl == 2]
         assert len(leaves) == 4
 
     def test_depth_3_produces_eight_leaves(self) -> None:
         signal = np.arange(16, dtype=np.float64)
         tree = haar_wavelet_packet_decompose(signal, depth=3)
-        leaves = [(l, i) for (l, i) in tree if l == 3]
+        leaves = [(lvl, i) for (lvl, i) in tree if lvl == 3]
         assert len(leaves) == 8
 
     def test_parseval_energy_conservation(self) -> None:
@@ -62,9 +62,7 @@ class TestHaarWaveletPacketDecompose:
         tree = haar_wavelet_packet_decompose(signal, depth=3)
         # (3, 0) is the pure low-pass node
         low_energy = float(np.sum(tree[(3, 0)] ** 2))
-        total_energy = sum(
-            float(np.sum(c**2)) for k, c in tree.items() if k[0] == 3
-        )
+        total_energy = sum(float(np.sum(c**2)) for k, c in tree.items() if k[0] == 3)
         assert low_energy / (total_energy + 1e-15) > 0.99
 
     def test_nan_replaced_with_zero(self) -> None:
@@ -102,7 +100,7 @@ class TestBuildEnergySpectrum:
             signal, dataset_id="ESA-AD-v2", depth=2, source_sha256="a" * 64
         )
         assert isinstance(spec, WaveletPacketSpectrum)
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             spec.depth = 3
 
     def test_node_count_matches_2_to_the_depth(self) -> None:
@@ -132,9 +130,7 @@ class TestBuildEnergySpectrum:
     def test_sha256_stored(self) -> None:
         signal = np.ones(8)
         sha = "e" * 64
-        spec = build_energy_spectrum(
-            signal, dataset_id="ESA-AD-v2", depth=1, source_sha256=sha
-        )
+        spec = build_energy_spectrum(signal, dataset_id="ESA-AD-v2", depth=1, source_sha256=sha)
         assert spec.source_sha256 == sha
 
 
@@ -150,7 +146,10 @@ class TestSpectralDivergence:
         self, signal: np.ndarray, dataset_id: str = "ESA-AD-v2"
     ) -> WaveletPacketSpectrum:
         return build_energy_spectrum(
-            signal, dataset_id=dataset_id, depth=3, source_sha256="f" * 64  # type: ignore[arg-type]
+            signal,
+            dataset_id=dataset_id,
+            depth=3,
+            source_sha256="f" * 64,  # type: ignore[arg-type]
         )
 
     def test_identical_signals_zero_divergence(self) -> None:

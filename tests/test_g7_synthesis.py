@@ -4,15 +4,14 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from pydantic import ValidationError
 
 from sovereign_ops.conformal import calibrate_conformal, conformal_predict
 from sovereign_ops.entropy import entropy_divergence_profile
 from sovereign_ops.g7_contracts import (
     DempsterShaferResult,
-    EntropyDivergenceProfile,
     MassAssignment,
     SEESReport,
-    SpectralDivergenceScore,
 )
 from sovereign_ops.spectral import build_energy_spectrum, spectral_divergence
 from sovereign_ops.synthesis import (
@@ -21,7 +20,6 @@ from sovereign_ops.synthesis import (
     dempster_combine_multi,
     sees_synthesise,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mass Assignment Construction
@@ -71,7 +69,7 @@ class TestBuildMassAssignment:
     def test_returns_frozen_contract(self) -> None:
         m = build_mass_assignment("test", score=0.5)
         assert isinstance(m, MassAssignment)
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             m.mass_anomalous = 0.9
 
 
@@ -170,24 +168,16 @@ class TestDempsterCombineMulti:
 
     def test_four_sources_amplification(self) -> None:
         """Four concordant sources → very high anomalous mass."""
-        ms = [
-            build_mass_assignment(f"s{i}", score=0.85, uncertainty=0.1)
-            for i in range(4)
-        ]
+        ms = [build_mass_assignment(f"s{i}", score=0.85, uncertainty=0.1) for i in range(4)]
         result = dempster_combine_multi(ms)
         assert result.combined_mass_anomalous > 0.95
 
     def test_rejects_single_source(self) -> None:
         with pytest.raises(ValueError, match="[Aa]t least 2"):
-            dempster_combine_multi(
-                [build_mass_assignment("s1", score=0.5)]
-            )
+            dempster_combine_multi([build_mass_assignment("s1", score=0.5)])
 
     def test_all_source_assignments_in_result(self) -> None:
-        ms = [
-            build_mass_assignment(f"src_{i}", score=0.5 + 0.1 * i)
-            for i in range(3)
-        ]
+        ms = [build_mass_assignment(f"src_{i}", score=0.5 + 0.1 * i) for i in range(3)]
         result = dempster_combine_multi(ms)
         result_ids = {s.source_id for s in result.source_assignments}
         expected_ids = {f"src_{i}" for i in range(3)}
@@ -227,9 +217,7 @@ class TestSEESSynthesise:
         spectral = spectral_divergence(ref_spec, test_spec)
 
         # Entropy
-        entropy = entropy_divergence_profile(
-            ref_signal, test_signal, dataset_id="ESA-AD-v2"
-        )
+        entropy = entropy_divergence_profile(ref_signal, test_signal, dataset_id="ESA-AD-v2")
 
         # Conformal
         cal_scores = rng.standard_normal(100)
@@ -256,7 +244,7 @@ class TestSEESSynthesise:
             **sees_inputs,
         )
         assert isinstance(report, SEESReport)
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             report.sees_score = 0.5
 
     def test_sees_score_in_01(self, sees_inputs: dict) -> None:  # type: ignore[type-arg]

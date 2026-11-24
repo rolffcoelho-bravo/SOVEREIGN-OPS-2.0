@@ -253,9 +253,7 @@ def spectral_divergence(
     if reference.dataset_id != test.dataset_id:
         raise ValueError("Cross-domain spectral comparison prohibited")
     if reference.depth != test.depth:
-        raise ValueError(
-            f"Spectra must have equal depth: {reference.depth} vs {test.depth}"
-        )
+        raise ValueError(f"Spectra must have equal depth: {reference.depth} vs {test.depth}")
 
     p_ref = _normalise_spectrum(reference)
     p_test = _normalise_spectrum(test)

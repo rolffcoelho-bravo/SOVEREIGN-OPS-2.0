@@ -93,11 +93,7 @@ def compare_views(root: Path, files: list[EDPFileReceipt]) -> ViewComparisonRepo
                         )
                     )
                 scenarios[name] = tuple(fold_list)
-            deltas = [
-                fold.f99_minus_f95_slots
-                for folds in scenarios.values()
-                for fold in folds
-            ]
+            deltas = [fold.f99_minus_f95_slots for folds in scenarios.values() for fold in folds]
             lookback_results.append(
                 LookbackCandidate(
                     record_ref=record.record_ref,

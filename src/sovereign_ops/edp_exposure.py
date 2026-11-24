@@ -100,11 +100,7 @@ def analyze_exposure(root: Path, files: list[EDPFileReceipt]) -> ExposureReport:
                         )
                     )
                 scenarios[name] = tuple(fold_list)
-            fractions = [
-                fold.coverage_fraction
-                for folds in scenarios.values()
-                for fold in folds
-            ]
+            fractions = [fold.coverage_fraction for folds in scenarios.values() for fold in folds]
             results.append(
                 ExposureCandidate(
                     record_ref=record.record_ref,

@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from sovereign_ops.contracts import Contract
 
-
 # ---------------------------------------------------------------------------
 # edp_duplicates  —  DuplicateDiagnosticReport
 # ---------------------------------------------------------------------------
