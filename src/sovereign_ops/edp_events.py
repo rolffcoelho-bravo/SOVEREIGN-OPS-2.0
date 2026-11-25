@@ -53,7 +53,9 @@ def inventory_failure_eligibility(root: Path, entry: EDPFileReceipt) -> FailureE
                     recorded_time_naive=timestamp.isoformat()
                     if timestamp.utcoffset() is None
                     else None,
-                    recorded_time_aware=timestamp.isoformat() if timestamp.utcoffset() else None,
+                    recorded_time_aware=timestamp.isoformat()
+                    if timestamp.utcoffset() is not None
+                    else None,
                     remarks_present=bool(remarks),
                     gates=gates,
                     eligibility="EXCLUDED_NO_SCADA" if not has_scada else "UNDETERMINED",

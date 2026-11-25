@@ -402,9 +402,11 @@ class PipelineLogger:
             self._logger = logger
             self._stage = stage
             self._start: float = 0.0
+            self._started_at: datetime = datetime.now(UTC)
 
         def __enter__(self) -> PipelineLogger._StageContext:
             self._start = time.monotonic()
+            self._started_at = datetime.now(UTC)
             self._logger._current_stage = self._stage
             self._logger._stage_start = self._start
             self._logger.info(f"Stage started: {self._stage}")
@@ -422,7 +424,7 @@ class PipelineLogger:
 
             timing = StageTiming(
                 stage=self._stage,
-                started_at=datetime.now(UTC),
+                started_at=self._started_at,
                 ended_at=datetime.now(UTC),
                 duration_ms=round(elapsed, 3),
                 status=status,
