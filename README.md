@@ -343,7 +343,7 @@ The confirmatory evaluation pipeline produces 8 immutable contract types:
 
 ## G7 SEES contracts
 
-The SEES framework introduces 13 additional immutable contract types:
+The SEES framework introduces 12 additional immutable contract types:
 
 | Contract | Key fields | Purpose |
 |---|---|---|
@@ -381,7 +381,7 @@ The ASRD framework introduces 14 additional immutable contract types:
 
 ## G9 CDTV contracts
 
-The CDTV framework introduces 11 additional immutable contract types:
+The CDTV framework introduces 8 additional immutable contract types:
 
 | Contract | Key fields | Purpose |
 |---|---|---|
@@ -394,7 +394,7 @@ The CDTV framework introduces 11 additional immutable contract types:
 | `ChainCompletenessResult` | a_complete · b_complete · chain_lengths · overall | Pillar 5: provenance integrity |
 | `CDTVReport` | verdict · pillars_passed · 5 pillar results · profiles | Sealed transfer validation report |
 
-**Total immutable contract types across all gates:** 99+ frozen Pydantic models with `extra="forbid"` and SHA-256 provenance.
+**Total immutable contract types across all gates:** 100 frozen Pydantic models with `extra="forbid"` and SHA-256 provenance.
 
 ## Project documentation
 
