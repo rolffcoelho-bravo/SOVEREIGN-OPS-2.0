@@ -82,6 +82,9 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 .stat__value--aqua{color:var(--aqua)}
 .stat__value--good{color:var(--good)}
 .stat__value--purple{color:var(--purple)}
+.stat__value--pink{color:var(--pink)}
+.stat__value--cyan{color:var(--cyan)}
+.stat__value--orange{color:var(--orange)}
 .stat__glow{position:absolute;top:-40px;right:-40px;width:120px;height:120px;
   border-radius:50%;filter:blur(50px);opacity:0.06;pointer-events:none}
 
@@ -290,10 +293,63 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 .animate:nth-child(5){animation-delay:0.15s}.animate:nth-child(6){animation-delay:0.18s}
 .animate:nth-child(7){animation-delay:0.21s}
 
+/* ═══ Navigation Bar ═══ */
+html{scroll-behavior:smooth}
+.nav{position:sticky;top:0;z-index:100;background:rgba(6,8,16,0.88);backdrop-filter:blur(16px) saturate(1.4);
+  border-bottom:1px solid var(--grid);padding:0 24px;margin:0 -40px;transition:box-shadow 0.3s}
+.nav.scrolled{box-shadow:0 4px 24px rgba(0,0,0,0.5)}
+.nav__inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:0;overflow-x:auto;
+  scrollbar-width:none;-ms-overflow-style:none}
+.nav__inner::-webkit-scrollbar{display:none}
+.nav__link{display:flex;align-items:center;gap:5px;padding:12px 14px;font-size:0.68rem;font-weight:600;
+  color:var(--text-muted);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;
+  transition:color 0.2s,border-color 0.2s}
+.nav__link:hover{color:var(--text-secondary)}
+.nav__link.active{color:var(--blue);border-bottom-color:var(--blue)}
+.nav__dot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:0.5}
+
+/* ═══ Back-to-Top ═══ */
+.btt{position:fixed;bottom:28px;right:28px;width:42px;height:42px;border-radius:12px;
+  background:var(--surface-2);border:1px solid var(--grid);color:var(--text-secondary);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:99;
+  opacity:0;transform:translateY(12px);transition:opacity 0.3s,transform 0.3s,background 0.2s,border-color 0.2s;
+  pointer-events:none}
+.btt.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.btt:hover{background:var(--surface-3);border-color:rgba(74,158,255,0.2);color:var(--blue)}
+.btt svg{width:18px;height:18px}
+
+/* ═══ Scroll Reveal ═══ */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1),transform 0.6s cubic-bezier(0.4,0,0.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.08s}.reveal-delay-2{transition-delay:0.16s}
+.reveal-delay-3{transition-delay:0.24s}
+
+/* ═══ KPI Icon Squares ═══ */
+.stat__icon-box{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;margin-bottom:8px;font-size:0}
+.stat__icon-box svg{width:16px;height:16px}
+
+/* ═══ Provenance (enhanced) ═══ */
+.prov-box__icon-wrap{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;margin:0 auto 6px}
+.prov-box__icon-wrap svg{width:18px;height:18px}
+
+/* ═══ Section Dividers ═══ */
+.section[id]{scroll-margin-top:56px}
+
+/* ═══ Last-Updated Badge ═══ */
+.last-updated{display:inline-flex;align-items:center;gap:5px;margin-top:14px;
+  padding:4px 12px;border-radius:16px;font-size:0.65rem;font-weight:500;
+  color:var(--text-muted);background:var(--surface-1);border:1px solid var(--grid)}
+.last-updated__dot{width:5px;height:5px;border-radius:50%;background:var(--good);
+  box-shadow:0 0 6px var(--good);animation:pulse 2s infinite}
+
 /* Responsive */
 @media(max-width:640px){
   body{padding:24px 16px 60px}
   h1{font-size:1.8rem}
+  .nav{margin:0 -16px;padding:0 12px}
+  .nav__link{padding:10px 10px;font-size:0.62rem}
   .gate{grid-template-columns:44px 1fr 80px}
   .wf-row{grid-template-columns:130px 1fr 36px}
   .ci-pipeline{flex-direction:column;align-items:flex-start}
@@ -306,8 +362,27 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </head>
 <body>
 
+<!-- ═══════════ NAVIGATION ═══════════ -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__link active" href="#top">Overview</a>
+    <a class="nav__link" href="#gates">Gates</a>
+    <a class="nav__link" href="#g5">G5</a>
+    <a class="nav__link" href="#g7">G7 SEES</a>
+    <a class="nav__link" href="#g8">G8 ASRD</a>
+    <a class="nav__link" href="#g9">G9 CDTV</a>
+    <a class="nav__link" href="#analytics">Analytics</a>
+    <a class="nav__link" href="#envelope">Decisions</a>
+    <a class="nav__link" href="#architecture">Architecture</a>
+    <a class="nav__link" href="#provenance">Provenance</a>
+    <a class="nav__link" href="#ci">CI</a>
+    <a class="nav__link" href="#stack">Stack</a>
+    <a class="nav__link" href="#principles">Principles</a>
+  </div>
+</nav>
+
 <!-- ═══════════ HEADER ═══════════ -->
-<header class="header">
+<header class="header" id="top">
   <h1>SOVEREIGN OPS 2.0</h1>
   <p class="subtitle">Domain-Aware Reliability Protocol — Abstention-First Anomaly Detection</p>
   <p class="tagline">A novel confirmatory evaluation framework with cryptographic provenance</p>
@@ -317,61 +392,64 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
     <span class="badge badge--aqua">Apache 2.0</span>
     <span class="badge badge--purple">DOI: 10.5281/zenodo.24364517</span>
   </div>
+  <div class="last-updated"><span class="last-updated__dot"></span> Last updated: November 2026 · v0.9.0-G9</div>
 </header>
 
 <!-- ═══════════ KPI ROW ═══════════ -->
 <section class="stats">
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--good)"></div>
-    <div class="stat__icon">🧪</div>
+    <div class="stat__icon-box" style="background:var(--good-wash);border:1px solid rgba(34,197,94,0.15)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--good)" stroke-width="1.5" stroke-linecap="round"><path d="M13 4L6.5 11 3 7.5"/></svg></div>
     <div class="stat__label">Tests</div>
     <div class="stat__value stat__value--good" data-count="882">0</div>
     <div class="stat__detail">37 test modules · 100% passing</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--blue)"></div>
-    <div class="stat__icon">📐</div>
+    <div class="stat__icon-box" style="background:var(--blue-wash);border:1px solid rgba(74,158,255,0.15)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M8 5v6"/></svg></div>
     <div class="stat__label">Source Modules</div>
     <div class="stat__value stat__value--blue" data-count="42">0</div>
     <div class="stat__detail">12,333 lines · mypy --strict</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--purple)"></div>
-    <div class="stat__icon">📜</div>
+    <div class="stat__icon-box" style="background:var(--purple-wash);border:1px solid rgba(139,92,246,0.15)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--purple)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v12M12 2v12M4 6h8M4 10h8"/></svg></div>
     <div class="stat__label">Contract Types</div>
     <div class="stat__value stat__value--purple" data-count="100">0</div>
     <div class="stat__detail">100 frozen · Pydantic v2</div>
   </div>
   <div class="stat animate">
     <div class="stat__glow" style="background:var(--aqua)"></div>
-    <div class="stat__icon">🗄️</div>
+    <div class="stat__icon-box" style="background:var(--aqua-wash);border:1px solid rgba(28,190,128,0.15)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--aqua)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M2 7h12"/></svg></div>
     <div class="stat__label">Datasets</div>
     <div class="stat__value stat__value--aqua" data-count="2">0</div>
     <div class="stat__detail">ESA + EDP · 11.8 GB · DOI-pinned</div>
   </div>
   <div class="stat animate">
-    <div class="stat__icon">🔌</div>
+    <div class="stat__glow" style="background:var(--pink)"></div>
+    <div class="stat__icon-box" style="background:var(--pink-wash);border:1px solid rgba(236,72,153,0.15)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--pink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5"/><path d="M8 3v5l3 3"/></svg></div>
     <div class="stat__label">API Endpoints</div>
-    <div class="stat__value" data-count="12">0</div>
+    <div class="stat__value stat__value--pink" data-count="12">0</div>
     <div class="stat__detail">health · provenance · pipeline · comparison</div>
   </div>
   <div class="stat animate">
-    <div class="stat__icon">🏷️</div>
+    <div class="stat__glow" style="background:var(--cyan)"></div>
+    <div class="stat__icon-box" style="background:var(--cyan-wash);border:1px solid rgba(6,182,212,0.15)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--cyan)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l8 6-8 6V2z"/></svg></div>
     <div class="stat__label">Zenodo DOIs</div>
-    <div class="stat__value" data-count="2">0</div>
+    <div class="stat__value stat__value--cyan" data-count="2">0</div>
     <div class="stat__detail">Concept + Version pinned</div>
   </div>
   <div class="stat animate">
-    <div class="stat__glow" style="background:var(--aqua)"></div>
-    <div class="stat__icon">📊</div>
+    <div class="stat__glow" style="background:var(--orange)"></div>
+    <div class="stat__icon-box" style="background:var(--orange-wash);border:1px solid rgba(249,115,22,0.15)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V7l5-4 5 4v5a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><path d="M6 12V9h4v3"/></svg></div>
     <div class="stat__label">Statistical Layers</div>
-    <div class="stat__value stat__value--aqua" data-count="5">0</div>
+    <div class="stat__value stat__value--orange" data-count="5">0</div>
     <div class="stat__detail">Wilcoxon · Holm · Cliff's δ · BCa · Kendall's W</div>
   </div>
 </section>
 
 <!-- ═══════════ GATE PROGRESS ═══════════ -->
-<section class="section">
+<section class="section reveal" id="gates">
   <h2 class="section__title">Development Gates</h2>
   <div class="gates-container">
     <div class="radial-wrap">
@@ -422,7 +500,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ G5: 5-LAYER CONFIRMATORY PIPELINE ═══════════ -->
-<section class="section">
+<section class="section reveal" id="g5">
   <h2 class="section__title">G5 — 5-Layer Confirmatory Evaluation Pipeline</h2>
   <p class="section__subtitle" style="margin-bottom:24px;margin-top:-12px">
     Non-parametric statistical testing, family-wise error control, effect-size quantification,
@@ -488,7 +566,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ G7: SEES FRAMEWORK ═══════════ -->
-<section class="section">
+<section class="section reveal" id="g7">
   <h2 class="section__title">G7 — Spectral-Entropic Evidence Synthesis (SEES)</h2>
   <p class="section__subtitle" style="margin-bottom:24px;margin-top:-12px">
     Wavelet packet spectral decomposition, Rényi entropy α-profiling,
@@ -556,7 +634,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ G8: ASRD FRAMEWORK ═══════════ -->
-<section class="section">
+<section class="section reveal" id="g8">
   <h2 class="section__title">G8 — Adaptive Spectral Regime Detection (ASRD)</h2>
   <p class="section__subtitle" style="margin-bottom:24px;margin-top:-12px">
     Extending SEES with sliding-window spectral tracking, CUSUM change-point detection,
@@ -624,7 +702,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ G9: CDTV FRAMEWORK ═══════════ -->
-<section class="section">
+<section class="section reveal" id="g9">
   <h2 class="section__title">G9 — Cross-Domain Transfer Validation (CDTV)</h2>
   <p style="color:var(--text-secondary);max-width:780px;margin-bottom:28px;font-size:0.88rem;line-height:1.6">
     Validating that analytical pipelines generalize across domains through 5 statistical pillars —
@@ -731,7 +809,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ CODEBASE ANALYTICS ═══════════ -->
-<section class="section">
+<section class="section reveal" id="analytics">
   <h2 class="section__title">Codebase Analytics</h2>
   <div class="chart-grid">
     <div class="chart-card">
@@ -886,7 +964,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ DECISION ENVELOPE ═══════════ -->
-<section class="section">
+<section class="section reveal" id="envelope">
   <h2 class="section__title">Decision Envelope — Five-Outcome Taxonomy</h2>
   <p class="section__subtitle" style="margin-bottom:20px;margin-top:-12px">Priority-ordered outcomes with confidence formula: coverage × F1</p>
   <div class="waterfall">
@@ -899,7 +977,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ ARCHITECTURE FLOW ═══════════ -->
-<section class="section">
+<section class="section reveal" id="architecture">
   <h2 class="section__title">Architecture — DARP Flow</h2>
   <div class="arch-svg-wrap">
     <svg viewBox="0 0 1000 580" xmlns="http://www.w3.org/2000/svg">
@@ -997,25 +1075,25 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ PROVENANCE CHAIN ═══════════ -->
-<section class="section">
+<section class="section reveal" id="provenance">
   <h2 class="section__title">Cryptographic Provenance Chain</h2>
   <div class="provenance">
-    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon">📦</div><div class="prov-box__title">Source Bytes</div><div class="prov-box__detail">DOI-pinned ZIP</div></div><div class="prov-hash">SHA-256 + MD5</div></div>
+    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon-wrap" style="background:var(--blue-wash);border:1px solid rgba(74,158,255,0.18)"><svg viewBox="0 0 18 18" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2L2 6v6l7 4 7-4V6L9 2z"/><path d="M2 6l7 4M9 10v8M16 6l-7 4"/></svg></div><div class="prov-box__title">Source Bytes</div><div class="prov-box__detail">DOI-pinned ZIP</div></div><div class="prov-hash">SHA-256 + MD5</div></div>
     <div class="prov-arrow">→</div>
-    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon">📋</div><div class="prov-box__title">Acquisition</div><div class="prov-box__detail">Receipt + manifest</div></div><div class="prov-hash">verify()</div></div>
+    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon-wrap" style="background:var(--aqua-wash);border:1px solid rgba(28,190,128,0.18)"><svg viewBox="0 0 18 18" fill="none" stroke="var(--aqua)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="2" width="12" height="14" rx="2"/><path d="M7 6h4M7 9h4M7 12h2"/></svg></div><div class="prov-box__title">Acquisition</div><div class="prov-box__detail">Receipt + manifest</div></div><div class="prov-hash">verify()</div></div>
     <div class="prov-arrow">→</div>
-    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon">🔍</div><div class="prov-box__title">Quality Report</div><div class="prov-box__detail">Profiler checks</div></div><div class="prov-hash">data_hash</div></div>
+    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon-wrap" style="background:var(--good-wash);border:1px solid rgba(34,197,94,0.18)"><svg viewBox="0 0 18 18" fill="none" stroke="var(--good)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5"/><path d="M16 16l-3.6-3.6"/></svg></div><div class="prov-box__title">Quality Report</div><div class="prov-box__detail">Profiler checks</div></div><div class="prov-hash">data_hash</div></div>
     <div class="prov-arrow">→</div>
-    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon">📊</div><div class="prov-box__title">Model Evidence</div><div class="prov-box__detail">Evaluation metrics</div></div><div class="prov-hash">model_hash</div></div>
+    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon-wrap" style="background:var(--purple-wash);border:1px solid rgba(139,92,246,0.18)"><svg viewBox="0 0 18 18" fill="none" stroke="var(--purple)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14V8M7 14V5M11 14V9M15 14V3"/></svg></div><div class="prov-box__title">Model Evidence</div><div class="prov-box__detail">Evaluation metrics</div></div><div class="prov-hash">model_hash</div></div>
     <div class="prov-arrow">→</div>
-    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon">🔐</div><div class="prov-box__title">Decision Envelope</div><div class="prov-box__detail">Sealed outcome</div></div><div class="prov-hash">envelope_hash</div></div>
+    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon-wrap" style="background:var(--pink-wash);border:1px solid rgba(236,72,153,0.18)"><svg viewBox="0 0 18 18" fill="none" stroke="var(--pink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="12" height="9" rx="2"/><path d="M6 7V5a3 3 0 016 0v2"/></svg></div><div class="prov-box__title">Decision Envelope</div><div class="prov-box__detail">Sealed outcome</div></div><div class="prov-hash">envelope_hash</div></div>
     <div class="prov-arrow">→</div>
-    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon">📁</div><div class="prov-box__title">Case Record</div><div class="prov-box__detail">Audit-ready</div></div><div class="prov-hash">case_digest</div></div>
+    <div class="prov-node"><div class="prov-box"><div class="prov-box__icon-wrap" style="background:var(--cyan-wash);border:1px solid rgba(6,182,212,0.18)"><svg viewBox="0 0 18 18" fill="none" stroke="var(--cyan)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15H5a2 2 0 01-2-2V3h8l4 4v8z"/><path d="M11 3v4h4"/></svg></div><div class="prov-box__title">Case Record</div><div class="prov-box__detail">Audit-ready</div></div><div class="prov-hash">case_digest</div></div>
   </div>
 </section>
 
 <!-- ═══════════ CI PIPELINE ═══════════ -->
-<section class="section">
+<section class="section reveal" id="ci">
   <h2 class="section__title">CI Pipeline</h2>
   <div class="ci-pipeline">
     <div class="ci-step"><div class="ci-box"><span class="ci-check">✓</span> ruff check</div><span class="ci-arrow">→</span></div>
@@ -1029,7 +1107,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ TECHNOLOGY STACK ═══════════ -->
-<section class="section">
+<section class="section reveal" id="stack">
   <h2 class="section__title">Technology Stack</h2>
   <div class="stack">
     <div class="stack__group">
@@ -1063,7 +1141,7 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <!-- ═══════════ DESIGN PRINCIPLES ═══════════ -->
-<section class="section">
+<section class="section reveal" id="principles">
   <h2 class="section__title">Key Design Principles</h2>
   <div class="principles">
     <div class="principle" style="border-top-color:var(--blue)"><div class="principle__title">Contract-First</div><div class="principle__desc">All data flows through immutable Pydantic models (extra="forbid", frozen=True). Canonical JSON serialization with SHA-256 digest for deterministic hashing.</div></div>
@@ -1077,8 +1155,13 @@ code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace}
 </section>
 
 <footer class="footer">
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px">
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l2.5 2.5"/></svg>
+    <span style="font-weight:600;letter-spacing:0.04em">SOVEREIGN-OPS 2.0</span>
+  </div>
   <p>ShockBridge Pulse Research Lab · <a href="https://shockbridgepulse.com">shockbridgepulse.com</a></p>
   <p style="margin-top:6px">DOI: <a href="https://doi.org/10.5281/zenodo.24364517">10.5281/zenodo.24364517</a> · Apache 2.0</p>
+  <p style="margin-top:8px;font-size:0.72rem;opacity:0.4">Domain-Aware Reliability Protocol · Contract-First Design · Abstention-Aware Decisions</p>
 </footer>
 
 <script>
@@ -1163,6 +1246,41 @@ srcData.slice(0, 14).forEach(d => {
   cell.innerHTML = `<div class="treemap-cell__name">${d.name}</div><div class="treemap-cell__val">${d.v} lines</div>`;
   treemap.appendChild(cell);
 });
+
+/* ── Back-to-top button ── */
+const btt=document.querySelector('.btt');
+window.addEventListener('scroll',()=>{
+  btt.classList.toggle('visible',window.scrollY>600);
+},{passive:true});
+btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* ── Intersection Observer for scroll-reveal ── */
+const revealObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}});
+},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+/* ── Nav scroll spy ── */
+const nav=document.querySelector('.nav');
+const navLinks=document.querySelectorAll('.nav__link');
+const sectionIds=[...navLinks].map(a=>a.getAttribute('href').slice(1));
+window.addEventListener('scroll',()=>{
+  /* nav shadow */
+  nav.style.boxShadow=window.scrollY>10?'0 2px 24px rgba(0,0,0,0.5)':'none';
+  /* active link */
+  let current='';
+  sectionIds.forEach(id=>{
+    const sec=document.getElementById(id);
+    if(sec&&sec.getBoundingClientRect().top<=120) current=id;
+  });
+  navLinks.forEach(a=>{
+    a.classList.toggle('active',a.getAttribute('href')==='#'+current);
+  });
+},{passive:true});
 </script>
+
+<button class="btt" aria-label="Back to top">
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M4 10l6-6 6 6"/></svg>
+</button>
 </body>
 </html>
