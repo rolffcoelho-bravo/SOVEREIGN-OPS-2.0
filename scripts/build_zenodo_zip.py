@@ -49,6 +49,9 @@ def should_include(rel: str) -> bool:
         return False
     if rel.endswith((".pyc", ".pyo")):
         return False
+    # Never include the Zenodo ZIP itself (avoid recursive packing)
+    if rel.startswith("dist/") and rel.endswith("-zenodo.zip"):
+        return False
     return True
 
 

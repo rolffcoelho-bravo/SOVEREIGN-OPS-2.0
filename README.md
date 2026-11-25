@@ -65,41 +65,29 @@ All 5 layers produce immutable Pydantic contracts with SHA-256 provenance chains
 The second methodological pillar is **SEES** (G7), a novel four-component framework for multi-domain anomaly characterisation that fuses signal-theoretic, information-theoretic, and uncertainty-aware evidence into a single auditable score. All four components are implemented from first principles with **zero external signal-processing dependencies**.
 
 ```
- ╔══════════════════════════════════════════════════════════════════════════════╗
- ║                  SEES — Spectral-Entropic Evidence Synthesis                ║
- ╚══════════════════════════════════════════════════════════════════════════════╝
+                    ┌──────────────────────────────────────────────────────────┐
+                    │      SEES — Spectral-Entropic Evidence Synthesis        │
+                    └──────────────────────────────────────────────────────────┘
 
-  INPUT                     PILLAR                          OUTPUT
- ───────────────────────────────────────────────────────────────────────
-
-  Time-Series      ┌─────────────────────────┐
-  Observation ────▶│ P1  Wavelet Packet      │────▶  Spectral Score ──────┐
-                   │     Spectral Decomp.    │      (KL + JS divergence)  │
-                   │     (Haar, depth d)     │                            │
-                   └─────────────────────────┘                            │
-                                                                          │
-  Residual         ┌─────────────────────────┐                            │
-  Distribution ───▶│ P2  Rényi Entropy       │────▶  Entropy Score ───────┤
-                   │     α-Profiling         │      (max |Δα|)            │
-                   │     (α ∈ {0,…,∞})       │                            │
-                   └─────────────────────────┘                            │
-                                                                          │
-  Nonconformity    ┌─────────────────────────┐                            │
-  Scores ─────────▶│ P3  Conformal           │────▶  Conformal Score ─────┤
-                   │     Prediction          │      (anomalous fraction)  │
-                   │     (coverage ≥ 1−ε)    │                            │
-                   └─────────────────────────┘                            │
-                                                                          ▼
-                                                        ┌─────────────────────┐
-                      3 pillar scores ─────────────────▶│ P4  Dempster-Shafer │
-                      + mass assignments                │     Fusion          │
-                                                        └─────────┬───────────┘
+                    ┌─────────────────┐
+   Time-Series ───▶ │  P1  Wavelet    │───▶  Spectral Score ─────┐
+                    │  Spectral Decomp│     (KL + JS divergence)  │
+                    └─────────────────┘                           │
                                                                   │
-                                                                  ▼
-                                                        ╔═════════════════╗
-                                                        ║   SEES Score    ║
-                                                        ║  = Pl(anomaly)  ║
-                                                        ╚═════════════════╝
+                    ┌─────────────────┐                           │
+   Residuals ─────▶ │  P2  Rényi      │───▶  Entropy Score ──────┤
+                    │  α-Profiling    │     (max |Δα|)            │
+                    └─────────────────┘                           │
+                                                                  ├──▶ Dempster-
+                    ┌─────────────────┐                           │    Shafer
+   Nonconformity ─▶ │  P3  Conformal  │───▶  Conformal Score ────┘    Fusion
+                    │  Prediction     │     (anomalous fraction)       (P4)
+                    └─────────────────┘                                 │
+                                                                        ▼
+                                                               ╔══════════════╗
+                                                               ║  SEES Score  ║
+                                                               ║ Pl(anomaly)  ║
+                                                               ╚══════════════╝
 ```
 
 | Pillar | Method | Key property |
@@ -303,7 +291,7 @@ sovereign-ops-2.0/
 │   ├── regime_classifier.py   # G8: Entropy-signature PAM clustering
 │   ├── regime_conformal.py    # G8: Regime-conditioned conformal scoring
 │   ├── asrd_pipeline.py       # G8: ASRD pipeline orchestrator
-│   ├── g9_contracts.py        # G9: 11 CDTV immutable contracts
+│   ├── g9_contracts.py        # G9: 8 CDTV immutable contracts
 │   ├── transfer_validation.py # G9: 5-pillar cross-domain transfer engine
 │   ├── edp_contracts.py       # EDP domain contracts
 │   ├── edp_source_audit.py    # EDP source integrity audit (319 lines)
@@ -316,9 +304,12 @@ sovereign-ops-2.0/
 │   ├── edp_source_values.py   # EDP source value analysis
 │   └── audit.py               # Cross-module audit utilities
 ├── tests/                     # 37 test modules (882 tests, synthetic fixtures)
-├── scripts/                   # Verification, acquisition, figure generation
+├── scripts/                   # Verification, packaging, figure generation
 │   ├── verify.py              # 7-step CI verification runner
+│   ├── quick_vignette.py      # Full DARP pipeline demo (synthetic data, 0.3s)
+│   ├── build_zenodo_zip.py    # Reproducible Zenodo archive builder
 │   └── generate_figures.py    # Publication-quality matplotlib figures
+├── r_package/                 # R interface via reticulate (configure, verify, run)
 ├── docs/                      # Dashboard, figures, gate reports
 │   ├── dashboard.html         # Interactive research dashboard (GitHub Pages)
 │   └── figures/               # 8 SVG + PNG publication figures
